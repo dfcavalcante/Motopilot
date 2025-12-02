@@ -1,0 +1,5 @@
+#pip install -r requirements.txt (para instalar todos os pacotes)
+fastapi
+uvicorn
+pydantic
+pydantic-settings
