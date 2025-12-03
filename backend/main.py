@@ -2,6 +2,7 @@
 #uvicorn main:app --reload
 
 from fastapi import FastAPI
+from app.routers import moto_router
 from config import Settings
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -18,9 +19,8 @@ app.add_middleware(
     allow_credentials=True
 )
 
-#Rotas - ainda não adicionei no caso
+#Rotas
+app.include_router(moto_router.router)
 #app.include_router(auth_router.router)
-#app.include_router(moto_router.router)
-#app.include_router(diag_router.router)
-#app.include_router(training_router.router)
+#app.include_router(chatbot_router.router)
 #app.include_router(report_router.router)
