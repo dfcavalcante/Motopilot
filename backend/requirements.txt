@@ -1,5 +1,31 @@
 #pip install -r requirements.txt (para instalar todos os pacotes)
+# ====================================================================
+# Back-end Core e Configuração
+# ====================================================================
+# Framework web para a API
 fastapi
 uvicorn
-pydantic
+
+# Gerenciamento de configurações seguras (para SECRET_KEY, URLs, etc.)
 pydantic-settings
+pydantic
+
+# Comunicação HTTP (necessário para enviar requisições ao Ollama)
+requests
+
+# ====================================================================
+# RAG (Retrieval-Augmented Generation) e Dados
+# ====================================================================
+# Biblioteca do Embedder 'all-MiniLM-L6-v2'
+sentence-transformers
+
+# Driver para conexão com o PostgreSQL
+psycopg2-binary
+
+# Ferramenta para extrair texto de arquivos PDF (para carregar os manuais)
+pypdf
+# ou
+# pypdf2 
+
+# Biblioteca fundamental para manipulação eficiente de vetores (embeddings)
+numpy

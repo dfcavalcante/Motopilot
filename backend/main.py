@@ -1,4 +1,4 @@
-#.venv\Scripts\activate
+#.venv\Scripts\activate ou . .\venv\Scripts\Activate.ps1
 #uvicorn main:app --reload
 
 from fastapi import FastAPI

@@ -14,6 +14,7 @@ class Settings(BaseSettings):
     ACESS_TOKEN_EXPIRE: 120 #ele desloga automaticamente dps de 120 min pelo oq eu entendi
 
     # Serviços de IA
+    LLM_MODEL_NAME: str = 'mistral:7b-instruct-v0.2'
     OLLAMA_URL: str = "http://localhost:11434"
     EMBEDDINGS_MODEL: str = "all-MiniLM-L6-v2"
 

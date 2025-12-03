@@ -1,0 +1,1 @@
+# Script único para popular o pgvector

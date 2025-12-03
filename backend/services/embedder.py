@@ -1,0 +1,1 @@
+# Lógica do Sentence-Transformers

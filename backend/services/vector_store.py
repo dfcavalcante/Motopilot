@@ -1,0 +1,1 @@
+# Conexão e Queries ao PostgreSQL + pgvector

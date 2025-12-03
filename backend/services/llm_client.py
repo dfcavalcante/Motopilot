@@ -1,0 +1,1 @@
+# Comunicação HTTP com o Ollama/Mistral
