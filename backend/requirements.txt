@@ -18,14 +18,21 @@ requests
 # ====================================================================
 # Biblioteca do Embedder 'all-MiniLM-L6-v2'
 sentence-transformers
+requests
 
 # Driver para conexão com o PostgreSQL
 psycopg2-binary
 
 # Ferramenta para extrair texto de arquivos PDF (para carregar os manuais)
 pypdf
-# ou
-# pypdf2 
 
 # Biblioteca fundamental para manipulação eficiente de vetores (embeddings)
 numpy
+
+# Banco de Dados Vetorial
+chromadb
+
+# Banco de Dados Relacional (Sistema: Users, Licenças, Motos) 
+psycopg2-binary     
+sqlalchemy
+
