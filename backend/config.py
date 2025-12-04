@@ -18,5 +18,11 @@ class Settings(BaseSettings):
     OLLAMA_URL: str = "http://localhost:11434"
     EMBEDDINGS_MODEL: str = "all-MiniLM-L6-v2"
 
+    # Configurações do RAG e Embeddings
+    EMBEDDER_MODEL_NAME = 'all-MiniLM-L6-v2'
+    CHUNK_SIZE = 400
+    CHUNK_OVERLAP = 100
+    K_NEIGHBORS = 3
+
     class Config:
         env: str = '.venv'
