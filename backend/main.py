@@ -1,26 +1,55 @@
-#.venv\Scripts\activate ou . .\venv\Scripts\Activate.ps1
-#uvicorn main:app --reload
-
 from fastapi import FastAPI
-from app.routers import moto_router
-from config import Settings
 from fastapi.middleware.cors import CORSMiddleware
 
+# --- IMPORTS DO BANCO DE DADOS (NOVO) ---
+from app.database.connections import engine, Base
+# Importamos os Models para que o SQLAlchemy saiba que eles existem e crie as tabelas
+from app.models.user_model import User
+from app.models.moto_model import Moto
+# Se você criar o maintenance depois, descomente a linha abaixo:
+# from app.models.maintenance_model import Maintenance
+
+# --- IMPORTS DAS ROTAS ---
+from app.routers import moto_router
+# from app.routers import user_router # Sugestão: Criar e descomentar depois
+
+# Import de Configurações
+try:
+    from config import Settings
+except ImportError:
+    # Fallback caso não tenha o arquivo config.py ainda, para não quebrar o código
+    class Settings:
+        API_NAME = "MotoPilot AI"
+        API_DESCRIPTION = "Software de IA para Mecânicos"
+        API_VERSION = "1.0.0"
+
+# --- CRIAÇÃO DAS TABELAS (MÁGICA ACONTECE AQUI) ---
+# Isso verifica se as tabelas existem no banco. Se não existirem, ele cria.
+Base.metadata.create_all(bind=engine)
+
 app = FastAPI(
-    title = Settings.API_NAME,
-    description= Settings.API_DESCRIPTION,
-    version = Settings.API_VERSION
+    title=Settings.API_NAME,
+    description=Settings.API_DESCRIPTION,
+    version=Settings.API_VERSION
 )
+
+# --- CONFIGURAÇÃO DE SEGURANÇA (CORS) ---
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost", "http://localhost:8080"], #coloca todos os domínios que iremos utilizar
-    allow_methods=["*"], #permite todos os comandos (put, delete, post, etc)
+    allow_origins=["http://localhost", "http://localhost:8080", "*"], # Adicionei '*' para facilitar testes
+    allow_methods=["*"],
     allow_headers=["*"],
     allow_credentials=True
 )
 
-#Rotas
+# --- ROTA DE SAÚDE (HEALTH CHECK) ---
+@app.get("/", tags=["Status"])
+def read_root():
+    return {"status": "online", "message": "API rodando e tabelas verificadas!"}
+
+# --- REGISTRO DE ROTAS ---
 app.include_router(moto_router.router)
-#app.include_router(auth_router.router)
-#app.include_router(chatbot_router.router)
-#app.include_router(report_router.router)
+# app.include_router(user_router.router) # Futuro: Rota de cadastro de usuários
+# app.include_router(auth_router.router)
+# app.include_router(chatbot_router.router)
+# app.include_router(report_router.router)
