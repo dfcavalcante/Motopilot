@@ -1,1 +1,1 @@
-# Script único para popular o pgvector
+# Script único para popular o banco vetorial

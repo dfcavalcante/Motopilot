@@ -49,7 +49,7 @@ class Settings(BaseSettings):
     EMBEDDING_DIMENSION: int = 384
     CHUNK_SIZE: int = 400
     CHUNK_OVERLAP: int = 100
-    K_NEIGHBORS: int = 3
+    K_NEIGHBORS: int = 5
 
 
 # Instância para ser usada no resto do projeto
