@@ -1,4 +1,7 @@
-from schemas.moto_schema import MotoBase, MotoUpdate, MotoResponse
+from sqlalchemy.orm import Session
+from sqlalchemy import func, select, update, delete
+from models.moto_model import Moto
+from schemas.moto_schema import MotoBase, MotoUpdate, MotoResponse, MotoFilter
 from typing import List, Optional
 
 '''
@@ -8,21 +11,76 @@ Incluindo CRUD e listagem de Motos
 
 class Moto_service:
     @staticmethod
-    def criar_moto(self, moto_data: MotoBase) -> MotoResponse:
+    def criar_moto(self, db:Session, moto_data: MotoBase) -> MotoResponse:
+        db_moto = Moto(**moto_data.model_dump()) #converte o Schema em Model
+        
+        db.add(db_moto)
+        db.commit()
+        db.refresh(db_moto)
+
+    def listar_motos(self, db:Session, filtro: MotoFilter) ->List[MotoResponse]:
         pass
 
-    def listar_motos(self) ->List[MotoResponse]:
-        pass
+    def buscar_moto_por_chassi(self, db:Session, chassi:str) -> Optional[Moto]:
+        return db.scalars(select(Moto).where(Moto.chassi == chassi)).first()
 
-    def deletar_moto(self) ->MotoResponse:
-        pass
+    def deletar_moto(self, db: Session, chassi:str) ->MotoResponse:
+        db_moto = self.buscar_moto_por_chassi(db, chassi)
 
-    def atualizar_moto(self, moto_data: MotoUpdate) -> MotoResponse:
-        pass
+        if not db_moto:
+            return None
+        
+        #resposta do Schema Moto Response antes de invalidar a moto
+        response_data = MotoResponse.model_validate(db_moto)
 
-    def adicionar_manual(self):
-        pass
+        db.delete(db_moto)
+        db.commit()
 
-    def arquivar_moto(self) -> MotoResponse:
-        pass
+        return response_data
 
+    def atualizar_moto(self, db:Session, chassi:str, moto_data: MotoUpdate) -> MotoResponse:
+        db_moto = self.buscar_moto_por_chassi(db, chassi)
+
+        if not db_moto:
+            return None
+        
+        #muda apenas os campos que houve mudança
+        update_data = moto_data.model_dump(exclude_unset=True)
+
+        for key, value in update_data.items():
+            setattr(db_moto, key, value) #setattr equivalente db_moto.marca = 'Honda'
+        
+        db.add(db_moto)
+        db.commit()
+        db.refresh(db_moto)
+
+        return db_moto
+
+    #aqui a lógica está como cada moto só possui um manual
+    def adicionar_manual(self, db:Session, chassi:str) ->Optional[MotoResponse]:
+        db_moto = self.buscar_moto_por_chassi(db, chassi)
+        if not db_moto:
+            return None
+        
+        if db_moto.has_manual: #caso a moto já possua manual, apenas retorna
+            return db_moto
+        
+        db_moto.has_manual=True
+        db.add(db_moto)
+        db.commit()
+        db.refresh(db_moto)
+
+        return db_moto
+    
+    def arquivar_moto(self, db:Session, chassi:str) -> Optional[MotoResponse]:
+        db_moto = self.buscar_moto_por_chassi(db, chassi)
+
+        if not db_moto:
+            return None
+        
+        db_moto.is_active=False #"desativa" a moto do banco de dados
+        db.add(db_moto)
+        db.commit()
+        db.refresh(db_moto)
+
+        return db_moto
