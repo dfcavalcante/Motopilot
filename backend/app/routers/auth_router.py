@@ -1,26 +1,25 @@
 # Trecho de código (na rota /register)
 
 # 1. Importa a ferramenta
-from app.services.security_service import get_password_hash
-# from app.database.models import User
-# from app.database.connections import get_db
+from fastapi import APIRouter, HTTPException, Depends, Response
+from services.security_service import get_password_hash
+from models.user_model import User
+from schemas.user_schema import UserBase, UserCreate, UserResponse
+from services.auth_service import Auth_service
+from sqlalchemy.orm import Session
+from app.database.connections import get_db
+
+router = APIRouter(tags=["Users"])
+
+auth_service = Auth_service()
 
 # 2. Rota POST de registro
-@router.post("/register")
-def register_user(user_data: UserCreateSchema, db: Session = Depends(get_db)):
-    
-    # --- Ponto CRÍTICO: Geração do Hash na Rota ---
-    hashed_password = get_password_hash(user_data.senha) 
+@router.post("/register", response_model= UserResponse)
+def register_user_endpoint(user: UserBase, db: Session = Depends(get_db)):
+    novo_user = auth_service.register_user(db, user)
+    return novo_user
 
-    # 3. Cria a instância do Modelo (User) usando o HASH
-    new_user = User(
-        username=user_data.username,
-        email=user_data.email,
-        hashed_password=hashed_password, # Armazenando o HASH, não a senha original
-        # ... outros campos
-    )
-    
-    # 4. Salva a instância no DB
-    # db.add(new_user)
-    # db.commit()
-    # return new_user
+@router.post("/login",response_model=UserResponse)
+def login_user_endpoint(user:UserBase, db: Session = Depends(get_db)):
+    login_user = auth_service.login_user(db, user)
+    return login_user

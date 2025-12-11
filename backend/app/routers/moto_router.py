@@ -13,10 +13,10 @@ router = APIRouter(prefix='/motos', tags=["Motos"])
 moto_service = Moto_service()
 
 # Endpoint de adicionar - POST
-@router.post("/", respons_model=MotoResponse)
+@router.post("/", response_model=MotoResponse)
 def criar_moto_endpoint(moto: MotoBase, db: Session = Depends(get_db)):
     nova_moto = moto_service.criar_moto(db, moto)
-    return moto
+    return nova_moto
 
 # Endpoint de listagem - GET
 @router.get('/', response_model=MotoListResponse)
