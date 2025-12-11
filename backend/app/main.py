@@ -16,7 +16,7 @@ from app.routers import chatbot_router
 
 # Import de Configurações
 try:
-    from config import Settings
+    from backend.app.config import Settings
 except ImportError:
     # Fallback caso não tenha o arquivo config.py ainda, para não quebrar o código
     class Settings:

@@ -3,7 +3,7 @@ from sentence_transformers import SentenceTransformer
 from typing import List
 import numpy as np
 
-from config import Settings
+from backend.app.config import Settings
 settings = Settings()
 
 class EmbedderService:

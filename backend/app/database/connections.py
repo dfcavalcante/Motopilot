@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-import config 
+import backend.app.config as config 
 from typing import Generator
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, sessionmaker

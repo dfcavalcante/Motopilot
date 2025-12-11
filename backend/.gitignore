@@ -1,1 +1,16 @@
-echo "*" > .venv/.gitignore
+#ENV para impedir que os dados sensíveis e muito grandes subim para o git.
+
+#Arquivos do ambiente Python e da IDE
+.venv/
+.vscode/
+.env
+
+backend/node_modules/
+
+# Dados e Bancos do Cache do Python
+# Arquivos da base de dados vetorial ChromaDB
+data/chroma_db/
+
+# Arquivos de cache do Python (pyc)
+__pycache__/
+*.pyc

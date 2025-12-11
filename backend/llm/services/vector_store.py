@@ -3,7 +3,7 @@ import os
 import chromadb
 from chromadb.utils import embedding_functions
 import uuid
-from config import settings
+from backend.app.config import settings
 
 # Inicializa a conexão com o ChromaDB local. A pasta de dados será criada automaticamente se não existir.
 class VectorStoreService:
