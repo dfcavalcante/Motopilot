@@ -36,3 +36,5 @@ chromadb
 psycopg2-binary     
 sqlalchemy
 
+passlib.context
+
