@@ -1,7 +1,7 @@
 #ENV para impedir que os dados sensíveis e muito grandes subim para o git.
 
 #Arquivos do ambiente Python e da IDE
-.venv/
+venv/
 .vscode/
 .env
 

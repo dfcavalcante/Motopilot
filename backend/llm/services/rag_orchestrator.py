@@ -7,7 +7,7 @@ from services.vector_store import vector_store
 from services.llm_client import llm_client
 from app.models.moto_model import Moto
 from app.models.user_model import User
-#from app.models.chat_model import ChatLog
+from app.models.chat_model import ChatLog
 
 class RagOrchestrator:
     def __init__(self):

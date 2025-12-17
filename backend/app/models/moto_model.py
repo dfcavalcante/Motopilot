@@ -1,17 +1,21 @@
-from sqlalchemy import Column, Integer, String, Boolean
+from sqlalchemy import Column, Integer, String, Text
+from sqlalchemy.orm import relationship
 from app.database.connections import Base
 
 class Moto(Base):
     __tablename__ = "motos"
 
-    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
-    chassi = Column(String(17), unique=True, index=True, nullable=False)
-    marca = Column(String, index=True, nullable=False)
-    modelo = Column(String, index=True, nullable=False)
-    ano = Column(Integer, nullable=False)
-    cor = Column(String, nullable=False)
-    placa = Column(String, unique=True, index=True, nullable=False)
+    id = Column(Integer, primary_key=True, index=True)
+    marca = Column(String(50), nullable=False)   # Ex: Honda
+    modelo = Column(String(100), nullable=False) # Ex: CBR 650R
+    ano = Column(Integer, nullable=True)         # Ex: 2023
+    
+    # Onde o PDF deste manual está salvo no servidor
+    # Ex: "manuals/honda_cbr650r_2023.pdf"
+    manual_pdf_path = Column(String(255), nullable=True)
 
-    #Campos para utilizar na lógica de serviço
-    is_active = Column(Boolean, default=True, nullable=False, index=True)
-    has_manual = Column(Boolean, default=True, nullable=False)
+    # URL da imagem da moto para exibir no chat
+    #imagem_url = Column(Text, nullable=True)
+
+    # Relacionamento com o Histórico (Uma moto aparece em vários logs)
+    chat_logs = relationship("ChatLog", back_populates="moto")

@@ -1,27 +1,23 @@
-from pydantic import BaseModel, Field
-import backend.app.config as config 
-from typing import Generator
 from sqlalchemy import create_engine
-from sqlalchemy.orm import Session, sessionmaker
+from sqlalchemy.orm import sessionmaker, declarative_base
 
-SQLALCHEMY_DATABASE_URL = config.DATABASE_URL
+# CORREÇÃO: Importamos 'settings' (o objeto carregado) e não apenas o módulo 'config'
+from app.config import settings 
 
-engine = create_engine(
-    SQLALCHEMY_DATABASE_URL, 
-    pool_pre_ping=True
-)
+# Agora acessamos a URL através do objeto settings
+engine = create_engine(settings.DATABASE_URL)
 
-SessionLocal = sessionmaker(autoflush=False, autocommit=False, bind=engine)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-def get_db() -> Generator[Session, None, None]:
+Base = declarative_base()
+
+def get_db():
     """
-    Fornece uma sessao de banco de dados para os endpoints (routers).
-    A sessao e fechada automaticamente apos o termino da requisicao.
+    Função de dependência para injetar a sessão do banco
+    nos endpoints do FastAPI.
     """
     db = SessionLocal()
     try:
-        # A sessao e fornecida ao endpoint
         yield db
     finally:
-        # Garante que a sessao seja fechada apos o uso
         db.close()

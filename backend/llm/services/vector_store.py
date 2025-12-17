@@ -52,4 +52,4 @@ class VectorStoreService:
         else:
             return[]
         
-vector_store = VectorStoreService
+vector_store = VectorStoreService()
