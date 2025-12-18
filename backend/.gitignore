@@ -1,16 +1,18 @@
-#ENV para impedir que os dados sensíveis e muito grandes subim para o git.
-
-#Arquivos do ambiente Python e da IDE
+# Ambientes Virtuais (Onde estão seus 10k arquivos)
 venv/
-.vscode/
-.env
+.venv/
+env/
 
-backend/node_modules/
-
-# Dados e Bancos do Cache do Python
-# Arquivos da base de dados vetorial ChromaDB
-data/chroma_db/
-
-# Arquivos de cache do Python (pyc)
+# Arquivos compilados do Python (Lixo de memória)
 __pycache__/
 *.pyc
+
+# Variáveis de Ambiente (Segurança - nunca suba senhas!)
+.env
+.env.local
+
+# Banco de dados local (SQLite/Chroma)
+*.sqlite3
+*.db
+chroma_db/
+data/

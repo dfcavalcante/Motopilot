@@ -1,60 +1,60 @@
-# Orquestra o fluxo RAG principal
 from sqlalchemy.orm import Session
 from datetime import datetime
 
-# Importações dos nossos serviços
-from services.vector_store import vector_store
-from services.llm_client import llm_client
+# Imports ajustados para rodar da raiz 'backend'
+from llm.services.vector_store import vector_store
+from llm.services.llm_client import llm_client
 from app.models.moto_model import Moto
-from app.models.user_model import User
 from app.models.chat_model import ChatLog
 
 class RagOrchestrator:
-    def __init__(self):
-        pass
-
     def processar_pergunta(self, db: Session, user_id: int, moto_id: int, pergunta_texto: str) -> str:
+        
+        # 1. Busca a moto no banco SQL
         moto = db.query(Moto).filter(Moto.id == moto_id).first()
 
         if not moto:
             return "Erro: Moto não encontrada no sistema."
         
+        # ==============================================================================
+        # ⚠️ A VARIÁVEL É CRIADA AQUI (LINHA CRUCIAL)
+        # Ela junta Marca + Modelo para saber qual PDF buscar (ex: "Honda Biz 110i")
+        # ==============================================================================
         nome_modelo_filtro = f"{moto.marca} {moto.modelo}".strip()
-        print(f"🤖 RAG Iniciado | Moto: {nome_modelo_filtro} | Pergunta: {pergunta_texto}")
+        
+        print(f"🤖 RAG Iniciado | Buscando no manual: '{nome_modelo_filtro}'")
 
-        #Recuperar Contexto
+        # 2. Busca no ChromaDB usando a variável criada acima
         trechos_relevantes = vector_store.buscar_similaridade(
             pergunta=pergunta_texto,
-            modelo_moto=nome_modelo_filtro
+            modelo_moto=nome_modelo_filtro, # <--- Usa aqui
+            k=4
         )
 
+        # Se não achou nada, retorna aviso (mas não trava)
         if not trechos_relevantes:
-            return "Desculpe, não encontrei informações específicas sobre a pergunta"
-        
-        contexto_unificado = "\n---\n".join(trechos_relevantes)
+            contexto_unificado = "Nenhuma informação específica encontrada no manual."
+        else:
+            contexto_unificado = "\n---\n".join(trechos_relevantes)
 
-        # Montagem do prompt 
-        prompt_final = f"""Você é o Motopilot, um assistente técnico especializado em mecânica de motos.
-        Você está auxiliando um mecânico profissional. Seja direto, técnico e preciso.
+        # 3. Monta o Prompt usando a variável novamente
+        prompt_final = f"""Você é o Motopilot, assistente técnico de motos.
         
         INSTRUÇÕES:
-        1. Use APENAS o contexto fornecido abaixo para responder.
-        2. Se a resposta não estiver no contexto, diga "Não consta no manual".
-        3. Não invente infromações.
-
-        CONTEXTO DO MANUAL ({nome_modelo_filtro}):
+        Use APENAS o contexto abaixo do manual da {nome_modelo_filtro} para responder.
+        Se não souber, diga "Não consta no manual".
+        
+        CONTEXTO:
         {contexto_unificado}
 
-        PERGUNTA DO MECÂNICO:
+        PERGUNTA:
         {pergunta_texto}
-
-        RESPOSTA:
         """
 
-        #Geração da Resposta
+        # 4. Gera a resposta
         resposta_ia = llm_client.gerar_resposta(prompt_final)
 
-        # Salvar Histórico
+        # 5. Salva no Banco SQL
         try:
             novo_log = ChatLog(
                 user_id=user_id,
@@ -65,14 +65,10 @@ class RagOrchestrator:
             )
             db.add(novo_log)
             db.commit()
-            print("Conversa salva no histórico com sucesso.")
         except Exception as e:
-            print(f"Erro ao salvar histórico (mas a resposta será enviada): {e}")
+            print(f"⚠️ Erro ao salvar histórico: {e}")
             db.rollback()
 
-            return resposta_ia
-        
+        return resposta_ia
+
 rag_orchestrator = RagOrchestrator()
-
-
-         

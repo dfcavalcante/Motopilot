@@ -3,7 +3,7 @@ import os
 import chromadb
 from chromadb.utils import embedding_functions
 import uuid
-from backend.app.config import settings
+from app.config import settings
 
 # Inicializa a conexão com o ChromaDB local. A pasta de dados será criada automaticamente se não existir.
 class VectorStoreService:
@@ -23,15 +23,15 @@ class VectorStoreService:
 
     #Recebe uma lista de textos (chunks do manual) e seus dados (marca, modelo) e salva tudo no banco vetorial
     def adicionar_chunks(self, textos: list, dados: list):
-        # Gera IDs únicos para cada pedaço (necessário para o Chroma)
         ids = [str(uuid.uuid4()) for _ in textos]
 
         try:
             self.collection.add(
-                documents=textos, # O texto original
-                datas=dados, # Ex: [{'modelo': 'CBR 150', 'pagina': 1}, ...]
-                ids=ids # IDs únicos
+                documents=textos,
+                metadatas=dados,  # <--- CORREÇÃO: O nome certo é 'metadatas'
+                ids=ids
             )
+            print(f"{len(textos)} chunks adicionados com sucesso!")
         except Exception as e:
             print(f"Erro ao adicionar chunks: {e}")
 

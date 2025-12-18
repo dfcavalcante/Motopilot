@@ -1,5 +1,6 @@
 import os
 from typing import Optional
+from urllib.parse import quote_plus  # <--- IMPORTANTE: Import necessário para corrigir a senha
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
@@ -15,16 +16,18 @@ class Settings(BaseSettings):
     # =================================================================
     # Se o arquivo .env não existir, ele usará estes valores padrão:
     POSTGRES_USER: str = "postgres"
-    POSTGRES_PASSWORD: str = "password"
+    POSTGRES_PASSWORD: str = "12345"
     POSTGRES_DB: str = "motopilot_db"
     POSTGRES_HOST: str = "localhost"
     POSTGRES_PORT: int = 5432
     
     # Propriedade que monta a URL automaticamente. 
-    # CORRIGIDO: Agora usa self.POSTGRES_HOST corretamente.
     @property
     def DATABASE_URL(self) -> str:
-        return f"postgresql://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}@{self.POSTGRES_HOST}:{self.POSTGRES_PORT}/{self.POSTGRES_DB}"
+        # CORREÇÃO: Codifica a senha para aceitar caracteres como @, ç, #, etc.
+        senha_segura = quote_plus(self.POSTGRES_PASSWORD)
+        
+        return f"postgresql://{self.POSTGRES_USER}:{senha_segura}@{self.POSTGRES_HOST}:{self.POSTGRES_PORT}/{self.POSTGRES_DB}"
 
     # =================================================================
     # 3. Banco de Dados Vetorial (ChromaDB)
@@ -37,7 +40,7 @@ class Settings(BaseSettings):
     # =================================================================
     OPENAI_API_KEY: Optional[str] = None
     OLLAMA_BASE_URL: str = "http://localhost:11434"
-    LLM_MODEL_NAME: str = "mistral:7b-instruct-v0.2"
+    LLM_MODEL_NAME: str = "mistral"
     
     # =================================================================
     # 5. Configurações do RAG e Embeddings
@@ -53,7 +56,7 @@ class Settings(BaseSettings):
     # =================================================================
     model_config = SettingsConfigDict(
         env_file=".env", 
-        env_file_encoding="utf-8",
+        env_file_encoding="latin-1",
         extra="ignore" # Ignora campos extras que possam estar no seu .env
     )
 
