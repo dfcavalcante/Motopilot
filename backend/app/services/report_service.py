@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
-from schemas.report_schema import ReportBase, ReportFilter, ReportResponse, ReportUpdate
-from models.report_model import Report, ReportBase
+from app.schemas.report_schema import ReportBase, ReportFilter, ReportResponse, ReportUpdate
+from app.models.report_model import Report, ReportBase
 
 '''
 Camada de serviço responsável pelo relatórios
@@ -26,8 +26,11 @@ class ReportService():
 
     def atualizar_relatorio(db: Session, relatorio_data: ReportBase) -> ReportResponse:
         pass
+    
+    def buscar_relatorio_por_id(report_id: int):
+        pass 
 
-    def listar_relatorios(db: Session, relatorio_data: ReportBase) -> ReportResponse:
+    def listar_relatorios(db: Session, filtros: list) -> ReportResponse:
         pass
 
     def exportar_relatorios(db:Session, relatorio_data: ReportBase) -> ReportResponse:

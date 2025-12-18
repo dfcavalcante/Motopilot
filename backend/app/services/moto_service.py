@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import func, select, update, delete
-from models.moto_model import Moto
-from schemas.moto_schema import MotoBase, MotoUpdate, MotoResponse, MotoFilter
+from app.models.moto_model import Moto
+from app.schemas.moto_schema import MotoBase, MotoUpdate, MotoResponse, MotoFilter
 from typing import List, Optional
 
 '''

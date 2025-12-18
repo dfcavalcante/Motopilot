@@ -1,28 +1,30 @@
 import os
-from pydantic_settings import BaseSettings
+from typing import Optional
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
     # =================================================================
     # 1. Dados da API
     # =================================================================
     API_NAME: str = "Motopilot"
-    API_VERSION: str = '1.0.0'
+    API_VERSION: str = "1.0.0"
     API_DESCRIPTION: str = "Assistente de Manutenção de motos e Treinamento de mecânicos"
 
     # =================================================================
-    # 2. Credenciais do Banco
+    # 2. Credenciais do Banco (PostgreSQL)
     # =================================================================
-    # O Pydantic vai buscar esses nomes exatos no seu arquivo .env
-    POSTGRES_USER: str
-    POSTGRES_PASSWORD: str
-    POSTGRES_SERVER: str = "localhost" # Valor padrão caso não ache no .env
-    POSTGRES_PORT: str = "5432"
-    POSTGRES_DB: str
-
-    # Propriedade que monta a URL automaticamente usando as variáveis acima
+    # Se o arquivo .env não existir, ele usará estes valores padrão:
+    POSTGRES_USER: str = "postgres"
+    POSTGRES_PASSWORD: str = "password"
+    POSTGRES_DB: str = "motopilot_db"
+    POSTGRES_HOST: str = "localhost"
+    POSTGRES_PORT: int = 5432
+    
+    # Propriedade que monta a URL automaticamente. 
+    # CORRIGIDO: Agora usa self.POSTGRES_HOST corretamente.
     @property
     def DATABASE_URL(self) -> str:
-        return f"postgresql://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}@{self.POSTGRES_SERVER}:{self.POSTGRES_PORT}/{self.POSTGRES_DB}"
+        return f"postgresql://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}@{self.POSTGRES_HOST}:{self.POSTGRES_PORT}/{self.POSTGRES_DB}"
 
     # =================================================================
     # 3. Banco de Dados Vetorial (ChromaDB)
@@ -33,8 +35,9 @@ class Settings(BaseSettings):
     # =================================================================
     # 4. Serviços de IA (LLM e Ollama)
     # =================================================================
+    OPENAI_API_KEY: Optional[str] = None
     OLLAMA_BASE_URL: str = "http://localhost:11434"
-    LLM_MODEL_NAME: str = 'mistral:7b-instruct-v0.2'
+    LLM_MODEL_NAME: str = "mistral:7b-instruct-v0.2"
     
     # =================================================================
     # 5. Configurações do RAG e Embeddings
@@ -45,14 +48,14 @@ class Settings(BaseSettings):
     CHUNK_OVERLAP: int = 100
     K_NEIGHBORS: int = 5
 
-    class Config:
-        # Pega o diretório onde este arquivo (config.py) está
-        base_dir = os.path.dirname(os.path.abspath(__file__))
-        
-        # Sobe um nível (de 'app' para 'backend') e procura o .env lá
-        env_file = os.path.join(base_dir, "..", ".env")
-        
-        extra = "ignore"
+    # =================================================================
+    # Configuração do Pydantic (V2)
+    # =================================================================
+    model_config = SettingsConfigDict(
+        env_file=".env", 
+        env_file_encoding="utf-8",
+        extra="ignore" # Ignora campos extras que possam estar no seu .env
+    )
 
-# Instância para ser usada no resto do projeto
+# Instância única para ser usada no resto do projeto
 settings = Settings()

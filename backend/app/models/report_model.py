@@ -1,11 +1,12 @@
 from sqlalchemy import Float, Integer, Column, Boolean, String
-from schemas.report_schema import ReportBase
+from app.schemas.report_schema import ReportBase
+from app.database.connections import Base
 
-class Report(ReportBase):
+class Report(Base):
     __tablename__ = "relatorio"
 
     id= Column(Integer, primary_key=True, index=True, autoincrement=True)
-    moto = Column("N tenho ctz se é str", nullable=False, index=True)
+    moto = Column(String, nullable=False, index=True)
     cliente = Column(String, nullable=False)
     diagnostico = Column(String, nullable=False)
     mecanicos = Column(String, nullable=False)

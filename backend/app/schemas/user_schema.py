@@ -24,7 +24,7 @@ class UserResponse(UserBase):
 
 class Token(BaseModel):
     #Precisa do token dps do login ser bem sucedido
-    acess_token=str
+    acess_token: str
 
 class UserLogin(BaseModel):
     email: EmailStr

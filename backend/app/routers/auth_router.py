@@ -2,10 +2,10 @@
 
 # 1. Importa a ferramenta
 from fastapi import APIRouter, HTTPException, Depends, Response
-from services.security_service import get_password_hash
-from models.user_model import User
-from schemas.user_schema import UserBase, UserCreate, UserResponse
-from services.auth_service import Auth_service
+from app.services.security_service import get_password_hash
+from app.models.user_model import User
+from app.schemas.user_schema import UserBase, UserCreate, UserResponse
+from app.services.auth_service import Auth_service
 from sqlalchemy.orm import Session
 from app.database.connections import get_db
 

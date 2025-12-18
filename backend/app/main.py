@@ -12,7 +12,11 @@ from app.models.moto_model import Moto
 # --- IMPORTS DAS ROTAS ---
 from app.routers import moto_router
 from app.routers import chatbot_router
-# from app.routers import user_router # Sugestão: Criar e descomentar depois
+from app.routers import auth_router
+from app.routers import report_router
+from app.routers import user_router
+
+#uvicorn app.main:app --reload
 
 # Import de Configurações
 try:
@@ -50,7 +54,7 @@ def read_root():
 
 # --- REGISTRO DE ROTAS ---
 app.include_router(moto_router.router)
-# app.include_router(user_router.router) # Futuro: Rota de cadastro de usuários
-# app.include_router(auth_router.router)
+#app.include_router(user_router.router) # Futuro: Rota de cadastro de usuários
+#app.include_router(auth_router.router)
 app.include_router(chatbot_router.router)
-# app.include_router(report_router.router)
+app.include_router(report_router.router)

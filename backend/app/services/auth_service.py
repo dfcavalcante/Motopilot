@@ -1,8 +1,8 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import func, select, update, delete
-from models.user_model import User
-from services.security_service import get_password_hash
-from schemas.user_schema import UserCreate, UserBase, UserResponse
+from app.models.user_model import User
+from app.services.security_service import get_password_hash
+from app.schemas.user_schema import UserCreate, UserBase, UserResponse
 from typing import List, Optional
 
 '''
