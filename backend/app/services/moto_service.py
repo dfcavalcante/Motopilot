@@ -21,11 +21,9 @@ class Moto_service:
     def listar_motos(self, db:Session, filtro: MotoFilter) ->List[MotoResponse]:
         pass
 
-    def buscar_moto_por_chassi(self, db:Session, chassi:str) -> Optional[Moto]:
-        return db.scalars(select(Moto).where(Moto.chassi == chassi)).first()
+    def deletar_moto(self, db: Session, id:int) ->MotoResponse:
 
-    def deletar_moto(self, db: Session, chassi:str) ->MotoResponse:
-        db_moto = self.buscar_moto_por_chassi(db, chassi)
+        db_moto = db.scalars(select(Moto).where(Moto.id == id)).first()
 
         if not db_moto:
             return None
@@ -38,8 +36,8 @@ class Moto_service:
 
         return response_data
 
-    def atualizar_moto(self, db:Session, chassi:str, moto_data: MotoUpdate) -> MotoResponse:
-        db_moto = self.buscar_moto_por_chassi(db, chassi)
+    def atualizar_moto(self, db:Session, id:int, moto_data: MotoUpdate) -> MotoResponse:
+        db_moto = db.scalars(select(Moto).where(Moto.id == id)).first()
 
         if not db_moto:
             return None
@@ -57,8 +55,9 @@ class Moto_service:
         return db_moto
 
     #aqui a lógica está como cada moto só possui um manual
-    def adicionar_manual(self, db:Session, chassi:str) ->Optional[MotoResponse]:
-        db_moto = self.buscar_moto_por_chassi(db, chassi)
+    def adicionar_manual(self, db:Session, id:int) ->Optional[MotoResponse]:
+        db_moto = db.scalars(select(Moto).where(Moto.id == id)).first()
+
         if not db_moto:
             return None
         
@@ -72,8 +71,8 @@ class Moto_service:
 
         return db_moto
     
-    def arquivar_moto(self, db:Session, chassi:str) -> Optional[MotoResponse]:
-        db_moto = self.buscar_moto_por_chassi(db, chassi)
+    def arquivar_moto(self, db:Session, id:int) -> Optional[MotoResponse]:
+        db_moto = db.scalars(select(Moto).where(Moto.id == id)).first()
 
         if not db_moto:
             return None
