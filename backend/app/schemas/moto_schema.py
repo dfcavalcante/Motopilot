@@ -8,12 +8,10 @@ class MotoBase(BaseModel):
     Schema para criação de moto
     Chassi será utilizada como chave primária
     '''
-    chassi: str = Field(..., example='9BD111060T5002156', max_length=17, min_length=17)
+    id: int
     marca: str = Field(..., example="Honda")
     modelo: str = Field(..., example="CG 160 Start")
     ano: int = Field(..., example=2025)
-    cor: str = Field(..., example='Azul Cobalto')
-    placa: str = Field(..., example='FBG563')
 
 class MotoUpdate(BaseModel):
     '''
@@ -23,8 +21,6 @@ class MotoUpdate(BaseModel):
     marca: Optional[str] = None
     modelo: Optional[str] = None
     ano: Optional[int] = None
-    cor: Optional[str] = None
-    placa: Optional[str] = None
 
 class MotoResponse(MotoBase):
     id: int
