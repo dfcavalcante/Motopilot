@@ -22,15 +22,33 @@ const Login = () => {
   };
 
     return (
-    <Grid sx={{bgcolor: 'grey.500'}} container style={{ height: '100vh' }}>
-        <Grid item xs={12} sm={6} margin={8}>
-            <img src="/images/Motopilot Logo.jpeg" alt="Motopilot Logo" width="400" height={200} />
+    <Grid 
+        sx={{bgcolor: 'grey.500', height: '100vh', paddingX: 4 }} 
+        container
+        spacing={40} 
+        alignItems='center'
+        justifyContent='center'
+        
+    >
+        <Grid item xs={12} md={6} sx={{display:'flex', justifyContent:'center'}}>
+            <img src="/images/Motopilot Logo.jpeg" alt="Motopilot Logo" style={{maxWidth: '100%', height:'auto', width:'400px'}}/>
         </Grid>
 
-        <Grid item xs={12} sm={6} margin={3}>
-            <Box backgroundColor="white" justifyContent={'center'} borderRadius={2} width={500} height={700}>
-                <Stack spacing={4} alignItems="center" justifyContent="center" paddingLeft={8} paddingRight={8} paddingTop={10}>
-                        <img src="/images/Motopilot Logo-modified.png" alt="Motopilot Logo" width="100" />
+        <Grid item xs={12} md={6} sx={{ display: 'flex', justifyContent: 'center' }}>
+            <Box sx={{
+                backgroundColor: "white", 
+                borderRadius: 2, 
+                width: '100%',
+                minWidth: 700,
+                minHeight: 850,
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                boxShadow: 3
+            }}
+            >
+                    <Stack spacing={4} alignItems="center" sx={{ px: { xs: 4, sm: 8 }, py: 5 }}>
+                        <img src="/images/Motopilot Logo-modified.png" alt="Motopilot Logo" width="150" />
 
                     <form onSubmit={handleSubmit}>
                         <TextField
