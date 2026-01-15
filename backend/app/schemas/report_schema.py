@@ -6,16 +6,16 @@ class ReportBase(BaseModel):
     Campos que o relatório possuirá
     '''
     #selecionar a moto cadastrada, acho q n é str mas dps eu vejo
-    moto: str = Field(..., example="Honda Cobalt")
-    cliente: str = Field(..., example="Cliente do Geraldo Gerente")
+    moto_id:  int = Field(..., example="Honda Cobalt")
+    cliente_id: int = Field(..., example="Cliente do Geraldo Gerente")
     diagnostico: str = Field(..., example="O diagnóstico que foi feito é que teve um reator da moto que explodiu e o pedal que saltou pra fora bla bla")
 
     #Mecânico(s) responsáveis pela manutenção
-    mecanicos: str = Field(..., example = "Marquinhos do Prompt") 
-    atividades: str = Field(..., example = "Troca de pedal, troca de motor")
+    mecanicos: str = Field(None,  example = "Marquinhos do Prompt") 
+    atividades: str = Field(None, example = "Troca de pedal, troca de motor")
     
     #Peças que foram substituídas (se houver)
-    pecas: Optional[str] = Field(..., example=["motor", "pedal", "buzina"])
+    pecas: Optional[str] = Field(..., example="motor, pedal e buzina")
     observacoes: Optional[str] = Field(..., example="Foi observado que a moto é de um modelo especial que saiu de linha por possuir defeitos de fábrica")
 
     #TODO: falta o campo de anexação de fotos que ainda não sei como adicionar que será Optional
@@ -55,6 +55,6 @@ class ReportFilter(BaseModel):
 class ReportResponse(ReportBase):
     id:int
     class Config:
-        from_atributes = True
+        from_attributes = True
 
 
