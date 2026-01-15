@@ -15,7 +15,7 @@ const Login = () => {
     try {
       const response = await axios.post('http://localhost:5000/api/login', { email, password });
       localStorage.setItem('token', response.data.token);
-      navigate('/dashboard');
+      
     } catch (err) {
       setError('Invalid credentials');
     }
@@ -31,7 +31,7 @@ const Login = () => {
         
     >
         <Grid item xs={12} md={6} sx={{display:'flex', justifyContent:'center'}}>
-            <img src="/images/Motopilot Logo.jpeg" alt="Motopilot Logo" style={{maxWidth: '100%', height:'auto', width:'400px'}}/>
+            <img src="/images/Motopilot Logo.png" alt="Motopilot Logo" style={{maxWidth: '100%', height:'auto', width:'400px'}}/>
         </Grid>
 
         <Grid item xs={12} md={6} sx={{ display: 'flex', justifyContent: 'center' }}>
@@ -89,6 +89,7 @@ const Login = () => {
                             sx={{ backgroundColor: "grey.700", width: "100%", mt: 2, height: 50, borderRadius: 3, fontSize: 15 }}
                             type="submit" 
                             variant="contained"
+                            onClick={() => navigate('/chatbot')} /*Depois tem que mudar pro função*/
                         >
                             Entrar
                         </Button>
