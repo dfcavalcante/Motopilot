@@ -7,7 +7,7 @@ import AddCircleOutlineOutlinedIcon from '@mui/icons-material/AddCircleOutlineOu
 
 //Pequena Header em cima do Chatbot, tem os ícones, nome e novo chat
 const HeaderChatBot = () =>{
-    const [nome, setNome] = useState('nome e sobrenome');
+    const [nome, setNome] = useState('Nome e Sobrenome');
 
     return(
     <Box 
@@ -17,10 +17,11 @@ const HeaderChatBot = () =>{
             display: 'flex', 
             flexDirection: 'row',
             alignItems: 'center',
-            justifyContent: 'space-between', // Empurra os grupos para as extremidades
-            px: 3, // Padding lateral
+            borderRadius: '8px',
+            justifyContent: 'space-between', 
+            px: 3, 
             backgroundColor: 'white',
-            borderBottom: '1px solid #E0E0E0', // Linha discreta inferior
+            borderBottom: '1px solid #E0E0E0', 
             boxSizing: 'border-box'
         }}
     >
@@ -62,7 +63,7 @@ const HeaderChatBot = () =>{
                     '&:hover': { borderColor: 'black', backgroundColor: 'transparent' }
                 }}
             > 
-                novo chat 
+                Novo chat 
             </Button>
 
             <Box sx={{ 

@@ -2,7 +2,8 @@ import { useState } from 'react';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { Container, Box, Input, Button, TextField, Stack, Grid} from '@mui/material';
+import { Container, Box, InputAdornment, Button, TextField, Stack, Grid, InputLabel} from '@mui/material';
+import WarningIcon from '@mui/icons-material/Warning';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -12,12 +13,11 @@ const Login = () => {
   
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
-      const response = await axios.post('http://localhost:5000/api/login', { email, password });
-      localStorage.setItem('token', response.data.token);
-      
-    } catch (err) {
-      setError('Invalid credentials');
+    if (!email || !password) {
+      setError(true);
+      return;
+    }else{
+        navigate('/chatbot');
     }
   };
 
@@ -51,6 +51,9 @@ const Login = () => {
                         <img src="/images/Motopilot Logo-modified.png" alt="Motopilot Logo" width="150" />
 
                     <form onSubmit={handleSubmit}>
+                        <InputLabel sx={{color: 'black', fontSize: 16}}>
+                            Email
+                        </InputLabel>
                         <TextField
                             sx={{
                                 "& .MuiOutlinedInput-root": {
@@ -61,12 +64,24 @@ const Login = () => {
                                 },
                             }}
                             fullWidth
-                            label="Usuário"
+                            placeholder="Insira seu e-mail"
                             variant="outlined"
                             value={email}
+                            error={error}
                             onChange={(e) => setEmail(e.target.value)}
                             margin="normal"
+                            InputProps={{
+                                endAdornment: (
+                                <InputAdornment position="end">
+                                    {error && <WarningIcon color="error" />}
+                                </InputAdornment>
+                                ),
+                            }}
                         />
+
+                        <InputLabel sx={{color: 'black', fontSize: 16}}>
+                            Senha
+                        </InputLabel>
                         <TextField
                             sx={{
                                 "& .MuiOutlinedInput-root": {
@@ -77,19 +92,30 @@ const Login = () => {
                                 },
                             }}
                             fullWidth
-                            label="Senha"
+                            placeholder="Insira sua senha"
                             variant="outlined"
                             type="password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             margin="normal"
+                            error={error}
+                            helperText={error ? 'Usuário ou Senha incorretos. Tente novamente ou entre em contato com o ADM' : ''}
+                            InputProps={{
+                                endAdornment: (
+                                <InputAdornment position="end">
+                                    {error && <WarningIcon color="error" />}
+                                </InputAdornment>
+                                ),
+                            }}
                         />
+
+                        
 
                         <Button
                             sx={{ backgroundColor: "#676767", width: "100%", mt: 2, height: 50, borderRadius: 3, fontSize: 15 }}
                             type="submit" 
                             variant="contained"
-                            onClick={() => navigate('/chatbot')} /*Depois tem que mudar pro função*/
+                            onClick={handleSubmit}
                         >
                             Entrar
                         </Button>

@@ -5,7 +5,7 @@ import axios from 'axios';
 import InputAdornment from '@mui/material/InputAdornment';
 import { Container, Box, Input, Button, TextField, Divider, Grid, Typography} from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
-import HeaderChatBot from '../components/HeaderChatBot.jsx'
+import HeaderChatBot from '../components/HeaderChatbot.jsx';
 import SideBar from '../components/SideBar.jsx';
 import SugestaoChatbot from '../components/SugestaoChatbot.jsx';
 import LightbulbOutlinedIcon from '@mui/icons-material/LightbulbOutlined';
@@ -13,10 +13,12 @@ import SentimentSatisfiedAltIcon from '@mui/icons-material/SentimentSatisfiedAlt
 import ArrowCircleUpIcon from '@mui/icons-material/ArrowCircleUp';
 
 const Chatbot = () => {
-  const [nomeChat, setNomeChat] = useState('Nome do Chatbot');
+  const [nomeChat, setNomeChat] = useState('Nome Chat');
   const [pergunta, setPergunta] = useState('');
   const navigate = useNavigate();
   
+  const isPerguntando = pergunta.length > 10;
+
   const sugestoes = [
     "Qual a pressão dos pneus?",
     "Como fazer a troca de óleo?",
@@ -25,7 +27,7 @@ const Chatbot = () => {
   ];
 
     return (
-    <Box backgroundColor="#989898" minHeight="100vh" sx={{p: '16px 8px',}}>
+    <Box backgroundColor="#989898" minHeight="100vh" sx={{p: '16px 8px'}}>
         <HeaderChatBot/>
 
         <Box
@@ -34,8 +36,9 @@ const Chatbot = () => {
             alignItems={'center'} 
             sx={{ mt: 2, display: 'flex', flexDirection: 'column'}}
             backgroundColor="white"
+            minHeight="85vh"
         >
-            <Typography  variant="h6" mb={3} mt={3}>
+            <Typography  variant="h6" mb={3}>
                 {nomeChat}
             </Typography>
 
@@ -44,7 +47,7 @@ const Chatbot = () => {
                     width: '90%',     
                     backgroundColor: 'grey.700',
                     height: '0.4px',    
-                    mb: 12        
+                    mb: 10,     
                 }} 
             />
 
@@ -52,7 +55,8 @@ const Chatbot = () => {
                 border: '1px solid black',
                 display: 'inline-flex',   
                 p: 1,                     
-                borderRadius: '8px'        
+                borderRadius: '8px',
+                mt: 2    
             }}>
                 <SentimentSatisfiedAltIcon/>
             </Box>
@@ -71,21 +75,23 @@ const Chatbot = () => {
                     "& .MuiOutlinedInput-root": {
                         borderRadius: "10px",
                         "& fieldset": { borderRadius: "10px" },
+                        alignItems: 'flex-end'
                     },
                     mb: 3}}
-                    label="Pergunte alguma coisa..."
+                    placeholder="Pergunte alguma coisa..."
                     fullWidth
                     multiline
+                    maxRows={6}
                     variant="outlined"
                     value={pergunta}
                     InputProps={{
-                        // Ícone no Início
                         startAdornment: (
                             <InputAdornment position="start">
-                                <AddIcon sx={{ color: 'black' }} />
+                                <Button>
+                                    <AddIcon sx={{ color: 'black', cursor:'pointer' }} />
+                                </Button>
                             </InputAdornment>
                         ),
-                        // Ícone no Final (Adicione isso aqui)
                         endAdornment: (
                             <InputAdornment position="end">
                                 <ArrowCircleUpIcon sx={{ color: 'black', cursor: 'pointer' }} />
@@ -95,20 +101,25 @@ const Chatbot = () => {
                     onChange={(e) => setPergunta(e.target.value)}
                 />
 
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
-                    <LightbulbOutlinedIcon fontSize="small" />
-                    <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                    Dúvidas frequentes
-                    </Typography>
-                </Box>
+                {!isPerguntando && (
+                    <Box>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
+                            <LightbulbOutlinedIcon fontSize="small" />
+                            <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                            Dúvidas frequentes
+                            </Typography>
+                    </Box>
 
-                <Grid container spacing={2}>
-                    {sugestoes.slice(0, 4).map((sugestao, index) => (
-                    <Grid item xs={6} key={index}>
-                        <SugestaoChatbot sugestao={sugestao} sx={{ width: '100%' }} />
+                    <Grid container spacing={2}>
+                        {sugestoes.slice(0, 4).map((sugestao, index) => (
+                        <Grid item xs={6} key={index}>
+                            <SugestaoChatbot sugestao={sugestao} sx={{ width: '100%' }} />
+                        </Grid>
+                        ))}
                     </Grid>
-                    ))}
-                </Grid>
+                </Box>
+                )}
+
             </Box>
         </Box>
     </Box>
