@@ -5,18 +5,23 @@ const SugestaoChatbot = ({sugestao}) => {
 
     return(
         <Box 
-            backgroundColor="grey.300"
-            borderRadius={3}
-            width={300}
-            height={70}
-            justifyContent={"center"}
-            alignItems={"center"}
-            display={"flex"}
-            sx={{cursor: "pointer"}}
+            sx={{
+                backgroundColor: "#D9D9D9",
+                borderRadius: "16px",
+                width: '320px', 
+                height: 40,   
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                cursor: "pointer",
+                px: 2,
+                textAlign: 'center',
+                '&:hover': { backgroundColor: '#ccc' } 
+            }}
         >
             <Typography
             variant="body1"
-            sx={{color: "grey.800"}}
+            sx={{color: '#000000'}}
             > 
                 {sugestao} 
             </Typography>

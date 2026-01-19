@@ -23,7 +23,7 @@ const Login = () => {
 
     return (
     <Grid 
-        sx={{bgcolor: 'grey.500', height: '100vh', paddingX: 4 }} 
+        sx={{bgcolor: '#D9D9D9', height: '100vh',p: '16px 8px',}} 
         container
         spacing={40} 
         alignItems='center'
@@ -86,7 +86,7 @@ const Login = () => {
                         />
 
                         <Button
-                            sx={{ backgroundColor: "grey.700", width: "100%", mt: 2, height: 50, borderRadius: 3, fontSize: 15 }}
+                            sx={{ backgroundColor: "#676767", width: "100%", mt: 2, height: 50, borderRadius: 3, fontSize: 15 }}
                             type="submit" 
                             variant="contained"
                             onClick={() => navigate('/chatbot')} /*Depois tem que mudar pro função*/
