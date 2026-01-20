@@ -4,7 +4,7 @@ from typing import Optional, List
 class ChatRequest(BaseModel):
     pergunta: str
     moto_modelo: None # Ex: "Honda CG 160"
-    historico: None   # Opcional: mensagens anteriores
+    historico: Optional[str] = None
 
 class ChatResponse(BaseModel):
     resposta: str

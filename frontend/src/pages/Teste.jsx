@@ -11,50 +11,58 @@ import SugestaoChatbot from '../components/SugestaoChatbot.jsx';
 import LightbulbOutlinedIcon from '@mui/icons-material/LightbulbOutlined';
 import SentimentSatisfiedAltIcon from '@mui/icons-material/SentimentSatisfiedAlt';
 import ArrowCircleUpIcon from '@mui/icons-material/ArrowCircleUp';
+import { sendChatMessage } from '../context/Chatbot.js';
+import ChatMessage from '../components/ChatMessage.jsx';
 
-const Chatbot = () => {
-  
+const Teste = () => {
   const [nomeChat, setNomeChat] = useState('Nome Chat');
   const [pergunta, setPergunta] = useState('');
-  const navigate = useNavigate();
 
-    const handleNavigation = () => {
-        navigate('/teste');
-    };
-  
   const isPerguntando = pergunta.length > 10;
 
-  const sugestoes = [
-    "Qual a pressão dos pneus?",
-    "Como fazer a troca de óleo?",
-    "O que fazer se a moto não ligar?",
-    "O que fazer se o motor não funcionar?"
-  ];
+  const [inputValue, setInputValue] = useState("");
+	const [messages, setMessages] = useState([]); // Histórico para exibir na tela
 
+  const handleSend = async () => {
+    if (!inputValue.trim()) return;
+
+    // 1. Cria a mensagem do usuário
+    const userPrompt = inputValue;
+    setMessages(prev => [...prev, { text: userPrompt, isBot: false }]);
+    setInputValue("");
+
+    try {
+      // 2. Chama seu Router/Service do Backend
+      // Supondo que sua API retorna { answer: "..." }
+      const response = await sendChatMessage(userPrompt); 
+
+      // 3. Adiciona a resposta da IA
+      setMessages(prev => [...prev, { text: response.pergunta, isBot: true }]);
+    } catch (error) {
+      setMessages(prev => [...prev, { text: "Erro ao processar resposta.", isBot: true }]);
+    }
+	}
     return (
   <Box 
       sx={{ 
         display: 'flex', 
         height: '100vh', 
         backgroundColor: "#989898", 
-        p: '16px', // Padding de 16px em toda a borda da tela
+        p: '16px', 
         boxSizing: 'border-box'
       }}
     >
-      {/* 1. SIDEBAR: Agora ela é um item do flexbox */}
       <SideBar />
 
-      {/* 2. ÁREA DA DIREITA (Header + Chat) */}
       <Box 
         sx={{ 
           display: 'flex', 
           flexDirection: 'column', 
           flexGrow: 1, 
-          ml: '20px', // Espaçamento de 8px entre a Sidebar e o conteúdo
+          ml: '20px', 
           height: '100%'
         }}
       >
-        {/* Usamos Stack para garantir que o Header e o Chat tenham 8px entre eles */}
         <Stack spacing="8px" sx={{ height: '100%' }}>
           
           <Box sx={{ flexShrink: 0 }}>
@@ -65,7 +73,7 @@ const Chatbot = () => {
             sx={{
               flexGrow: 1,
               backgroundColor: "white",
-              borderRadius: '20px', // Arredondado conforme seu protótipo
+              borderRadius: '20px',
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',
@@ -86,25 +94,12 @@ const Chatbot = () => {
                 }} 
             />
 
-            <Box sx={{ 
-                border: '1px solid black',
-                display: 'inline-flex',   
-                p: 1,                     
-                borderRadius: '8px',
-                mt: 2    
-            }}>
-                <SentimentSatisfiedAltIcon/>
-            </Box>
-            
 
-            <Typography variant="body1" gutterBottom color='grey.800' mt={2}>
-            Olá, Tudo bem?
-            </Typography>
-            <Typography variant="h4" gutterBottom mb={5} fontWeight={'bold'}>
-                Como podemos te ajudar?
-            </Typography>
+            <Box sx={{ width: '100%', maxWidth: 720}}>
+							{messages.map((msg, index) => (
+							<ChatMessage key={index} text={msg.text} isBot={msg.isBot} />
+							))}
 
-            <Box sx={{ width: '100%', maxWidth: 720, mx: 'auto', mt: 4, mb: 10}}>
                 <TextField
                     sx={{
                     "& .MuiOutlinedInput-root": {
@@ -116,42 +111,31 @@ const Chatbot = () => {
                     placeholder="Pergunte alguma coisa..."
                     fullWidth
                     multiline
+										onChange={(e) => {
+												setInputValue(e.target.value);
+												setPergunta(e.target.value);
+										}}
+         						onKeyDown={(e) => e.key === 'Enter' && handleSend()}
                     maxRows={6}
                     variant="outlined"
                     value={pergunta}
                     InputProps={{
                         startAdornment: (
                             <InputAdornment position="start">
-                                <AddIcon sx={{ color: 'black', cursor:'pointer' }} />
+                                <Button >
+                                    <AddIcon sx={{ color: 'black', cursor:'pointer' }} />
+                                </Button>
                             </InputAdornment>
                         ),
                         endAdornment: (
-                            <InputAdornment onClick={handleNavigation} position="end">
-                                <ArrowCircleUpIcon sx={{ color: 'black', cursor: 'pointer' }} />
+                            <InputAdornment position="end">
+                                <Button onClick={handleSend}>
+                                    <ArrowCircleUpIcon sx={{ color: 'black', cursor: 'pointer' }} />
+                                </Button>
                             </InputAdornment>
                         ),
                     }}
-                    onChange={(e) => setPergunta(e.target.value)}
                 />
-
-                {!isPerguntando && (
-                    <Box>
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
-                            <LightbulbOutlinedIcon fontSize="small" />
-                            <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                            Dúvidas frequentes
-                            </Typography>
-                    </Box>
-
-                    <Grid container spacing={2}>
-                        {sugestoes.slice(0, 4).map((sugestao, index) => (
-                        <Grid item xs={6} key={index}>
-                            <SugestaoChatbot sugestao={sugestao} sx={{ width: '100%' }} />
-                        </Grid>
-                        ))}
-                    </Grid>
-                </Box>
-                )}
                     </Box>
                 </Box>
                 </Stack>
@@ -161,4 +145,4 @@ const Chatbot = () => {
 
 }
 
-export default Chatbot;
+export default Teste;
