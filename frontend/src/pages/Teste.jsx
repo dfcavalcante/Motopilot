@@ -26,22 +26,28 @@ const Teste = () => {
   const handleSend = async () => {
     if (!inputValue.trim()) return;
 
-    // 1. Cria a mensagem do usuário
-    const userPrompt = inputValue;
-    setMessages(prev => [...prev, { text: userPrompt, isBot: false }]);
+    const userMsg = { text: inputValue, isBot: false };
+    
+    setMessages((prev) => [...prev, userMsg]);
+  
+    const perguntaTexto = inputValue;
     setInputValue("");
 
     try {
-      // 2. Chama seu Router/Service do Backend
-      // Supondo que sua API retorna { answer: "..." }
-      const response = await sendChatMessage(userPrompt); 
+        const data = await sendChatMessage(perguntaTexto, 1, 1);
 
-      // 3. Adiciona a resposta da IA
-      setMessages(prev => [...prev, { text: response.pergunta, isBot: true }]);
+        const botMsg = { 
+            text: data.resposta, 
+            isBot: true 
+        };
+
+        setMessages((prev) => [...prev, botMsg]);
+
     } catch (error) {
-      setMessages(prev => [...prev, { text: "Erro ao processar resposta.", isBot: true }]);
+        console.error("Erro:", error);
+        setMessages((prev) => [...prev, { text: "Erro ao conectar com o servidor.", isBot: true }]);
     }
-	}
+};
     return (
   <Box 
       sx={{ 

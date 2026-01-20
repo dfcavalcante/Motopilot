@@ -38,6 +38,12 @@ app = FastAPI(
     version=Settings.API_VERSION
 )
 
+origins = [
+    "http://localhost:5173", # Porta do React (Vite)
+    "http://localhost:3000", # Porta do React (Create-React-App)
+    "http://127.0.0.1:5173",
+]
+
 # --- CONFIGURAÇÃO DE SEGURANÇA (CORS) ---
 app.add_middleware(
     CORSMiddleware,
