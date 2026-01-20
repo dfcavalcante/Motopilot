@@ -17,7 +17,7 @@ const HeaderChatBot = () =>{
             display: 'flex', 
             flexDirection: 'row',
             alignItems: 'center',
-            borderRadius: '8px',
+            borderRadius: '20px',
             justifyContent: 'space-between', 
             px: 3, 
             backgroundColor: 'white',

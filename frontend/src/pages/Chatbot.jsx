@@ -3,7 +3,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import InputAdornment from '@mui/material/InputAdornment';
-import { Container, Box, Input, Button, TextField, Divider, Grid, Typography} from '@mui/material';
+import { Container, Box, Stack, Button, TextField, Divider, Grid, Typography} from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import HeaderChatBot from '../components/HeaderChatbot.jsx';
 import SideBar from '../components/SideBar.jsx';
@@ -27,17 +27,47 @@ const Chatbot = () => {
   ];
 
     return (
-    <Box backgroundColor="#989898" minHeight="100vh" sx={{p: '16px 8px'}}>
-        <HeaderChatBot/>
+   <Box 
+      sx={{ 
+        display: 'flex', 
+        height: '100vh', 
+        backgroundColor: "#989898", 
+        p: '16px', // Padding de 16px em toda a borda da tela
+        boxSizing: 'border-box'
+      }}
+    >
+      {/* 1. SIDEBAR: Agora ela é um item do flexbox */}
+      <SideBar />
 
-        <Box
-            borderRadius={5}
-            justifyContent={'center'} 
-            alignItems={'center'} 
-            sx={{ mt: 2, display: 'flex', flexDirection: 'column'}}
-            backgroundColor="white"
-            minHeight="85vh"
-        >
+      {/* 2. ÁREA DA DIREITA (Header + Chat) */}
+      <Box 
+        sx={{ 
+          display: 'flex', 
+          flexDirection: 'column', 
+          flexGrow: 1, 
+          ml: '20px', // Espaçamento de 8px entre a Sidebar e o conteúdo
+          height: '100%'
+        }}
+      >
+        {/* Usamos Stack para garantir que o Header e o Chat tenham 8px entre eles */}
+        <Stack spacing="8px" sx={{ height: '100%' }}>
+          
+          <Box sx={{ flexShrink: 0 }}>
+            <HeaderChatBot />
+          </Box>
+
+          <Box
+            sx={{
+              flexGrow: 1,
+              backgroundColor: "white",
+              borderRadius: '20px', // Arredondado conforme seu protótipo
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              p: 4,
+              overflowY: 'auto'
+            }}
+          >
             <Typography  variant="h6" mb={3}>
                 {nomeChat}
             </Typography>
@@ -119,10 +149,11 @@ const Chatbot = () => {
                     </Grid>
                 </Box>
                 )}
-
+                    </Box>
+                </Box>
+                </Stack>
             </Box>
         </Box>
-    </Box>
     )
 
 }
