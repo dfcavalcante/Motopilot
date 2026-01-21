@@ -12,7 +12,7 @@ Incluindo CRUD e listagem de Motos
 class Moto_service:
     @staticmethod
     def criar_moto(self, db:Session, moto_data: MotoBase) -> MotoResponse:
-        db_moto = Moto(**moto_data.model_dump()) #converte o Schema em Model
+        db_moto = Moto(**moto_data.model_dump()) 
         
         db.add(db_moto)
         db.commit()

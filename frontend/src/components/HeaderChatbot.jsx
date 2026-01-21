@@ -4,10 +4,17 @@ import React from 'react';
 import PersonOutlineOutlinedIcon from '@mui/icons-material/PersonOutlineOutlined';
 import NotificationsNoneOutlinedIcon from '@mui/icons-material/NotificationsNoneOutlined';
 import AddCircleOutlineOutlinedIcon from '@mui/icons-material/AddCircleOutlineOutlined';
+import { useNavigate } from 'react-router-dom';
 
 //Pequena Header em cima do Chatbot, tem os ícones, nome e novo chat
 const HeaderChatBot = () =>{
     const [nome, setNome] = useState('Nome e Sobrenome');
+    const navigate = useNavigate();
+
+    const handleCadastroMoto = async (e) => {
+    e.preventDefault();
+    navigate('/cadastroMoto');
+    };
 
     return(
     <Box 
@@ -72,7 +79,7 @@ const HeaderChatBot = () =>{
                     borderRadius: '8px'        
                 }}>
                 <IconButton sx={{ color: 'grey.700' }}>
-                    <NotificationsNoneOutlinedIcon />
+                    <NotificationsNoneOutlinedIcon onClick={handleCadastroMoto} />
                 </IconButton>
             </Box>
         </Box>
