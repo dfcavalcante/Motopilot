@@ -1,28 +1,22 @@
-import { useState } from 'react';
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import React, { useState } from 'react';
 import InputAdornment from '@mui/material/InputAdornment';
-import { Container, Box, Stack, Button, TextField, Divider, Grid, Typography} from '@mui/material';
+import { Box, Stack, Button, TextField, Divider, Grid, Typography } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import HeaderChatBot from '../components/HeaderChatbot.jsx';
 import SideBar from '../components/SideBar.jsx';
 import SugestaoChatbot from '../components/SugestaoChatbot.jsx';
+import ChatMessage from '../components/ChatMessage.jsx';
 import LightbulbOutlinedIcon from '@mui/icons-material/LightbulbOutlined';
 import SentimentSatisfiedAltIcon from '@mui/icons-material/SentimentSatisfiedAlt';
 import ArrowCircleUpIcon from '@mui/icons-material/ArrowCircleUp';
+import { sendChatMessage } from '../context/Chatbot.js';
 
 const Chatbot = () => {
   
-  const [nomeChat, setNomeChat] = useState('Nome Chat');
-  const [pergunta, setPergunta] = useState('');
-  const navigate = useNavigate();
-
-    const handleNavigation = () => {
-        navigate('/teste');
-    };
-  
-  const isPerguntando = pergunta.length > 10;
+  const [nomeChat, setNomeChat] = useState('Novo Chat');
+  const [input, setInput] = useState('');
+  const [messages, setMessages] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   const sugestoes = [
     "Qual a pressão dos pneus?",
@@ -31,30 +25,92 @@ const Chatbot = () => {
     "O que fazer se o motor não funcionar?"
   ];
 
-    return (
-  <Box 
+  const handleSend = async (textoParaEnviar = input) => {
+    if (!textoParaEnviar || textoParaEnviar.trim() === "") return;
+
+    const userMsg = { text: textoParaEnviar, isBot: false };
+    setMessages((prev) => [...prev, userMsg]);
+    
+    setInput("");
+    setIsLoading(true);
+
+    try {
+        const data = await sendChatMessage(textoParaEnviar, 1, 1);
+        const botMsg = { text: data.resposta, isBot: true };
+        setMessages((prev) => [...prev, botMsg]);
+    } catch (error) {
+        console.error("Erro:", error);
+        setMessages((prev) => [...prev, { text: "Erro ao conectar com o servidor.", isBot: true }]);
+    } finally {
+        setIsLoading(false);
+    }
+  };
+
+  const handleSuggestionClick = (texto) => {
+      handleSend(texto);
+  };
+
+  // A área de perguntar do chatr
+  const inputArea = (
+    <Box sx={{ width: '100%', maxWidth: 720, mt: 2, flexShrink: 0 }}>
+        <TextField
+            sx={{
+            "& .MuiOutlinedInput-root": {
+                borderRadius: "10px",
+                "& fieldset": { borderRadius: "10px" },
+                alignItems: 'flex-end'
+            },
+            }}
+            placeholder="Pergunte alguma coisa..."
+            fullWidth
+            multiline
+            maxRows={6}
+            variant="outlined"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={(e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    handleSend();
+                }
+            }}
+            InputProps={{
+                startAdornment: (
+                    <InputAdornment position="start">
+                      <AddIcon sx={{ color: 'black', cursor:'pointer' }} />
+                    </InputAdornment>
+                ),
+                endAdornment: (
+                    <InputAdornment position="end">
+                      <ArrowCircleUpIcon sx={{ color: 'black', cursor: 'pointer' }} onClick={() => handleSend()} />
+                    </InputAdornment>
+                ),
+            }}
+        />
+    </Box>
+  );
+
+  return (
+    <Box 
       sx={{ 
         display: 'flex', 
         height: '100vh', 
         backgroundColor: "#989898", 
-        p: '16px', // Padding de 16px em toda a borda da tela
+        p: '16px', 
         boxSizing: 'border-box'
       }}
     >
-      {/* 1. SIDEBAR: Agora ela é um item do flexbox */}
       <SideBar />
 
-      {/* 2. ÁREA DA DIREITA (Header + Chat) */}
       <Box 
         sx={{ 
           display: 'flex', 
           flexDirection: 'column', 
           flexGrow: 1, 
-          ml: '20px', // Espaçamento de 8px entre a Sidebar e o conteúdo
+          ml: '20px', 
           height: '100%'
         }}
       >
-        {/* Usamos Stack para garantir que o Header e o Chat tenham 8px entre eles */}
         <Stack spacing="8px" sx={{ height: '100%' }}>
           
           <Box sx={{ flexShrink: 0 }}>
@@ -65,15 +121,15 @@ const Chatbot = () => {
             sx={{
               flexGrow: 1,
               backgroundColor: "white",
-              borderRadius: '20px', // Arredondado conforme seu protótipo
+              borderRadius: '20px',
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',
               p: 4,
-              overflowY: 'auto'
+              overflow: 'hidden'
             }}
           >
-            <Typography  variant="h6" mb={3}>
+            <Typography variant="h6" mb={2}>
                 {nomeChat}
             </Typography>
 
@@ -82,83 +138,88 @@ const Chatbot = () => {
                     width: '90%',     
                     backgroundColor: 'grey.700',
                     height: '0.4px',    
-                    mb: 10,     
+                    mb: 2,     
                 }} 
             />
 
-            <Box sx={{ 
-                border: '1px solid black',
-                display: 'inline-flex',   
-                p: 1,                     
-                borderRadius: '8px',
-                mt: 2    
-            }}>
-                <SentimentSatisfiedAltIcon/>
-            </Box>
-            
+            {messages.length === 0 ? (
+                <Box sx={{ 
+                    flexGrow: 1, 
+                    display: 'flex', 
+                    flexDirection: 'column', 
+                    alignItems: 'center',
+                    justifyContent: 'center', 
+                    overflowY: 'auto',
+                    width: '100%',
+                    maxWidth: 720
+                }}>
+                    <Box sx={{ 
+                        border: '1px solid black',
+                        display: 'inline-flex',   
+                        p: 1,                     
+                        borderRadius: '8px',
+                        mb: 2    
+                    }}>
+                        <SentimentSatisfiedAltIcon/>
+                    </Box>
 
-            <Typography variant="body1" gutterBottom color='grey.800' mt={2}>
-            Olá, Tudo bem?
-            </Typography>
-            <Typography variant="h4" gutterBottom mb={5} fontWeight={'bold'}>
-                Como podemos te ajudar?
-            </Typography>
+                    <Typography variant="body1" gutterBottom color='grey.800'>
+                        Olá, Tudo bem?
+                    </Typography>
+                    <Typography variant="h4" gutterBottom mb={3} fontWeight={'bold'}>
+                        Como podemos te ajudar?
+                    </Typography>
 
-            <Box sx={{ width: '100%', maxWidth: 720, mx: 'auto', mt: 4, mb: 10}}>
-                <TextField
-                    sx={{
-                    "& .MuiOutlinedInput-root": {
-                        borderRadius: "10px",
-                        "& fieldset": { borderRadius: "10px" },
-                        alignItems: 'flex-end'
-                    },
-                    mb: 3}}
-                    placeholder="Pergunte alguma coisa..."
-                    fullWidth
-                    multiline
-                    maxRows={6}
-                    variant="outlined"
-                    value={pergunta}
-                    InputProps={{
-                        startAdornment: (
-                            <InputAdornment position="start">
-                                <AddIcon sx={{ color: 'black', cursor:'pointer' }} />
-                            </InputAdornment>
-                        ),
-                        endAdornment: (
-                            <InputAdornment onClick={handleNavigation} position="end">
-                                <ArrowCircleUpIcon sx={{ color: 'black', cursor: 'pointer' }} />
-                            </InputAdornment>
-                        ),
-                    }}
-                    onChange={(e) => setPergunta(e.target.value)}
-                />
+                    {inputArea} 
 
-                {!isPerguntando && (
-                    <Box>
+                    <Box sx={{ width: '100%', mt: 5 }}>
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
                             <LightbulbOutlinedIcon fontSize="small" />
                             <Typography variant="body1" sx={{ fontWeight: 500 }}>
                             Dúvidas frequentes
                             </Typography>
-                    </Box>
+                        </Box>
 
-                    <Grid container spacing={2}>
-                        {sugestoes.slice(0, 4).map((sugestao, index) => (
-                        <Grid item xs={6} key={index}>
-                            <SugestaoChatbot sugestao={sugestao} sx={{ width: '100%' }} />
+                        <Grid container spacing={2}>
+                            {sugestoes.slice(0, 4).map((sugestao, index) => (
+                            <Grid item xs={6} key={index}>
+                                <div onClick={() => handleSuggestionClick(sugestao)} style={{ cursor: 'pointer' }}>
+                                    <SugestaoChatbot sugestao={sugestao} sx={{ width: '100%' }} />
+                                </div>
+                            </Grid>
+                            ))}
                         </Grid>
-                        ))}
-                    </Grid>
-                </Box>
-                )}
                     </Box>
                 </Box>
-                </Stack>
-            </Box>
-        </Box>
-    )
+            ) : (
+                /*Parte da conversa */
+                <>
+                    <Box 
+                        sx={{ 
+                            flexGrow: 1, 
+                            width: '100%', 
+                            maxWidth: 720,
+                            overflowY: 'auto',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            mb: 2
+                        }}
+                    >
+                        {messages.map((msg, index) => (
+                            <ChatMessage key={index} text={msg.text} isBot={msg.isBot} />
+                        ))}
+                        {isLoading && <Typography variant="caption" sx={{ ml: 2 }}>Digitando...</Typography>}
+                    </Box>
 
+                    {inputArea}
+                </>
+            )}
+
+          </Box>
+        </Stack>
+      </Box>
+    </Box>
+  )
 }
 
 export default Chatbot;
