@@ -15,6 +15,7 @@ class Report(Base):
     atividades = Column(Text, nullable=False)
     observacoes = Column(Text, nullable=True)
     mecanicos = Column(Text, nullable=False)
+    pecas = Column(Text, nullable=True)
 
     created_at = Column(DateTime, server_default=func.now(), nullable=False)
     updated_at = Column(DateTime, onupdate=func.now())
