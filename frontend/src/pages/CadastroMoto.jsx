@@ -4,16 +4,21 @@ import HeaderChatBot from '../components/HeaderChatbot.jsx';
 import SideBar from '../components/SideBar.jsx';
 import PdfUploader from '../components/PdfUploader.jsx';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import { MotoContext, MotoProvider } from '../context/MotoContext.jsx';
+import { useContext } from 'react';
+
 
 const CadastroDeMoto = () => {
-	const [formValues, setFormValues] = useState({
-    nome: '',
+	const { cadastrarMoto, loading, erro } = useContext(MotoContext);
+  const [arquivoPdf, setArquivoPdf] = useState(null);
+
+  const [formValues, setFormValues] = useState({
     modelo: '',
     ano: '',
     marca: ''
   });
 
-	const handleChange = (e) => {
+  const handleChange = (e) => {
     const { name, value } = e.target;
     setFormValues((prev) => ({
       ...prev,
@@ -21,25 +26,42 @@ const CadastroDeMoto = () => {
     }));
   };
 
-  const handleFileSelect = (file) => {
-    setArquivoPdf(file);
-  };
+  const handleFileSelect = (arquivo) => {
+  // Verificamos se o que chegou é um evento ou o arquivo direto
+  if (arquivo && arquivo.target) {
+     // Caso o PdfUploader mande um evento padrão (pouco provável em componentes customizados)
+     if (arquivo.target.files && arquivo.target.files[0]) {
+        setArquivoPdf(arquivo.target.files[0]);
+     }
+  } else {
+     // Caso o PdfUploader mande o arquivo direto (O mais provável)
+     console.log("Arquivo recebido:", arquivo);// Para debug
+     setArquivoPdf(arquivo);
+  }
+};
 
   const handleSubmit = async (e) => {
     e.preventDefault(); 
 
-    if (!formValues.nome || !arquivoPdf) {
-      alert("Por favor, preencha o nome e anexe o PDF.");
+    if (!formValues.modelo || !arquivoPdf) {
+      alert("Por favor, preencha o modelo e anexe o PDF.");
       return;
     }
 
     const formData = new FormData();
-    formData.append('nome', formValues.nome);
     formData.append('modelo', formValues.modelo);
     formData.append('ano', formValues.ano);
     formData.append('marca', formValues.marca);
     formData.append('documento_pdf', arquivoPdf);
-	}
+
+    const sucesso = await cadastrarMoto(formData);
+
+    if (sucesso) {
+        alert("Moto cadastrada com sucesso!");
+        setFormValues({ modelo: '', ano: '', marca: '' });
+        setArquivoPdf(null);
+    }
+  };
 
   return (
     <Box 
@@ -71,17 +93,6 @@ const CadastroDeMoto = () => {
 
 					{/*Aqui começa o cadastro de moto */}
 					<Box component="form" onSubmit={handleSubmit} sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-          
-          <TextField
-            label="Nome da Moto"
-            name="nome"
-            value={formValues.nome}
-            onChange={handleChange}
-            placeholder="Ex: CB 500F"
-            variant="outlined"
-            fullWidth
-            required
-          />
 
           <TextField
             label="Modelo"

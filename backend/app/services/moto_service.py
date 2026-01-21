@@ -11,12 +11,14 @@ Incluindo CRUD e listagem de Motos
 
 class Moto_service:
     @staticmethod
-    def criar_moto(self, db:Session, moto_data: MotoBase) -> MotoResponse:
+    def criar_moto(db:Session, moto_data: MotoBase) -> MotoResponse:
         db_moto = Moto(**moto_data.model_dump()) 
         
         db.add(db_moto)
         db.commit()
         db.refresh(db_moto)
+
+        return db_moto
 
     def listar_motos(self, db:Session, filtro: MotoFilter) ->List[MotoResponse]:
         pass

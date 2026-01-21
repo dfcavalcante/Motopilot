@@ -6,12 +6,12 @@ from typing import Optional, List
 class MotoBase(BaseModel):
     '''
     Schema para criação de moto
-    Chassi será utilizada como chave primária
+    O path do manual foi adicionado aqui
     '''
-    id: int
     marca: str = Field(..., example="Honda")
     modelo: str = Field(..., example="CG 160 Start")
     ano: int = Field(..., example=2025)
+    manual_pdf_path: str | None = None
 
 class MotoUpdate(BaseModel):
     '''
