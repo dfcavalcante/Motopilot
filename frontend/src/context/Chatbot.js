@@ -14,7 +14,7 @@ export const sendChatMessage = async (userMessage, userId, motoId) => {
   const payload = {
     pergunta: userMessage,
     usuario_id: parseInt(userId),
-    moto_id: 1
+    moto_id: parseInt(motoId)
   };
 
   try {
