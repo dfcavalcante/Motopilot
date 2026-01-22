@@ -10,46 +10,53 @@ const MOTOS_PADRAO = [
 
 export const useChat = () => {
     const { motos, cadastrarMoto, listar_motos } = useContext(MotoContext);
-
     const [messages, setMessages] = useState([]);
     const [isLoadingChat, setIsLoadingChat] = useState(false);
     const [motoSelecionada, setMotoSelecionada] = useState(null);
-    const [carregandoMotos, setCarregandoMotos] = useState(true);
+    const [carregandoMotos, setCarregandoMotos] = useState(false); // Comece como false
 
     useEffect(() => {
-        const inicializar = async () => {
-            setCarregandoMotos(true);
+    let ativo = true; // Controle para evitar atualizar estado se o componente desmontar
+
+    const inicializar = async () => {
+        setCarregandoMotos(true);
+        try {
+            // 1. Tenta listar as motos
+            const listaAtual = await listar_motos();
             
-            try {
-                const listaAtual = await listar_motos(); 
+            // 2. Se não houver motos, cadastra as padrões em sequência
+            if (ativo && (!listaAtual || listaAtual.length === 0)) {
+                console.log("Banco vazio. Criando motos padrão...");
                 
-                const quantidadeMotos = listaAtual ? listaAtual.length : 0;
+                const blob = new Blob(["Manual Pendente"], { type: 'application/pdf' });
+                const arquivoFake = new File([blob], "manual_padrao.pdf", { type: "application/pdf" });
 
-                if (quantidadeMotos === 0) { 
-                    console.log("Nenhuma moto encontrada. Criando padrões...");
+                // Usamos for...of para garantir a ordem sequencial e evitar atropelo no banco
+                for (const moto of MOTOS_PADRAO) {
+                    const formData = new FormData();
+                    formData.append('marca', moto.marca);
+                    formData.append('modelo', moto.modelo);
+                    formData.append('ano', moto.ano);
+                    formData.append('documento_pdf', arquivoFake);
                     
-                    const blob = new Blob(["Manual Pendente"], { type: 'application/pdf' });
-                    const arquivoFake = new File([blob], "manual_padrao.pdf", { type: "application/pdf" });
-
-                    for (const moto of MOTOS_PADRAO) {
-                        const formData = new FormData();
-                        formData.append('marca', moto.marca);
-                        formData.append('modelo', moto.modelo);
-                        formData.append('ano', moto.ano);
-                        formData.append('documento_pdf', arquivoFake); 
-                        
-                        await cadastrarMoto(formData); 
-                    }
-                    await listar_motos();
+                    await cadastrarMoto(formData); 
                 }
-            } catch (error) {
-                console.error("Erro ao inicializar chat:", error);
-            } finally {
-                setCarregandoMotos(false);
+                
+                // 3. Após cadastrar todas, busca a lista atualizada final
+                await listar_motos();
             }
-        };
-        inicializar();
-    }, []); 
+        } catch (error) {
+            console.error("Erro na inicialização:", error);
+        } finally {
+            // 4. Só desliga o loading aqui, no final de TUDO
+            if (ativo) setCarregandoMotos(false);
+        }
+    };
+
+    inicializar();
+
+    return () => { ativo = false; }; // Cleanup function
+}, []); // Array de dependências vazio para rodar só uma vez
 
     const enviarMensagem = async (texto) => {
         if (!texto || texto.trim() === "" || !motoSelecionada) return;

@@ -1,6 +1,7 @@
 import { Box, Typography } from "@mui/material";
 import React from "react";
 
+//Aquelas sugestões que aparecem abaixo do chat do chatbot
 const SugestaoChatbot = ({ sugestao, onClick }) => {
     return (
         <Box 

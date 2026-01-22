@@ -9,9 +9,7 @@ class Moto(Base):
     marca = Column(String(50), nullable=False)   # Ex: Honda
     modelo = Column(String(100), nullable=False) # Ex: CBR 650R
     ano = Column(Integer, nullable=True)         # Ex: 2023
-    
-    # Onde o PDF deste manual está salvo no servidor
-    # Ex: "manuals/honda_cbr650r_2023.pdf"
+
     manual_pdf_path = Column(String(255), nullable=True)
 
     # URL da imagem da moto para exibir no chat

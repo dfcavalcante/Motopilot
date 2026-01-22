@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Box, Stack, Button, TextField, Divider, Grid, Typography } from '@mui/material';
-import HeaderChatBot from '../components/HeaderChatbot.jsx';
+import HeaderChatBot from '../components/ChatBot/HeaderChatbot.jsx';
 import SideBar from '../components/SideBar.jsx';
 import PdfUploader from '../components/PdfUploader.jsx';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
@@ -27,15 +27,12 @@ const CadastroDeMoto = () => {
   };
 
   const handleFileSelect = (arquivo) => {
-  // Verificamos se o que chegou é um evento ou o arquivo direto
   if (arquivo && arquivo.target) {
-     // Caso o PdfUploader mande um evento padrão (pouco provável em componentes customizados)
      if (arquivo.target.files && arquivo.target.files[0]) {
         setArquivoPdf(arquivo.target.files[0]);
      }
   } else {
-     // Caso o PdfUploader mande o arquivo direto (O mais provável)
-     console.log("Arquivo recebido:", arquivo);// Para debug
+     console.log("Arquivo recebido:", arquivo);
      setArquivoPdf(arquivo);
   }
 };

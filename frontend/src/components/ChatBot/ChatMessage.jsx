@@ -6,6 +6,7 @@ import ThumbUpAltOutlinedIcon from '@mui/icons-material/ThumbUpAltOutlined';
 import ThumbDownAltOutlinedIcon from '@mui/icons-material/ThumbDownAltOutlined';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 
+// Componente de mensagem de chat, exibindo mensagens do bot e do usuário
 const ChatMessage = ({ text, isBot }) => {
   const handleCopy = () => {
     navigator.clipboard.writeText(text);
