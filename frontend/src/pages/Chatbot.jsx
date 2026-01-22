@@ -34,6 +34,11 @@ const Chatbot = () => {
       setInput('');
   };
 
+  const handleSuggestion = ({sugestao}) =>{
+    enviarMensagem(sugestao);
+    setInput('')
+  }
+
   const sugestoes = [
     "Qual a pressão dos pneus?",
     "Como fazer a troca de óleo?",
@@ -110,7 +115,7 @@ const Chatbot = () => {
         }}
       >
         <DialogTitle sx={{ textAlign: 'center', borderBottom: '1px solid #333', pb: 2 }}>
-            <Typography variant="h6" fontWeight="bold">
+            <Typography variant="" fontWeight="bold">
                 {carregandoMotos ? "Carregando..." : "Escolha sua Moto"}
             </Typography>
         </DialogTitle>
@@ -189,7 +194,7 @@ const Chatbot = () => {
               overflow: 'hidden'
             }}
           >
-            <Typography variant="h6" mb={2}>
+            <Typography variant="" mb={2}>
                 {nomeChat}
             </Typography>
 
@@ -239,11 +244,12 @@ const Chatbot = () => {
                             Dúvidas frequentes
                             </Typography>
                         </Box>
-
+                        
+                        
                         <Grid container spacing={2}>
                             {sugestoes.slice(0, 4).map((sugestao, index) => (
                             <Grid item xs={6} key={index}>
-                                <div onClick={() => handleSendClick(sugestao)} style={{ cursor: 'pointer' }}>
+                                <div onClick={() => handleSuggestion({sugestao})} style={{ cursor: 'pointer' }}>
                                     <SugestaoChatbot sugestao={sugestao} sx={{ width: '100%' }} />
                                 </div>
                             </Grid>
