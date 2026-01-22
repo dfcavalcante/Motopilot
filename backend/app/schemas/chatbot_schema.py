@@ -1,10 +1,11 @@
-from pydantic import BaseModel, Field
-from typing import Optional, List
+from typing import Optional
+from pydantic import BaseModel
+
 
 class ChatRequest(BaseModel):
     pergunta: str
-    moto_modelo: None # Ex: "Honda CG 160"
-    historico: None   # Opcional: mensagens anteriores
+    usuario_id: int
+    moto_id: int
 
 class ChatResponse(BaseModel):
     resposta: str

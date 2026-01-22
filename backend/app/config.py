@@ -11,7 +11,7 @@ class Settings(BaseSettings):
     API_VERSION: str = "1.0.0"
     API_DESCRIPTION: str = "Assistente de Manutenção de motos e Treinamento de mecânicos"
 
-    # =================================================================
+    '''# =================================================================
     # 2. Credenciais do Banco (PostgreSQL)
     # =================================================================
     # Se o arquivo .env não existir, ele usará estes valores padrão:
@@ -24,11 +24,21 @@ class Settings(BaseSettings):
     # Propriedade que monta a URL automaticamente. 
     @property
     def DATABASE_URL(self) -> str:
-        # CORREÇÃO: Codifica a senha para aceitar caracteres como @, ç, #, etc.
-        senha_segura = quote_plus(self.POSTGRES_PASSWORD)
-        
-        return f"postgresql://{self.POSTGRES_USER}:{senha_segura}@{self.POSTGRES_HOST}:{self.POSTGRES_PORT}/{self.POSTGRES_DB}"
+      senha_segura = quote_plus(self.POSTGRES_PASSWORD)
+      # Adicionamos client_encoding=utf8 ao final da string
+      return f"postgresql://{self.POSTGRES_USER}:{senha_segura}@{self.POSTGRES_HOST}:{self.POSTGRES_PORT}/{self.POSTGRES_DB}?client_encoding=utf8"'''
+    
+    #Estou utilizando o sqlite apenas para debug, caso queira usar o POSTGRESQL tire o comentário gigante de cima e exclia esse código de baixo
+    DB_TYPE: str = "sqlite" 
+  
+    SQLITE_DB_PATH: str = "./motopilot.db"
 
+    @property
+    def DATABASE_URL(self) -> str:
+        if self.DB_TYPE == "sqlite":
+            # O SQLite usa 3 barras para caminhos relativos
+            return f"sqlite:///{self.SQLITE_DB_PATH}"
+        
     # =================================================================
     # 3. Banco de Dados Vetorial (ChromaDB)
     # =================================================================
@@ -56,7 +66,7 @@ class Settings(BaseSettings):
     # =================================================================
     model_config = SettingsConfigDict(
         env_file=".env", 
-        env_file_encoding="latin-1",
+        env_file_encoding="utf-8",
         extra="ignore" # Ignora campos extras que possam estar no seu .env
     )
 
