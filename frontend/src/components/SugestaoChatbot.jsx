@@ -1,10 +1,10 @@
 import { Box, Typography } from "@mui/material";
 import React from "react";
 
-const SugestaoChatbot = ({sugestao}) => {
-
-    return(
+const SugestaoChatbot = ({ sugestao, onClick }) => {
+    return (
         <Box 
+            onClick={() => onClick && onClick(sugestao)}
             sx={{
                 backgroundColor: "#D9D9D9",
                 borderRadius: "16px",
