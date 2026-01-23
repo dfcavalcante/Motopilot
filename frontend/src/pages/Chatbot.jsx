@@ -70,7 +70,7 @@ const Chatbot = () => {
 
           <Box sx={{ flexGrow: 1, bgcolor: "white", borderRadius: '16px', display: 'flex', flexDirection: 'column', alignItems: 'center', p: 4, overflow: 'hidden' }}>
             
-            <Typography mb={2}>{nomeChat}</Typography>
+            <Typography mb={2} fontSize={30}>{nomeChat}</Typography>
             <Divider sx={{ width: '90%', bgcolor: 'grey.700', height: '0.4px'}} />
 
             {/* PARTE PRINCIPAL*/}

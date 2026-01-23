@@ -22,6 +22,19 @@ const HeaderChatBot = ({ nomeChat, setNomeChat, onNovoChat }) =>{
         setEditando(false);
     };
 
+    //Tirando do return, pois o Fernando não aprovou ainda
+    {editando ? (
+                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                        <TextField size="small" value={tempNome} onChange={(e) => setTempNome(e.target.value)} />
+                        <IconButton onClick={handleSalvarNome} color="success"><CheckIcon /></IconButton>
+                    </Box>
+                ) : (
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <Typography variant="body2" color="grey.600" fontStyle="italic">{nomeChat}</Typography>
+                        <IconButton size="small" onClick={() => setEditando(true)}><EditIcon fontSize="small" /></IconButton>
+                    </Box>
+                )}
+
     return(
     <Box 
         sx={{
@@ -52,18 +65,8 @@ const HeaderChatBot = ({ nomeChat, setNomeChat, onNovoChat }) =>{
                 
                 <Divider orientation="vertical" flexItem sx={{ mx: 1, height: 20, alignSelf: 'center' }} />
 
-
-                {editando ? (
-                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                        <TextField size="small" value={tempNome} onChange={(e) => setTempNome(e.target.value)} />
-                        <IconButton onClick={handleSalvarNome} color="success"><CheckIcon /></IconButton>
-                    </Box>
-                ) : (
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <Typography variant="body2" color="grey.600" fontStyle="italic">{nomeChat}</Typography>
-                        <IconButton size="small" onClick={() => setEditando(true)}><EditIcon fontSize="small" /></IconButton>
-                    </Box>
-                )}
+                <Typography> Nome Sobrenome</Typography>
+                
             </Box>
 
         </Box>
@@ -77,7 +80,7 @@ const HeaderChatBot = ({ nomeChat, setNomeChat, onNovoChat }) =>{
             }}>
             <Button
                 variant='outlined'
-                startIcon={<AddCircleOutlineOutlinedIcon />}
+                startIcon={<img src="/images/add.png" alt="Add" width="20" />}
                 sx={{ 
                     color: 'black', 
                     borderColor: 'black',
@@ -95,7 +98,7 @@ const HeaderChatBot = ({ nomeChat, setNomeChat, onNovoChat }) =>{
                     display: 'inline-flex',                    
                     borderRadius: '8px'        
                 }}>
-                <IconButton sx={{ color: 'grey.700' }}>
+                <IconButton sx={{ color: 'grey.700' }} onClick={handleCadastroMoto} >
                     <img src="/images/bell.png" alt="Logo" width="15" />
                 </IconButton>
             </Box>

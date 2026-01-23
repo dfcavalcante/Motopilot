@@ -1,8 +1,5 @@
 import React from 'react';
 import { Box, Typography, Paper, Avatar, Tooltip, IconButton } from '@mui/material';
-import PersonIcon from '@mui/icons-material/Person';
-import ContentCopyIcon from '@mui/icons-material/ContentCopy';
-import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 
 // Componente de mensagem de chat, exibindo mensagens do bot e do usuário
 const ChatMessage = ({ text, isBot }) => {
@@ -14,10 +11,13 @@ const ChatMessage = ({ text, isBot }) => {
     <Box
       sx={{
         display: 'flex',
-        flexDirection: 'column', 
+        flexDirection: 'column',
         alignItems: isBot ? 'flex-start' : 'flex-end',
         mb: 2,
-        px: 2, 
+        px: 2,
+        '&:first-of-type': {
+            mt: 2
+        }
       }}
     >
       {/* Balão de Mensagem */}
@@ -37,22 +37,21 @@ const ChatMessage = ({ text, isBot }) => {
       </Box>
 
       {isBot && (
-        <Box sx={{ display: 'flex', gap: 0, mt: 0.5, ml: 0.5 }}>
+        <Box sx={{ display: 'flex', gap: 0, mt: 0.5, ml: 0.8 }}>
           
           <Tooltip title="Copiar resposta">
             <IconButton size="small" onClick={handleCopy}>
-              <ContentCopyIcon fontSize="small" sx={{ color: 'black' }} />
+              <img src="/images/copy.png" alt="Logo" width="15" />
             </IconButton>
           </Tooltip>
 
           <Tooltip title="Mais opções">
             <IconButton size="small">
-              <MoreHorizIcon fontSize="small" sx={{ color: 'black' }} />
+              <img src='images/refresh.svg' alt="Logo" width="15" />
             </IconButton>
           </Tooltip>
         </Box>
       )}
-
 
       {/* Ícone do Cliente (Aparece apenas se NÃO for bot e fica embaixo) */}
       {!isBot && (
@@ -64,7 +63,7 @@ const ChatMessage = ({ text, isBot }) => {
               bgcolor: 'grey.400' 
             }}
           >
-            <PersonIcon sx={{ fontSize: 16 }} />
+            <img src="/images/person.png" alt="Logo" width="10" />
           </Avatar>
         </Box>
       )}
