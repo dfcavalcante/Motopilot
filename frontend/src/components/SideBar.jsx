@@ -1,12 +1,10 @@
 import React from "react";
 import { Box, Typography, Stack, Divider, IconButton } from "@mui/material";
 import { useLocation, useNavigate } from 'react-router-dom';
-import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
-import LogoutIcon from '@mui/icons-material/Logout';
-import FolderOpenOutlinedIcon from '@mui/icons-material/FolderOpenOutlined';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
+
 
 const SideBar = ({ historico = [] }) => {
   const [open, setOpen] = React.useState(false); 
@@ -14,8 +12,8 @@ const SideBar = ({ historico = [] }) => {
   const navigate = useNavigate();
 
   const menus = [
-    { name: "Chatbot", link: "/chatbot", icon: <HomeOutlinedIcon /> },
-    { name: "Projetos", link: "/projetos" , icon: <FolderOpenOutlinedIcon /> },
+    { name: "Chatbot", link: "/chatbot", icon: <img src="/images/Home.svg" alt="Logo" width="20" /> },
+    { name: "Projetos", link: "/projetos" , icon: <img src="/images/Folder.svg" alt="Logo" width="20" /> },
   ];
 
   return (
@@ -24,7 +22,7 @@ const SideBar = ({ historico = [] }) => {
         width: open ? "240px" : "80px", 
         transition: "width 0.3s ease", 
         height: "100%", 
-        borderRadius: "20px", 
+        borderRadius: "16px", 
         display: "flex",
         flexDirection: "column",
         p: "20px",
@@ -47,9 +45,17 @@ const SideBar = ({ historico = [] }) => {
 
         <Divider />
 
-        {/* LISTA DE CONVERSAS RECENTES (Só aparece se a Sidebar estiver aberta) */}
+        <Box sx={{ 
+          flexGrow: 1, 
+          overflowY: 'auto', 
+          display: 'flex', 
+          flexDirection: 'column',
+          gap: 1 
+        }}>
+
+
         {open && (
-            <Box sx={{ flexGrow: 1, overflowY: 'auto', mt: 2 }}>
+            <Box sx={{ mb: 2 }}>
                 <Typography variant="caption" sx={{ color: 'grey.500', fontWeight: 'bold', mb: 1, display: 'block' }}>
                     CONVERSAS RECENTES
                 </Typography>
@@ -72,8 +78,8 @@ const SideBar = ({ historico = [] }) => {
             </Box>
         )}
 
-        {/* MENUS ORIGINAIS */}
-        <Box sx={{ mt: open ? 2 : 'auto' }}>
+        {/* MENUS DE NAVEGAÇÃO */}
+        <Box>
             {menus.map((menu, index) => (
                 <Box
                     key={index}
@@ -81,6 +87,7 @@ const SideBar = ({ historico = [] }) => {
                     sx={{
                         display: "flex", alignItems: "center", gap: "15px", cursor: "pointer",
                         padding: "12px", borderRadius: "12px", mb: 1,
+                        justifyContent: open ? 'flex-start' : 'center',
                         backgroundColor: location.pathname === menu.link ? "#f0f0f0" : "transparent",
                         "&:hover": { backgroundColor: "#f5f5f5" }
                     }}
@@ -90,18 +97,25 @@ const SideBar = ({ historico = [] }) => {
                 </Box>
             ))}
         </Box>
+      </Box>
 
+      {/* --- RODAPÉ (Logout) --- */}
+      <Box sx={{ mt: 1 }}> 
+        <Divider sx={{ mb: 1 }} />
         <Box
             onClick={() => navigate("/")}
             sx={{
                 display: "flex", alignItems: "center", gap: "15px", cursor: "pointer",
-                padding: "12px", borderRadius: "12px", mt: 'auto',
+                padding: "12px", borderRadius: "12px",
+                justifyContent: open ? 'flex-start' : 'center', 
                 "&:hover": { backgroundColor: "#fff5f5", color: "red" }
             }}
         >
-            <LogoutIcon />
+             <img src="/images/logout.png" alt="Logo" width="20" />
             {open && <Typography sx={{ fontWeight: 500 }}>Sair</Typography>}
         </Box>
+      </Box>
+
       </Stack>
     </Box>
   );

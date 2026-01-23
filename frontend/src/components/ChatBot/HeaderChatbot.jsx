@@ -1,8 +1,6 @@
 import { useState } from 'react';
 import {Box, Typography, Button, IconButton, Divider, TextField} from '@mui/material';
 import React from 'react';
-import PersonOutlineOutlinedIcon from '@mui/icons-material/PersonOutlineOutlined';
-import NotificationsNoneOutlinedIcon from '@mui/icons-material/NotificationsNoneOutlined';
 import AddCircleOutlineOutlinedIcon from '@mui/icons-material/AddCircleOutlineOutlined';
 import { useNavigate } from 'react-router-dom';
 import EditIcon from '@mui/icons-material/Edit';
@@ -46,10 +44,10 @@ const HeaderChatBot = ({ nomeChat, setNomeChat, onNovoChat }) =>{
                 <Box sx={{ 
                     border: '1px solid black',
                     display: 'inline-flex',   
-                    p: 1,                     
+                    p: 1.5,                     
                     borderRadius: '8px'        
                 }}>
-                    <PersonOutlineOutlinedIcon sx={{ color: 'grey.700' }} />
+                    <img src="/images/person.png" alt="Logo" width="12" />
                 </Box>
                 
                 <Divider orientation="vertical" flexItem sx={{ mx: 1, height: 20, alignSelf: 'center' }} />
@@ -98,7 +96,7 @@ const HeaderChatBot = ({ nomeChat, setNomeChat, onNovoChat }) =>{
                     borderRadius: '8px'        
                 }}>
                 <IconButton sx={{ color: 'grey.700' }}>
-                    <NotificationsNoneOutlinedIcon onClick={handleCadastroMoto} />
+                    <img src="/images/bell.png" alt="Logo" width="15" />
                 </IconButton>
             </Box>
         </Box>

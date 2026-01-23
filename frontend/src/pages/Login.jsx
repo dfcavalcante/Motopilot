@@ -24,31 +24,31 @@ const Login = () => {
 
   return (
     <Grid
-      sx={{ bgcolor: '#D9D9D9', height: '100vh', p: '16px 8px' }}
+      sx={{ bgcolor: '#D9D9D9', height: '100vh', p: '24px 24px' }}
       container
       alignItems='center'
       justifyContent='center'
     >
-      <Grid item xs={12} md={6} sx={{ display: 'flex', justifyContent: 'center' }}>
+      <Grid item xs={12} md={6} sx={{ display: 'flex', justifyContent: 'center', transform: 'translateX(-100px)' }}>
         <img src="/images/Motopilot Logo.png" alt="Motopilot Logo" style={{ maxWidth: '100%', height: 'auto', width: '400px' }} />
       </Grid>
 
       <Grid item xs={12} md={6} sx={{ display: 'flex', justifyContent: 'center' }}>
         <Box sx={{
           backgroundColor: "white", 
-        borderRadius: 2, 
-        width: '100%',
-        minWidth: 700,
-        minHeight: 850,
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'center',
-        boxShadow: 3,
-        transform: 'translateX(50px)',
-        }}
-        >
-          <Stack spacing={4} alignItems="center" sx={{ px: { xs: 4, sm: 8 }, py: 5 }}>
-            <img src="/images/Motopilot Logo-modified.png" alt="Motopilot Logo" width="150" />
+          borderRadius: 2, 
+          width: '100%',
+          minWidth: 800,
+          minHeight: 880,
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          boxShadow: 3,
+          transform: 'translateX(320px)', // Ajuste de posição para direita
+          }}
+          >
+          <Stack spacing={4} alignItems="center" sx={{ px: { xs: 4, sm: 12 }, py: 5 }}>
+            <img src="/images/Motopilot Logo-modified.png" alt="Motopilot Logo" width="90" />
 
             <form onSubmit={handleSubmit} style={{ width: '100%' }}>
               <InputLabel sx={{ color: 'black', fontSize: 16 }}>
@@ -57,7 +57,22 @@ const Login = () => {
               <TextField
                 sx={{
                   "& .MuiOutlinedInput-root": {
-                    borderRadius: "10px",
+                    borderRadius: "12px",
+                    backgroundColor: '#fff',
+
+                    "& fieldset": { borderColor: '#e0e0e0' },
+                    "&:hover fieldset": { borderColor: '#bdbdbd' },
+
+                    "&.Mui-focused": {
+                      backgroundColor: '#fff', // remove azul no foco
+                    },
+                  },
+
+                  // remove azul do autofill (Chrome)
+                  "& input:-webkit-autofill": {
+                    WebkitBoxShadow: "0 0 0 1000px white inset",
+                    WebkitTextFillColor: "#000",
+                    transition: "background-color 5000s ease-in-out 0s",
                   },
                 }}
                 fullWidth
@@ -82,7 +97,20 @@ const Login = () => {
               <TextField
                 sx={{
                   "& .MuiOutlinedInput-root": {
-                    borderRadius: "10px",
+                    borderRadius: "12px",
+                    backgroundColor: '#fff',
+
+                    "& fieldset": { borderColor: '#e0e0e0' },
+                    "&:hover fieldset": { borderColor: '#bdbdbd' },
+
+                    "&.Mui-focused": {
+                      backgroundColor: '#fff',
+                    },
+                  },
+                  "& input:-webkit-autofill": {
+                    WebkitBoxShadow: "0 0 0 1000px white inset",
+                    WebkitTextFillColor: "#000",
+                    transition: "background-color 5000s ease-in-out 0s",
                   },
                 }}
                 fullWidth
@@ -112,9 +140,10 @@ const Login = () => {
               />
 
               <Button
-                sx={{ backgroundColor: "#676767", width: "100%", mt: 2, height: 50, borderRadius: 3, fontSize: 15 }}
+                sx={{ backgroundColor: "#676767", width: "100%", mt: 2, height: 50, borderRadius: 3, fontSize: 20, textTransform: 'none'}}
                 type="submit"
                 variant="contained"
+                
               >
                 Entrar
               </Button>

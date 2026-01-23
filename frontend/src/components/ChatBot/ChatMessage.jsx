@@ -2,8 +2,6 @@ import React from 'react';
 import { Box, Typography, Paper, Avatar, Tooltip, IconButton } from '@mui/material';
 import PersonIcon from '@mui/icons-material/Person';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
-import ThumbUpAltOutlinedIcon from '@mui/icons-material/ThumbUpAltOutlined';
-import ThumbDownAltOutlinedIcon from '@mui/icons-material/ThumbDownAltOutlined';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 
 // Componente de mensagem de chat, exibindo mensagens do bot e do usuário
@@ -44,18 +42,6 @@ const ChatMessage = ({ text, isBot }) => {
           <Tooltip title="Copiar resposta">
             <IconButton size="small" onClick={handleCopy}>
               <ContentCopyIcon fontSize="small" sx={{ color: 'black' }} />
-            </IconButton>
-          </Tooltip>
-
-          <Tooltip title="Gostei">
-            <IconButton size="small">
-              <ThumbUpAltOutlinedIcon fontSize="small" sx={{ color: 'black' }} />
-            </IconButton>
-          </Tooltip>
-
-          <Tooltip title="Não gostei">
-            <IconButton size="small">
-              <ThumbDownAltOutlinedIcon fontSize="small" sx={{ color: 'black' }} />
             </IconButton>
           </Tooltip>
 

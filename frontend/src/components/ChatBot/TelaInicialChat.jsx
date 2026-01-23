@@ -1,6 +1,5 @@
 import React from 'react';
 import { Box, Typography, Grid } from '@mui/material';
-import SentimentSatisfiedAltIcon from '@mui/icons-material/SentimentSatisfiedAlt';
 import LightbulbOutlinedIcon from '@mui/icons-material/LightbulbOutlined';
 import SugestaoChatbot from './SugestaoChatbot';
 
@@ -9,11 +8,11 @@ const TelaInicialChat= ({ sugestoes, onSuggestionClick, children }) => {
   return (
     <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', overflowY: 'auto', width: '100%', maxWidth: 720 }}>
         <Box sx={{ border: '1px solid black', display: 'inline-flex', p: 1, borderRadius: '8px', mb: 2 }}>
-            <SentimentSatisfiedAltIcon/>
+            <img src="/images/smile_face.png" alt="Logo" width="15" />
         </Box>
 
         <Typography variant="body1" gutterBottom color='grey.800'>Olá, Tudo bem?</Typography>
-        <Typography variant="h4" gutterBottom mb={3} fontWeight={'bold'}>Como podemos te ajudar?</Typography>
+        <Typography variant="h4" gutterBottom mb={3} fontWeight={500}>Como podemos te ajudar?</Typography>
 
         {/* Aqui renderizamos o Input que virá como filho */}
         {children} 
@@ -21,7 +20,7 @@ const TelaInicialChat= ({ sugestoes, onSuggestionClick, children }) => {
         <Box sx={{ width: '100%', mt: 5 }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
                 <LightbulbOutlinedIcon fontSize="small" />
-                <Typography variant="body1" sx={{ fontWeight: 500 }}>Dúvidas frequentes</Typography>
+                <Typography variant="body1" >Dúvidas frequentes</Typography>
             </Box>
             
             <Grid container spacing={2}>

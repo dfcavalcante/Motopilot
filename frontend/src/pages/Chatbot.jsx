@@ -68,10 +68,10 @@ const Chatbot = () => {
             <HeaderChatBot />
           </Box>
 
-          <Box sx={{ flexGrow: 1, bgcolor: "white", borderRadius: '20px', display: 'flex', flexDirection: 'column', alignItems: 'center', p: 4, overflow: 'hidden' }}>
+          <Box sx={{ flexGrow: 1, bgcolor: "white", borderRadius: '16px', display: 'flex', flexDirection: 'column', alignItems: 'center', p: 4, overflow: 'hidden' }}>
             
             <Typography mb={2}>{nomeChat}</Typography>
-            <Divider sx={{ width: '90%', bgcolor: 'grey.700', height: '0.4px', mb: 2 }} />
+            <Divider sx={{ width: '90%', bgcolor: 'grey.700', height: '0.4px'}} />
 
             {/* PARTE PRINCIPAL*/}
             {messages.length === 0 ? (
@@ -85,7 +85,7 @@ const Chatbot = () => {
             ) : (
                 // Tela de Conversa
                 <>
-                    <Box sx={{ flexGrow: 1, width: '100%', maxWidth: 720, overflowY: 'auto', display: 'flex', flexDirection: 'column', mb: 2 }}>
+                    <Box sx={{ flexGrow: 1, width: '100%', maxWidth: 720, overflowY: 'auto', display: 'flex', flexDirection: 'column'}}>
                         {messages.map((msg, index) => (
                             <ChatMessage key={index} text={msg.text} isBot={msg.isBot} />
                         ))}

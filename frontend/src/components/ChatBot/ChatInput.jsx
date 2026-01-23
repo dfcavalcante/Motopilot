@@ -1,7 +1,5 @@
 import React from 'react';
 import { Box, TextField, InputAdornment } from '@mui/material';
-import AddIcon from '@mui/icons-material/Add';
-import ArrowCircleUpIcon from '@mui/icons-material/ArrowCircleUp';
 
 // Componente de entrada de chat, onde escreve pergunta
 const ChatInput = ({ input, setInput, onSend }) => {
@@ -25,20 +23,15 @@ const ChatInput = ({ input, setInput, onSend }) => {
             onKeyDown={handleKeyDown}
             sx={{
                 "& .MuiOutlinedInput-root": {
-                    borderRadius: "10px",
-                    "& fieldset": { borderRadius: "10px" },
+                    borderRadius: "16px",
+                    "& fieldset": { borderRadius: "16px" },
                     alignItems: 'flex-end'
                 },
             }}
             InputProps={{
-                startAdornment: (
-                    <InputAdornment position="start">
-                        <AddIcon sx={{ color: 'black', cursor:'pointer' }} />
-                    </InputAdornment>
-                ),
                 endAdornment: (
                     <InputAdornment position="end">
-                      <ArrowCircleUpIcon sx={{ color: 'black', cursor: 'pointer' }} onClick={onSend} />
+                      <img src="/images/SendButton.png" alt="Send" width="20" style={{ cursor: 'pointer' }} onClick={onSend} />
                     </InputAdornment>
                 ),
             }}
