@@ -16,7 +16,7 @@ const MotoSelectionDialog = ({ open, onClose, onSelect, motos, loading }) => {
       }}
     >
       <DialogTitle sx={{ textAlign: 'center', borderBottom: '1px solid #333', pb: 2, pr: 5 }}>
-          <Typography variant="h6" fontWeight="bold">
+          <Typography variant="body2" fontWeight="bold">
               {loading ? "Carregando..." : "Escolha sua Moto"}
           </Typography>
           <IconButton onClick={onClose} sx={{ position: 'absolute', right: 8, top: 8, color: 'grey.500', '&:hover': { color: 'white', bgcolor: '#333' } }}>

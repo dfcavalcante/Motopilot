@@ -47,7 +47,7 @@ const ChatMessage = ({ text, isBot }) => {
 
           <Tooltip title="Mais opções">
             <IconButton size="small">
-              <img src='images/refresh.svg' alt="Logo" width="15" />
+              <img src='images/Refresh.svg' alt="Logo" width="15" />
             </IconButton>
           </Tooltip>
         </Box>

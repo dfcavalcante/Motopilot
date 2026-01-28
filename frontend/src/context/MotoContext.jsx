@@ -27,6 +27,54 @@ export const MotoProvider = ({ children }) => {
     }
   };
 
+  const atualizarMoto = async (id, dadosAtualizados) => {
+    setLoading(true);
+    setErro(null);
+    try {
+      const response = await fetch(`${BASE_URL}/motos/${id}/atualizar`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(dadosAtualizados),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        const msg = errorData.detail || "Erro ao atualizar moto";
+        throw new Error(msg);
+      }
+      const motoAtualizada = await response.json();
+      setMotos((prev) =>
+        prev.map((moto) => (moto.id === id ? motoAtualizada : moto))
+      );
+    } catch (error) {
+      console.error(error);
+      setErro(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const excluirMoto = async (id) => {
+    setLoading(true);
+    setErro(null);
+    try {
+      const response = await fetch(`${BASE_URL}/motos/${id}/deletar`, {
+        method: "DELETE",
+      });
+      if (!response.ok) {
+        throw new Error("Erro ao excluir moto");
+      }
+      setMotos((prev) => prev.filter((moto) => moto.id !== id));
+    } catch (error) {
+      console.error(error);
+      setErro(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const cadastrarMoto = async (dados) => { 
     setLoading(true);
     setErro(null);
@@ -67,7 +115,7 @@ export const MotoProvider = ({ children }) => {
   };
 
   return (
-    <MotoContext.Provider value={{ motos, cadastrarMoto, listar_motos, loading, erro }}>
+    <MotoContext.Provider value={{ motos, cadastrarMoto, listar_motos, loading, erro, excluirMoto, atualizarMoto}}>
       {children}
     </MotoContext.Provider>
   );

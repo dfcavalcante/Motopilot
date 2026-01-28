@@ -50,7 +50,7 @@ def listar_motos_endpoint(db: Session = Depends(get_db)):
     return moto_service.listar_motos(db)
 
 # --- UPDATE (PATCH) ---
-@router.patch('/{moto_id}', response_model=MotoResponse)
+@router.patch('/{moto_id}/atualizar', response_model=MotoResponse)
 def atualizar_moto_endpoint(moto_id: int, moto_data: MotoUpdate, db: Session = Depends(get_db)):
     moto_atualizada = moto_service.atualizar_moto(db, moto_id, moto_data)
     if not moto_atualizada:
@@ -86,7 +86,7 @@ def arquivar_moto_endpoint(moto_id: int, db: Session = Depends(get_db)):
     return moto_arquivada
 
 # --- DELETE ---
-@router.delete('/{moto_id}', status_code=status.HTTP_204_NO_CONTENT)
+@router.delete('/{moto_id}/deletar', status_code=status.HTTP_204_NO_CONTENT)
 def deletar_moto_endpoint(moto_id: int, db: Session = Depends(get_db)):
     sucesso = moto_service.deletar_moto(db, moto_id)
     if not sucesso:
