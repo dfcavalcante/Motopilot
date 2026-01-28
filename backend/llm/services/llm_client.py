@@ -16,13 +16,20 @@ class LLMClient:
         # Monta o prompt combinando a instrução do sistema (System) + a pergunta (User)
         full_prompt = f"{system_prompt}\n\nPERGUNTA DO USUÁRIO: {user_prompt}"
 
+        # --- ADICIONE ISTO AQUI ---
+        print("\n" + "="*50)
+        print("🕵️ DEBUG: O QUE ESTÁ SENDO ENVIADO PARA O OLLAMA:")
+        print(full_prompt)
+        print("="*50 + "\n")
+        # --------------------------
+
         payload = {
             "model": self.model,
             "prompt": full_prompt,
-            "stream": False, # False para receber a resposta inteira de uma vez
+            "stream": False,
             "options": {
-                "temperature": 0.1, # Temperatura baixa = Mais fiel ao manual
-                "num_ctx": 4096     # Contexto maior para caber os trechos do PDF
+                "temperature": 0.1,
+                "num_ctx": 4096 
             }
         }
 
