@@ -17,6 +17,11 @@ const HeaderChatBot = ({ nomeChat, setNomeChat, onNovoChat }) =>{
     navigate('/cadastroMoto');
     };
 
+    const handleRelatorio = async (e) => {
+    e.preventDefault();
+    navigate('/relatorio');
+    };
+
     const handleSalvarNome = () => {
         setNomeChat(tempNome);
         setEditando(false);
@@ -80,6 +85,7 @@ const HeaderChatBot = ({ nomeChat, setNomeChat, onNovoChat }) =>{
             }}>
             <Button
                 variant='outlined'
+                onClick={handleRelatorio}
                 startIcon={<img src="/images/add.png" alt="Add" width="20" />}
                 sx={{ 
                     color: 'black', 

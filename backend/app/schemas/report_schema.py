@@ -6,8 +6,10 @@ class ReportBase(BaseModel):
     Campos que o relatório possuirá
     '''
     #selecionar a moto cadastrada, acho q n é str mas dps eu vejo
-    moto: str = Field(..., example="Honda Cobalt")
-    cliente: str = Field(..., example="Cliente do Geraldo Gerente")
+    moto_id: int = Field(..., example=1)
+    #Nome do cliente dono da moto
+    cliente: str = Field(..., example="João da Silva")
+
     diagnostico: str = Field(..., example="O diagnóstico que foi feito é que teve um reator da moto que explodiu e o pedal que saltou pra fora bla bla")
 
     #Mecânico(s) responsáveis pela manutenção
