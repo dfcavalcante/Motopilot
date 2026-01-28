@@ -6,8 +6,9 @@ import {
 import CloseIcon from '@mui/icons-material/Close';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import SaveIcon from '@mui/icons-material/Save';
+import { MotoContext } from '../../context/MotoContext';
 
-const UpdateMoto = ({ open, onClose, onSave, initialData }) => {
+const UpdateMoto = ({ open, onClose, onSave, initialData, moto }) => {
   // Estado para armazenar os dados do formulário
   const [formData, setFormData] = useState({
     marca: '',
@@ -108,6 +109,22 @@ const UpdateMoto = ({ open, onClose, onSave, initialData }) => {
                 Escolher Arquivo
                 <input hidden accept="application/pdf" type="file" onChange={handleFileChange} />
               </Button>
+
+              {/*Ainda não funciona, tem que implementa uma rota pro manual no backend*/}
+              {moto.manual_path && (
+                <Button
+                  variant="text"
+                  startIcon={<PictureAsPdfIcon />}
+                  endIcon={<OpenInNewIcon sx={{ fontSize: 14 }} />}
+                  // Abre o manual em uma nova aba
+                  href={`${BASE_URL}/manuals/${moto.manual_path}`} 
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  sx={{ color: '#fff9c4', textTransform: 'none' }}
+                >
+                  Ver Manual Atual
+                </Button>
+              )}
             </Box>
 
           </Stack>

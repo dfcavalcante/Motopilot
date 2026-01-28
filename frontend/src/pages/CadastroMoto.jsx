@@ -172,7 +172,8 @@ const CadastroDeMoto = () => {
           open={!!editingMoto} // Converte objeto para boolean (true se existir objeto)
           onClose={() => setEditingMoto(null)} 
           onSave={handleSaveUpdate}
-          initialData={editingMoto} 
+          initialData={editingMoto}
+          moto={motos.find(moto => moto.id === editingMoto.id)}
         />
       )}
 		</Box>

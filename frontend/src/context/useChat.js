@@ -2,12 +2,6 @@ import { useState, useEffect, useContext } from 'react';
 import { MotoContext } from '../context/MotoContext';
 import { sendChatMessage } from '../context/Chatbot.js';
 
-const MOTOS_PADRAO = [
-    { marca: "Honda", modelo: "CG 160 Titan", ano: 2024 },
-    { marca: "Yamaha", modelo: "Fazer 250", ano: 2023 },
-    { marca: "BMW", modelo: "G 310 R", ano: 2022 }
-];
-
 export const useChat = () => {
     const { motos, cadastrarMoto, listar_motos } = useContext(MotoContext);
     const [messages, setMessages] = useState([]);
@@ -23,32 +17,10 @@ export const useChat = () => {
         try {
             // 1. Tenta listar as motos
             const listaAtual = await listar_motos();
-            
-            // 2. Se não houver motos, cadastra as padrões em sequência
-            if (ativo && (!listaAtual || listaAtual.length === 0)) {
-                console.log("Banco vazio. Criando motos padrão...");
-                
-                const blob = new Blob(["Manual Pendente"], { type: 'application/pdf' });
-                const arquivoFake = new File([blob], "manual_padrao.pdf", { type: "application/pdf" });
-
-                // Usamos for...of para garantir a ordem sequencial e evitar atropelo no banco
-                for (const moto of MOTOS_PADRAO) {
-                    const formData = new FormData();
-                    formData.append('marca', moto.marca);
-                    formData.append('modelo', moto.modelo);
-                    formData.append('ano', moto.ano);
-                    formData.append('documento_pdf', arquivoFake);
-                    
-                    await cadastrarMoto(formData); 
-                }
-                
-                // 3. Após cadastrar todas, busca a lista atualizada final
-                await listar_motos();
-            }
+            //Retirei a criação automática da moto padrão
         } catch (error) {
             console.error("Erro na inicialização:", error);
         } finally {
-            // 4. Só desliga o loading aqui, no final de TUDO
             if (ativo) setCarregandoMotos(false);
         }
     };

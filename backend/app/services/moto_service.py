@@ -1,3 +1,4 @@
+import os
 from sqlalchemy.orm import Session
 from sqlalchemy import select
 from app.models.moto_model import Moto
@@ -17,11 +18,18 @@ class Moto_service:
     def listar_motos(self, db: Session) -> List[Moto]: 
         return list(db.scalars(select(Moto)).all())
 
+    #Deleta a moto e seu manual associado
     def deletar_moto(self, db: Session, id: int) -> bool:
         db_moto = db.scalars(select(Moto).where(Moto.id == id)).first()
 
         if not db_moto:
             return False
+        
+        nome_arquivo = db_moto.manual_pdf_path
+        caminho_arquivo = os.path.join(os.getcwd(), nome_arquivo) if nome_arquivo else None
+
+        if nome_arquivo and caminho_arquivo and os.path.exists(caminho_arquivo):
+            os.remove(caminho_arquivo)
         
         db.delete(db_moto)
         db.commit()
