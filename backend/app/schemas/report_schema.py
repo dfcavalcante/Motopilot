@@ -14,10 +14,10 @@ class ReportBase(BaseModel):
 
     #Mecânico(s) responsáveis pela manutenção
     mecanicos: str = Field(..., example = "Marquinhos do Prompt") 
-    atividades: str = Field(..., example = "Troca de pedal, troca de motor")
+    servicos: str = Field(..., example = "Troca de pedal, troca de motor")
     
     #Peças que foram substituídas (se houver)
-    pecas: Optional[str] = Field(..., example=["motor", "pedal", "buzina"])
+    pecas_trocadas: Optional[str] = Field(..., example=["motor", "pedal", "buzina"])
     observacoes: Optional[str] = Field(..., example="Foi observado que a moto é de um modelo especial que saiu de linha por possuir defeitos de fábrica")
 
     #TODO: falta o campo de anexação de fotos que ainda não sei como adicionar que será Optional

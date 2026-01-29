@@ -4,13 +4,13 @@ from app.schemas.report_schema import ReportBase, ReportFilter, ReportResponse, 
 from app.database.connections import get_db
 from sqlalchemy.orm import Session
 
-router = APIRouter(prefix="/relatorio", tags=['Relatorio'])
+router = APIRouter(prefix="/relatorios", tags=['Relatorio'])
 
 report_service = ReportService()
 
-@router.post("/", response_model=ReportResponse)
+@router.post("/criar", response_model=ReportResponse)
 def criar_relatorio_endpoint(relatorio: ReportBase, db: Session = Depends(get_db)):
-    novo_relatorio = report_service.criar_relatorio(relatorio, db)
+    novo_relatorio = report_service.criar_relatorio(db, relatorio)
     return novo_relatorio
 
 @router.delete("/{report_id}/deletar", response_model=ReportResponse)
@@ -18,7 +18,7 @@ def deletar_relatorio_endpoint(relatorio: ReportBase, db: Session = Depends(get_
     deletar_relatorio = report_service.deletar_relatorio(relatorio, db)
     return deletar_relatorio
 
-@router.get("/filtros", response_model=ReportResponse)
+@router.get("/listar", response_model=ReportResponse)
 def listar_relatorios_endpoint(filtros: ReportFilter = Depends(), db: Session = Depends(get_db)):
     listar_relatorio = report_service.listar_relatorios(filtros, db)
     return listar_relatorio

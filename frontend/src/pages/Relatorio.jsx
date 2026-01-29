@@ -1,19 +1,41 @@
 import React from "react";
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import { Box, Stack, Typography, TextField, Button, FormControl, InputLabel, Select,MenuItem } from '@mui/material';
 import PdfUploader from "../components/PdfUploader";
-import { useRelatorio } from "../context/Relatorio";
 import { MotoContext} from '../context/MotoContext.jsx';
+import { RelatorioContext } from "../context/RelatorioContext.jsx";
+import { useNavigate } from "react-router-dom";
 
 //Página apenas da CRIAÇÃO de relatórios
 const Relatorio = () => {
-  const { motos} = useContext(MotoContext);
+  const navigate = useNavigate();
+  const { motos, listar_motos} = useContext(MotoContext);
 
   const [motoEscolhida, setMotoEscolhida] = useState('');
+  const { salvarRelatorio} = useContext(RelatorioContext);
 
   const handleChange = (event) => {
+    setFormValues({ ...formValues, moto: event.target.value });
     setMotoEscolhida(event.target.value);
   };
+
+  const handleClienteChange = (event) => {
+    setFormValues({ ...formValues, cliente: event.target.value });
+  }
+
+  const handleDiagnosticoChange = (event) => {
+    setFormValues({ ...formValues, diagnostico: event.target.value });
+  }
+  const handleMecanicosChange = (event) => {
+    setFormValues({ ...formValues, mecanicos: event.target.value });
+  }
+  const handleServicosChange = (event) => {
+    setFormValues({ ...formValues, servicos: event.target.value });
+  }
+
+  useEffect(() => {
+    listar_motos();
+  }, []);
 
   const [formValues, setFormValues] = useState({
       moto: '',
@@ -42,9 +64,7 @@ const Relatorio = () => {
     formData.append('servicos', formValues.servicos);
     formData.append('pecas_trocadas', formValues.pecas_trocadas);
     formData.append('observacoes', formValues.observacoes);
-    formData.append('ano', formValues.ano);
-    formData.append('marca', formValues.marca);
-    formData.append('documento_pdf', arquivoPdf);
+    //formData.append('documento_pdf', arquivoPdf);
 
     const sucesso = await salvarRelatorio(formData);
 
@@ -71,7 +91,7 @@ const Relatorio = () => {
                   label="Selecione a Moto"
                   onChange={handleChange}
                 >
-                  {motos.map((moto) => (
+                  {motos && motos.map((moto) => (
                     <MenuItem key={moto.id} value={moto.id}>
                       {moto.modelo} - {moto.marca} ({moto.ano})
                     </MenuItem>
@@ -83,6 +103,8 @@ const Relatorio = () => {
                 placeholder="Digite o nome do cliente"
                 variant="outlined"
                 fullWidth
+                onChange={handleClienteChange}
+                required
               />
 
               <TextField
@@ -91,12 +113,16 @@ const Relatorio = () => {
                 fullWidth
                 multiline
                 rows={4}
+                required
+                onChange={handleDiagnosticoChange}
               />
 
               <TextField
                 placeholder="Digite o(s) mecânico(s) responsável(s)"
                 variant="outlined"
                 fullWidth
+                required
+                onChange={handleMecanicosChange}
               />
 
               {/*No schema está escrito como "atividades" */}
@@ -104,6 +130,8 @@ const Relatorio = () => {
                 placeholder="Digite o(s) serviço(s) realizado(s)"
                 variant="outlined"
                 fullWidth
+                required
+                onChange={handleServicosChange}
               />
 
               <TextField
@@ -133,7 +161,11 @@ const Relatorio = () => {
               <Button onClick={handleSubmit}>
                 Salvar Relatório
               </Button>
-            </Stack>      
+            </Stack>   
+
+            <Button onClick={() => navigate('/historicoRelatorios')}>
+              Ir para histórico de relatórios
+            </Button>   
         </Box>
     );
 }
