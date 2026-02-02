@@ -1,26 +1,67 @@
 import { useState } from 'react';
 import {Box, Typography, Button, IconButton, Divider, TextField} from '@mui/material';
 import React from 'react';
-import AddCircleOutlineOutlinedIcon from '@mui/icons-material/AddCircleOutlineOutlined';
 import { useNavigate } from 'react-router-dom';
 import EditIcon from '@mui/icons-material/Edit';
 import CheckIcon from '@mui/icons-material/Check';
+import { useLocation } from 'react-router-dom';
 
 //Pequena Header em cima do Chatbot, tem os ícones, nome e novo chat
 const HeaderChatBot = ({ nomeChat, setNomeChat, onNovoChat }) =>{
     const [editando, setEditando] = useState(false);
     const [tempNome, setTempNome] = useState(nomeChat);
     const navigate = useNavigate();
+    const location = useLocation();
 
     const handleCadastroMoto = async (e) => {
-    e.preventDefault();
-    navigate('/cadastroMoto');
+        e.preventDefault();
+        navigate('/cadastroMoto');
     };
 
     const handleSalvarNome = () => {
         setNomeChat(tempNome);
         setEditando(false);
     };
+
+    const handlePaginaAtual = () => {
+        if(location.pathname === '/chatbot'){
+            return (
+                <Button
+                variant='outlined'
+                startIcon={<img src="/images/add.png" alt="Add" width="20" />}
+                sx={{ 
+                    color: 'black', 
+                    borderColor: 'black',
+                    borderRadius: '8px',
+                    textTransform: 'none',
+                    px: 2,
+                    '&:hover': { borderColor: 'black', backgroundColor: 'transparent' }
+                }}
+            > 
+                Novo chat 
+            </Button>
+            )
+        }
+        if(location.pathname === '/listagemMotos'){
+            return (
+            <Button
+                variant='outlined'
+                startIcon={<img src="/images/add.png" alt="Add" width="20" />}
+                onClick={handleCadastroMoto}
+                sx={{ 
+                    color: 'black', 
+                    borderColor: 'black',
+                    borderRadius: '8px',
+                    textTransform: 'none',
+                    px: 2,
+                    '&:hover': { borderColor: 'black', backgroundColor: 'transparent' }
+                }}
+            > 
+                Adicionar moto
+            </Button>
+            )
+        }
+    }
 
     //Tirando do return, pois o Fernando não aprovou ainda
     {editando ? (
@@ -78,27 +119,15 @@ const HeaderChatBot = ({ nomeChat, setNomeChat, onNovoChat }) =>{
             justifyContent: 'flex-end', 
             gap: 2,                    
             }}>
-            <Button
-                variant='outlined'
-                startIcon={<img src="/images/add.png" alt="Add" width="20" />}
-                sx={{ 
-                    color: 'black', 
-                    borderColor: 'black',
-                    borderRadius: '8px',
-                    textTransform: 'none',
-                    px: 2,
-                    '&:hover': { borderColor: 'black', backgroundColor: 'transparent' }
-                }}
-            > 
-                Novo chat 
-            </Button>
+
+            {handlePaginaAtual()}
 
             <Box sx={{ 
                     border: '1px solid black',
                     display: 'inline-flex',                    
                     borderRadius: '8px'        
                 }}>
-                <IconButton sx={{ color: 'grey.700' }} onClick={handleCadastroMoto} >
+                <IconButton sx={{ color: 'grey.700' }}>
                     <img src="/images/bell.png" alt="Logo" width="15" />
                 </IconButton>
             </Box>

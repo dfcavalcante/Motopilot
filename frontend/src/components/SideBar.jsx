@@ -12,8 +12,9 @@ const SideBar = ({ historico = [] }) => {
   const navigate = useNavigate();
 
   const menus = [
-    { name: "Chatbot", link: "/chatbot", icon: <img src="/images/Home.svg" alt="Logo" width="20" /> },
-    { name: "Projetos", link: "/projetos" , icon: <img src="/images/Folder.svg" alt="Logo" width="20" /> },
+    { name: "Início", link: "/chatbot", icon: <img src="/images/Home.svg" alt="Logo" width="20" /> },
+    { name: "Motos", link: "/listagemMotos" , icon: <img src="/images/Folder.svg" alt="Logo" width="20" /> },
+    { name: "Usuários", link: "/relatorio", icon: <img src="/images/users.png" alt="Logo" width="20" /> },
   ];
 
   return (
@@ -39,8 +40,8 @@ const SideBar = ({ historico = [] }) => {
 
       <Stack spacing={2} sx={{ height: '100%', overflow: 'hidden' }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-          <img src="/images/Motopilot Logo-modified.png" alt="Logo" width="40" />
-          {open && <Typography variant="h6" fontWeight="bold">MotoPilot</Typography>}
+          {!open && <img src="/images/Motopilot Logo-modified.png" alt="Logo" width="40" />}
+          {open && <img src="/images/Motopilot Logo.png" alt="Logo" width="180" height={30} />}
         </Box>
 
         <Divider />
