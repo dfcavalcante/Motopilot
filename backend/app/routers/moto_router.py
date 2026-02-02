@@ -44,7 +44,7 @@ def criar_moto_endpoint(
 
     return moto_service.criar_moto(db, moto_data)
 
-@router.get('/', response_model=List[MotoResponse])
+@router.get('/listar', response_model=List[MotoResponse])
 def listar_motos_endpoint(db: Session = Depends(get_db)):
     # Chama o service sem passar filtros
     return moto_service.listar_motos(db)
