@@ -36,7 +36,7 @@ class VectorStoreService:
             print(f"Erro ao adicionar chunks: {e}")
 
     # Recebe a pergunta do usuário, converte em vetor automaticamente e busca os trechos mais parecidos.
-    def buscar_similaridade(self, pergunta: str, modelo_moto: str, k: int = 5) -> list:
+    def buscar_similaridade(self, pergunta: str, modelo_moto: str, k: int = 10) -> list:
         if not modelo_moto:
             print("Erro: Tentativa de busca sem modelo de moto definido.")
             return[]

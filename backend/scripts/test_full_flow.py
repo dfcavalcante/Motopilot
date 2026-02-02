@@ -1,104 +1,78 @@
 import sys
 import os
 
-# Ajuste de path para o Python encontrar a pasta 'app'
-sys.path.append(os.getcwd())
+# --- 1. CONFIGURAÇÃO DE CAMINHO ---
+current_dir = os.path.dirname(os.path.abspath(__file__))
+parent_dir = os.path.dirname(current_dir)
+sys.path.append(parent_dir)
+# -------------------------------
 
-from app.database.connections import SessionLocal
-from llm.services.rag_orchestrator import rag_orchestrator
-# Importamos o vector_store diretamente para fazer o "teste de visão" antes da IA
-from llm.services.vector_store import vector_store 
-from app.models.moto_model import Moto
-from app.models.user_model import User
+from llm.services.rag_orchestrator import RagOrchestrator
 
-def teste_fluxo_completo():
-    db = SessionLocal()
+# --- CLASSES FALSAS (MOCKS) ---
+class MotoFalsa:
+    """Finge ser o objeto Moto do banco SQL"""
+    id = 1
+    marca = "Honda"
+    # AQUI ESTAVA O SEGREDO: O nome tem que bater com o PDF (sem o .pdf geralmente)
+    modelo = "Honda_Biz_110i_2023" 
+
+class BancoDeDadosFalso:
+    """Finge ser a sessão do SQLAlchemy para o código não quebrar"""
+    def query(self, model):
+        return self 
     
+    def filter(self, condition):
+        return self 
+    
+    def first(self):
+        return MotoFalsa() # Entrega a Biz falsa
+    
+    def add(self, obj):
+        pass 
+    
+    def commit(self):
+        pass 
+# ------------------------------
+
+def teste_com_mock_biz():
+    print("\n🛠️  Iniciando teste RAG (Simulando Honda Biz)...")
+
     try:
-        print("🛠️ Preparando cenário de teste...")
+        # 1. Carrega o RAG
+        print("... Carregando Orquestrador ...")
+        rag = RagOrchestrator()
         
-        # ==============================================================================
-        # 1. Garantir Usuário (Evita erro de chave estrangeira)
-        # ==============================================================================
-        user = db.query(User).filter_by(email="teste@motopilot.com").first()
-        if not user:
-            print("👤 Criando usuário de teste...")
-            user = User(
-                nome="MecanicoTeste",
-                email="teste@motopilot.com",
-                senha_hash="123",
-                cargo="mechanic"
-            )
-            db.add(user)
-            db.commit()
-            print(f"   -> Usuário criado com ID: {user.id}")
-            
-        # ==============================================================================
-        # 2. Garantir Moto (O modelo DEVE ser idêntico ao nome do arquivo PDF)
-        # ==============================================================================
-        nome_pdf_ingerido = "Honda_Biz_110i_2023" # <--- Tem que ser igual ao que o ingest.py salvou
+        # 2. Prepara os dados
+        db_fake = BancoDeDadosFalso()
+        pergunta = "Como verificar o nível do óleo do motor?" # Pergunta específica para a Biz
         
-        moto = db.query(Moto).filter(Moto.modelo == nome_pdf_ingerido).first()
-        
-        if not moto:
-            print(f"🏍️ Criando moto de teste: '{nome_pdf_ingerido}'...")
-            moto = Moto(
-                marca="Honda", 
-                modelo=nome_pdf_ingerido, 
-                ano=2023
-            )
-            db.add(moto)
-            db.commit()
-            print(f"   -> Moto criada com ID: {moto.id}")
-        else:
-            print(f"🏍️ Moto encontrada no banco: {moto.modelo}")
+        print(f"❓ Pergunta: '{pergunta}'")
+        print(f"🏍️  Buscando manual: {MotoFalsa.modelo}")
 
-        # ==============================================================================
-        # 3. DEBUG: Verificar se o Vector Store está "enxergando" os dados
-        # ==============================================================================
-        # Usando a pergunta corrigida que contém as palavras-chave do manual ("motor", "ligar")
-        pergunta = "Qual o procedimento se o motor não ligar?"
+        # 3. Chama a função com o NOME CORRETO: processar_pergunta
+        print("... Processando ...\n")
         
-        print(f"\n🔎 DEBUG RAG: Verificando o banco vetorial para o modelo: '{moto.modelo}'")
-        
-        # Teste direto na "memória" da IA
-        docs_encontrados = vector_store.buscar_similaridade(pergunta, moto.modelo, k=3)
-        
-        print(f"📄 Documentos encontrados: {len(docs_encontrados)}")
-        
-        if len(docs_encontrados) == 0:
-            print("❌ ERRO CRÍTICO: O banco vetorial retornou 0 resultados!")
-            print(f"   Verifique se o nome '{moto.modelo}' é EXATAMENTE igual ao salvo no ingest.py")
-            return # Para aqui porque a IA não vai conseguir responder
-        else:
-            print(f"   ✅ Primeiro trecho encontrado: {docs_encontrados[0][:100]}...")
-            print("   (O sistema de busca está funcionando!)")
-
-        # ==============================================================================
-        # 4. Executar o Orchestrator (A IA gera a resposta)
-        # ==============================================================================
-        print(f"\n🗣️ Perguntando para a IA: '{pergunta}'")
-        print("⏳ Processando (pode levar alguns segundos)...")
-        
-        resposta = rag_orchestrator.processar_pergunta(
-            db=db,
-            user_id=user.id,
-            moto_id=moto.id,
+        resposta = rag.processar_pergunta(
+            db=db_fake,       
+            user_id=999,      
+            moto_id=1,        
             pergunta_texto=pergunta
         )
-        
-        print("\n📝 Resultados Finais:")
-        print("="*60)
-        print(f"🤖 IA: {resposta}")
-        print("="*60)
-        
+
+        # --- ADICIONE ISTO PARA VER A RESPOSTA FINAL ---
+        print("\n" + "="*30)
+        print("🤖 RESPOSTA FINAL DA IA:")
+        print(resposta)
+        print("="*30 + "\n")
+        # -----------------------------------------------
+
+        print("✅ Teste finalizado!")
+
     except Exception as e:
-        print(f"\n❌ Ocorreu um erro no teste: {e}")
+        print(f"\n❌ Erro durante o teste: {e}")
         import traceback
         traceback.print_exc()
-        
-    finally:
-        db.close()
 
 if __name__ == "__main__":
-    teste_fluxo_completo()
+    teste_com_mock_biz()

@@ -1,63 +1,87 @@
-from app.models.moto_model import Moto
-from app.models.chat_model import ChatLog
-from llm.services.vector_store import vector_store
-from llm.services.llm_client import llm_client
+from langchain_chroma import Chroma
+from langchain_huggingface import HuggingFaceEmbeddings
+from langchain_ollama import OllamaLLM
+# --- MUDANÇA AQUI: Usando langchain_core (mais moderno) ---
+from langchain_core.prompts import PromptTemplate
+# ----------------------------------------------------------
+from langchain.chains import RetrievalQA
+from app.models.moto_model import Moto 
+from app.utils.text_utils import gerar_id_manual
+
+# Instância global
+rag_orchestrator = None
 
 class RagOrchestrator:
     def __init__(self):
-        self.vector_store = vector_store
-        self.llm_client = llm_client
+        print("🧠 Inicializando Cérebro RAG (Orchestrator)...")
+        
+        self.embedding_function = HuggingFaceEmbeddings(
+            model_name="sentence-transformers/all-MiniLM-L6-v2"
+        )
+        
+        self.vector_store = Chroma(
+            persist_directory="./chroma_db",
+            embedding_function=self.embedding_function
+        )
+        
+        self.llm = OllamaLLM(model="mistral", temperature=0) 
 
     def processar_pergunta(self, db, user_id, moto_id, pergunta_texto):
-        # 1. Recupera os dados da Moto e do Usuário
         moto = db.query(Moto).filter(Moto.id == moto_id).first()
         
         if not moto:
-            return "Erro: Moto não encontrada."
+            return "Erro: Moto não identificada no sistema."
 
-        # CORREÇÃO CRÍTICA AQUI:
-        # Não concatenamos 'moto.marca' com 'moto.modelo' porque o moto.modelo
-        # já é o nome do arquivo PDF (ex: 'Honda_Biz_110i_2023')
-        nome_para_busca = moto.modelo 
-
-        print(f"🤖 RAG Iniciado | Buscando no manual: '{nome_para_busca}'")
-
-        # 2. Busca no ChromaDB (Recuperação)
-        contexto_list = self.vector_store.buscar_similaridade(pergunta_texto, nome_para_busca)
+        nome_completo = f"{moto.marca} {moto.modelo} {moto.ano}"
+        filtro_moto = gerar_id_manual(nome_completo)
         
-        # Junta os pedacinhos de texto em um só
-        contexto_str = "\n\n".join(contexto_list)
+        print(f"🤖 RAG: Buscando contexto para ID: '{filtro_moto}'")
 
-        if not contexto_str:
-            print("⚠️ AVISO: Nenhum contexto encontrado no banco para essa moto!")
+        retriever = self.vector_store.as_retriever(
+            search_type="similarity",
+            search_kwargs={
+                "k": 5, 
+                "filter": {"modelo_moto": filtro_moto} 
+            }
+        )
 
-        # 3. Monta o Prompt para a IA
-        prompt_sistema = f"""
-        Você é um mecânico especialista assistente chamado Motopilot.
-        Use APENAS o contexto abaixo do manual da {moto.marca} {moto.modelo} para responder.
-        Se a resposta não estiver no contexto, diga que não consta no manual.
-        Seja técnico, direto e cite valores numéricos se houver.
+        # Prompt "Sniper"
+        prompt_template = """
+        Você é um Assistente Técnico Mecânico especializado. Sua função é dar respostas EXATAS e DIRETAS.
         
-        CONTEXTO DO MANUAL:
-        {contexto_str}
+        CONTEXTO TÉCNICO RETIRADO DO MANUAL:
+        {context}
+        
+        PERGUNTA DO USUÁRIO: 
+        {question}
+
+        REGRAS RIGOROSAS:
+        1. Se a resposta for um valor numérico (pneu, óleo, torque), responda APENAS o valor e a unidade.
+        2. NÃO explique como procurar no manual. NÃO dê conselhos genéricos.
+        3. Se houver uma tabela no contexto, extraia o dado exato.
+        4. Exemplo de resposta boa: "Dianteiro: 60/100-17M/C 33L".
+        5. Se a informação NÃO estiver no contexto, diga apenas: "Informação não encontrada no manual."
+
+        RESPOSTA TÉCNICA:
         """
+        
+        PROMPT = PromptTemplate(
+            template=prompt_template, 
+            input_variables=["context", "question"]
+        )
 
-        # 4. Chama a LLM (Geração)
-        resposta_ia = self.llm_client.generate(prompt_sistema, pergunta_texto)
+        qa_chain = RetrievalQA.from_chain_type(
+            llm=self.llm,
+            chain_type="stuff",
+            retriever=retriever,
+            chain_type_kwargs={"prompt": PROMPT}
+        )
 
-        # 5. Salva o Histórico (Opcional, mas recomendado)
         try:
-            log = ChatLog(
-                user_id=user_id,
-                moto_id=moto_id,
-                pergunta=pergunta_texto,
-                resposta_ia=resposta_ia
-            )
-            db.add(log)
-            db.commit()
+            resposta = qa_chain.invoke(pergunta_texto)
+            return resposta['result']
         except Exception as e:
-            print(f"Erro ao salvar log: {e}")
-
-        return resposta_ia
+            print(f"❌ Erro no LLM: {e}")
+            return "Desculpe, ocorreu um erro ao consultar o manual."
 
 rag_orchestrator = RagOrchestrator()
