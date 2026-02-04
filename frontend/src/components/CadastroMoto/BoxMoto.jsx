@@ -1,16 +1,11 @@
-import { Box, Button, Typography } from "@mui/material";
+import { Box, Button, Typography, IconButton } from "@mui/material";
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
 
-const BoxMoto = ({ nomeMoto, numeroDeSerie, estado }) => {
+const BoxMoto = ({ nomeMoto, numeroDeSerie, estado, onEdit, onDelete }) => {
   const navigate = useNavigate();
-
-  {
-    /* Função para navegar para a página de informações da moto */
-  }
-  const handleMotoInformacaoes = () => {
-    navigate("/");
-  };
 
   return (
     <Box
@@ -23,68 +18,55 @@ const BoxMoto = ({ nomeMoto, numeroDeSerie, estado }) => {
         overflow: "hidden",
         display: "flex",
         flexDirection: "column",
-        position: "relative", 
+        position: "relative",
       }}
     >
       {/* Imagem de Fundo */}
       <img
         src="images/Motopilot Logo.png"
         alt="Logo Motopilot"
-        style={{
-          width: "100%",
-          height: "189px",
-          objectFit: "cover",
-          display: "block",
-        }}
+        style={{ width: "100%", height: "189px", objectFit: "cover", display: "block" }}
       />
 
-      {/* A Box do estado atual da moto (ativa ou inativa) */}
-      <Box
-        sx={{
-          position: "absolute",
-          top: "12px", 
-          right: "12px", 
-          backgroundColor: "#D9D9D9",
-          borderRadius: "12px",
-          padding: "4px 12px", 
-          boxShadow: 1, 
-          width: 50,
-          height: 8,
-        }}
-      >
-        <Typography
-          variant="caption"
-          sx={{ color: "#000000", fontWeight: "bold" }}
+      {/* Botões de Ação isolados com zIndex e stopPropagation */}
+      <Box sx={{ position: "absolute", top: "12px", left: "12px", display: "flex", gap: 1, zIndex: 2 }}>
+        <IconButton 
+          onClick={(e) => { e.stopPropagation(); onEdit(); }} 
+          size="small" 
+          sx={{ bgcolor: "rgba(255,255,255,0.9)", '&:hover': { bgcolor: "white" }, boxShadow: 2 }}
         >
-          {estado}
+          <EditIcon fontSize="small" color="primary" />
+        </IconButton>
+        <IconButton 
+          onClick={(e) => { e.stopPropagation(); onDelete(); }} 
+          size="small" 
+          sx={{ bgcolor: "rgba(255,255,255,0.9)", '&:hover': { bgcolor: "white" }, boxShadow: 2 }}
+        >
+          <DeleteIcon fontSize="small" color="error" />
+        </IconButton>
+      </Box>
+
+      {/* Badge de Estado */}
+      <Box sx={{ position: "absolute", top: "12px", right: "12px", bgcolor: "#D9D9D9", borderRadius: "12px", px: 2, py: 0.5, boxShadow: 1 }}>
+        <Typography variant="caption" sx={{ color: "black", fontWeight: "bold" }}>
+          {estado || "Ativa"}
         </Typography>
       </Box>
 
-      {/* Conteúdo de Texto e Botão */}
-      <Box sx={{ p: 2, display: "flex", flexDirection: "column" }}>
-        {/* Removi o {estado} daqui pois ele já está na imagem agora */}
-
-        <Typography variant="h6" mb={2}>
-          {" "}
-          {nomeMoto}{" "}
-        </Typography>
-        <Typography variant="body2" mb={1} sx={{ color: "#484848" }}>
-          {" "}
-          Nº Série: {numeroDeSerie}{" "}
-        </Typography>
+      {/* Conteúdo inferior */}
+      <Box sx={{ p: 2, flexGrow: 1, display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
+        <Box>
+          <Typography variant="h6" fontWeight="bold" noWrap>{nomeMoto}</Typography>
+          <Typography variant="body2" color="#484848">Nº Série: {numeroDeSerie}</Typography>
+        </Box>
 
         <Button
           variant="contained"
-          onClick={handleMotoInformacaoes}
+          onClick={() => navigate("/")}
           sx={{
-            backgroundColor: "#D9D9D9",
-            color: "black",
-            width: "200px",
-            height: "40px",
-            borderRadius: "16px",
-            mt: 1,
-            textTransform: "none",
-            alignSelf: "center",
+            bgcolor: "#D9D9D9", color: "black", width: "80%", borderRadius: "16px",
+            textTransform: "none", alignSelf: "center", fontWeight: "bold",
+            '&:hover': { bgcolor: "#c4c4c4" }
           }}
         >
           Entrar
