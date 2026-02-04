@@ -1,40 +1,35 @@
-import { Box, Grid, Stack, Typography, Divider, Button, Menu, MenuItem } from "@mui/material";
-import React, { useContext, useState, useEffect } from "react";
+import React, { useContext, useState, useEffect, useMemo } from "react";
+import { Box, Grid, Stack, Typography, Divider, Menu, MenuItem } from "@mui/material";
 import SideBar from "../components/SideBar";
 import HeaderChatBot from "../components/ChatBot/HeaderChatbot";
 import BoxMoto from "../components/CadastroMoto/BoxMoto";
 import { MotoContext } from "../context/MotoContext";
-
 import BarraPesquisa from "../components/CadastroMoto/BarraPesquisa";
+import UpdateMoto from "../components/CadastroMoto/UpdateMoto";
 
 const ListagemMotos = () => {
-  const { listarMotos, motos } = useContext(MotoContext);
-
-  const [input, setInput] = React.useState("");
-
+  const { listarMotos, motos, excluirMoto, atualizarMoto } = useContext(MotoContext);
+  
+  const [input, setInput] = useState("");
   const [anchorEl, setAnchorEl] = useState(null);
-  const openMenu = Boolean(anchorEl);
-
   const [tipoOrdenacao, setTipoOrdenacao] = useState(null);
+  const [editingMoto, setEditingMoto] = useState(null);
+
+  const openMenu = Boolean(anchorEl);
 
   useEffect(() => {
     listarMotos();
   }, []);
 
-  const handleClickOrdernar = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleCloseMenu = () => {
-    setAnchorEl(null);
-  };
+  const handleClickOrdernar = (event) => setAnchorEl(event.currentTarget);
+  const handleCloseMenu = () => setAnchorEl(null);
 
   const handleSelectOrder = (tipo) => {
     setTipoOrdenacao(tipo);
     handleCloseMenu();
   };
 
-  const motosProcessadas = React.useMemo(() => {
+  const motosProcessadas = useMemo(() => {
     let lista = [...motos];
     if (input) {
       lista = lista.filter((moto) =>
@@ -51,121 +46,51 @@ const ListagemMotos = () => {
   }, [motos, input, tipoOrdenacao]);
 
   return (
-    <Box
-      sx={{
-        display: "flex",
-        height: "100vh",
-        bgcolor: "#989898",
-        p: "16px",
-        boxSizing: "border-box",
-      }}
-    >
+    <Box sx={{ display: "flex", height: "100vh", bgcolor: "#989898", p: "16px", boxSizing: "border-box" }}>
       <SideBar />
 
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          flexGrow: 1,
-          ml: "20px",
-          height: "100%",
-        }}
-      >
+      <Box sx={{ display: "flex", flexDirection: "column", flexGrow: 1, ml: "20px", height: "100%" }}>
         <Stack spacing="8px" sx={{ height: "100%" }}>
           <Box sx={{ flexShrink: 0 }}>
             <HeaderChatBot />
           </Box>
 
-          {/* Conteúdo da página de listagem de motos */}
-          <Box
-            sx={{
-              flexGrow: 1,
-              bgcolor: "white",
-              borderRadius: "16px",
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              p: 4,
-              overflow: "hidden",
-            }}
-          >
-            <Box
-              sx={{
-                flexGrow: 1,
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                overflowY: "auto",
-                width: "100%",
-              }}
-            >
-              <Typography mb={2} fontSize={30}>
-                Motos
-              </Typography>
-              <Divider
-                sx={{ width: "90%", bgcolor: "grey.700", height: "0.4px" }}
-              />
+          <Box sx={{ flexGrow: 1, bgcolor: "white", borderRadius: "16px", display: "flex", flexDirection: "column", alignItems: "center", p: 4, overflow: "hidden" }}>
+            
+            <Box sx={{ width: "100%", display: "flex", flexDirection: "column", alignItems: "center" }}>
+              <Typography mb={2} fontSize={30} fontWeight="bold">Motos</Typography>
+              <Divider sx={{ width: "90%", bgcolor: "grey.700", height: "0.4px" }} />
 
-              <Box
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  width: "90%",
-                  position: "relative",
-                  mt: 2,
-                }}
-              >
-                <Typography
-                  onClick={handleClickOrdernar}
-                  color="black"
-                  sx={{ position: "absolute", left: 0 }}
-                >
-                  Ordernar
+              <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", width: "90%", position: "relative", mt: 2 }}>
+                <Typography onClick={handleClickOrdernar} sx={{ position: "absolute", left: 0, cursor: "pointer", fontWeight: "500" }}>
+                  Ordenar
                 </Typography>
 
-                <Menu
-                  anchorEl={anchorEl}
-                  open={openMenu}
-                  onClose={handleCloseMenu}
-                >
-                  <MenuItem onClick={() => handleSelectOrder("AZ")}>
-                    Marca A-Z
-                  </MenuItem>
-                  <MenuItem onClick={() => handleSelectOrder("ZA")}>
-                    Marca Z-A
-                  </MenuItem>
+                <Menu anchorEl={anchorEl} open={openMenu} onClose={handleCloseMenu}>
+                  <MenuItem onClick={() => handleSelectOrder("AZ")}>Modelo A-Z</MenuItem>
+                  <MenuItem onClick={() => handleSelectOrder("ZA")}>Modelo Z-A</MenuItem>
                 </Menu>
 
                 <BarraPesquisa input={input} setInput={setInput} />
               </Box>
             </Box>
 
-            {/*Box das motos com fundo cinza ao redor delas*/}
-            <Box
-              backgroundColor="#DBDBDB"
-              sx={{
-                flexGrow: 8,
-                width: "90%",
-                borderRadius: "16px",
-                p: 2,
-                mt: 2,
-                overflowY: "auto",
-              }}
-            >
-              <Grid container spacing={2} sx={{ mt: 2 }}>
+            <Box sx={{ flexGrow: 1, width: "95%", bgcolor: "#DBDBDB", borderRadius: "16px", p: 3, mt: 3, overflowY: "auto" }}>
+              <Grid container spacing={3}>
                 {motosProcessadas.length > 0 ? (
-                  motosProcessadas.map((moto, index) => (
-                    <Grid item key={moto.id || index}>
+                  motosProcessadas.map((moto) => (
+                    <Grid item key={moto.id} xs={12} sm={6} md={4}>
                       <BoxMoto
                         nomeMoto={moto.modelo}
-                        numeroDeSerie={moto.marca}
-                        estado={moto.estado}
+                        numeroDeSerie={moto.marca} // Ou a prop correta de marca
+                        ano={moto.ano}
+                        onEdit={() => setEditingMoto(moto)}
+                        onDelete={() => excluirMoto(moto.id)}
                       />
                     </Grid>
                   ))
                 ) : (
-                  <Typography sx={{ p: 2 }}>
+                  <Typography sx={{ p: 2, width: "100%", textAlign: "center" }}>
                     Nenhuma moto encontrada.
                   </Typography>
                 )}
@@ -174,6 +99,18 @@ const ListagemMotos = () => {
           </Box>
         </Stack>
       </Box>
+
+      {editingMoto && (
+        <UpdateMoto 
+          open={!!editingMoto} 
+          onClose={() => setEditingMoto(null)} 
+          onSave={async (dados) => { 
+            await atualizarMoto(editingMoto.id, dados); 
+            setEditingMoto(null); 
+          }}
+          initialData={editingMoto}
+        />
+      )}
     </Box>
   );
 };
