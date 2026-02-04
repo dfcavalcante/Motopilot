@@ -14,7 +14,7 @@ const SideBar = ({ historico = [] }) => {
   const menus = [
     { name: "Início", link: "/chatbot", icon: <img src="/images/Home.svg" alt="Logo" width="20" /> },
     { name: "Motos", link: "/listagemMotos" , icon: <img src="/images/Folder.svg" alt="Logo" width="20" /> },
-    { name: "Usuários", link: "/relatorio", icon: <img src="/images/users.png" alt="Logo" width="20" /> },
+    { name: "Usuários", link: "/usuarios", icon: <img src="/images/users.png" alt="Logo" width="20" /> },
   ];
 
   return (

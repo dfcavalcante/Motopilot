@@ -18,6 +18,11 @@ const HeaderChatBot = ({ nomeChat, setNomeChat, onNovoChat }) =>{
         navigate('/cadastroMoto');
     };
 
+    const handleCadastroUsuario = async (e) => {
+        e.preventDefault();
+        navigate('/cadastro');
+    }
+
     const handleSalvarNome = () => {
         setNomeChat(tempNome);
         setEditando(false);
@@ -58,6 +63,25 @@ const HeaderChatBot = ({ nomeChat, setNomeChat, onNovoChat }) =>{
                 }}
             > 
                 Adicionar moto
+            </Button>
+            )
+        }
+        if(location.pathname === '/usuarios'){
+            return(
+            <Button
+                variant='outlined'
+                startIcon={<img src="/images/add.png" alt="Add" width="20" />}
+                onClick={handleCadastroUsuario}
+                sx={{ 
+                    color: 'black', 
+                    borderColor: 'black',
+                    borderRadius: '8px',
+                    textTransform: 'none',
+                    px: 2,
+                    '&:hover': { borderColor: 'black', backgroundColor: 'transparent' }
+                }}
+            > 
+                Adicionar usuário
             </Button>
             )
         }

@@ -145,8 +145,8 @@ const ListagemMotos = () => {
             <Box
               backgroundColor="#DBDBDB"
               sx={{
-                flexGrow: 8,
-                width: "90%",
+                flexGrow: 100,
+                width: "100%",
                 borderRadius: "16px",
                 p: 2,
                 mt: 2,
