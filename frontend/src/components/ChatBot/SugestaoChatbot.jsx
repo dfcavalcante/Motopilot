@@ -9,7 +9,7 @@ const SugestaoChatbot = ({ sugestao, onClick }) => {
             sx={{
                 backgroundColor: "#D9D9D9",
                 borderRadius: "16px",
-                width: '320px', 
+                width: '352px', 
                 height: 40,   
                 display: "flex",
                 justifyContent: "center",

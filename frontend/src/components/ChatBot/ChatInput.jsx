@@ -17,6 +17,7 @@ const ChatInput = ({ input, setInput, onSend }) => {
             fullWidth
             multiline
             maxRows={6}
+            size="small"
             variant="outlined"
             value={input}
             onChange={(e) => setInput(e.target.value)}
