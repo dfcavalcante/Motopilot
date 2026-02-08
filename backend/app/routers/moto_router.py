@@ -23,23 +23,25 @@ def criar_moto_endpoint(
     marca: str = Form(...),
     modelo: str = Form(...),
     ano: int = Form(...),
-    documento_pdf: UploadFile = File(...), 
+    numeroSerie: str = Form(...),
+    descricao: str = Form(None),
+    documento_pdf: UploadFile = File(...),
+    imagem_moto: UploadFile = File(...),
     db: Session = Depends(get_db)
 ):
-    try:
-        filename = f"{uuid.uuid4()}_{documento_pdf.filename}"
-        file_path = os.path.join(UPLOAD_DIR, filename)
-        
-        with open(file_path, "wb") as buffer:
-            shutil.copyfileobj(documento_pdf.file, buffer)
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Erro ao salvar arquivo: {str(e)}")
-    
+    #Salvar o caminho do PDF e da imagem usando a função auxiliar
+    caminho_pdf = salvar_arquivo(documento_pdf, sub_pasta="manuais")
+    caminho_imagem = salvar_arquivo(imagem_moto, sub_pasta="imagens")
+
     moto_data = MotoBase(
         marca=marca,
         modelo=modelo,
         ano=ano,
-        manual_pdf_path=file_path 
+        numeroSerie=numeroSerie,
+        estado='Ativa',  # Define o estado inicial como "Ativa"
+        descricao=descricao,
+        manual_pdf_path=caminho_pdf,
+        imagem_path=caminho_imagem
     )
 
     return moto_service.criar_moto(db, moto_data)
@@ -92,3 +94,23 @@ def deletar_moto_endpoint(moto_id: int, db: Session = Depends(get_db)):
     if not sucesso:
         raise HTTPException(status_code=404, detail="Moto não encontrada")
     return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+#Função auxiliar para salvar arquivos (PDFs e imagens)
+def salvar_arquivo(arquivo: UploadFile, sub_pasta: str = "") -> str | None:
+    if not arquivo or not arquivo.filename:
+        return None
+        
+    try:
+        filename = f"{uuid.uuid4()}_{arquivo.filename}"
+        
+        caminho_pasta = os.path.join(UPLOAD_DIR, sub_pasta)
+        os.makedirs(caminho_pasta, exist_ok=True)
+        
+        file_path = os.path.join(caminho_pasta, filename)
+        
+        with open(file_path, "wb") as buffer:
+            shutil.copyfileobj(arquivo.file, buffer)
+            
+        return file_path
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Erro ao salvar arquivo {arquivo.filename}: {str(e)}")

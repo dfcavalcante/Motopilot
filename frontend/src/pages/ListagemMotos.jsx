@@ -1,20 +1,11 @@
-import React, { useContext, useState, useEffect, useMemo } from "react";
-import {
-  Box,
-  Grid,
-  Stack,
-  Typography,
-  Divider,
-  Menu,
-  MenuItem,
-  IconButton,
-} from "@mui/material";
-import SideBar from "../components/SideBar";
-import HeaderChatBot from "../components/ChatBot/HeaderChatbot";
-import BoxMoto from "../components/CadastroMoto/BoxMoto";
-import { MotoContext } from "../context/MotoContext";
-import BarraPesquisa from "../components/CadastroMoto/BarraPesquisa";
-import InformacoesMoto from "../components/Motos/InformacoesMoto";
+import React, { useContext, useState, useEffect, useMemo } from 'react';
+import { Box, Grid, Stack, Typography, Divider, Menu, MenuItem, IconButton } from '@mui/material';
+import SideBar from '../components/SideBar';
+import HeaderChatBot from '../components/ChatBot/HeaderChatbot';
+import BoxMoto from '../components/CadastroMoto/BoxMoto';
+import { MotoContext } from '../context/MotoContext';
+import BarraPesquisa from '../components/CadastroMoto/BarraPesquisa';
+import InformacoesMoto from '../components/Motos/InformacoesMoto';
 
 const ListagemMotos = () => {
   const { listarMotos, motos, excluirMoto, atualizarMoto } = useContext(MotoContext);
@@ -54,14 +45,10 @@ const ListagemMotos = () => {
     return lista;
   }, [motos, input, tipoOrdenacao]);
 
-  // --- LOGICA DE RENDERIZAÇÃO ---
-
-  // Se houver uma moto selecionada, renderizamos APENAS o InformacoesMoto
   if (motoSelecionada) {
     return <InformacoesMoto moto={motoSelecionada} onBack={() => setMotoSelecionada(null)} />;
   }
 
-  // Caso contrário, renderizamos a listagem normal
   return (
     <Box
       sx={{
@@ -156,12 +143,7 @@ const ListagemMotos = () => {
                 {motosProcessadas.length > 0 ? (
                   motosProcessadas.map((moto) => (
                     <Grid item key={moto.id} xs={12} sm={6} md={4}>
-                      <BoxMoto
-                        nomeMoto={moto.modelo}
-                        numeroDeSerie={moto.numeroSerie || moto.marca} // Verifique qual prop você quer exibir aqui
-                        ano={moto.ano}
-                        onEnter={() => setMotoSelecionada(moto)} // Passa o objeto moto inteiro
-                      />
+                      <BoxMoto moto={moto} onEnter={() => setMotoSelecionada(moto)} />
                     </Grid>
                   ))
                 ) : (

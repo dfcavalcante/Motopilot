@@ -6,12 +6,15 @@ from typing import Optional
 class MotoBase(BaseModel):
     '''
     Schema base com os campos comuns.
-    manual_pdf_path é opcional pois pode não ter manual no início.
     '''
     marca: str
     modelo: str
     ano: int 
     manual_pdf_path: str | None = None
+    imagem_path: str | None = None
+    estado: str | None = None 
+    numeroSerie: str
+    descricao: str | None = None
 
 class MotoUpdate(BaseModel):
     '''
@@ -21,6 +24,9 @@ class MotoUpdate(BaseModel):
     marca: Optional[str] = None
     modelo: Optional[str] = None
     ano: Optional[int] = None
+    manual_pdf_path: Optional[str] = None
+    imagem_path: Optional[str] = None
+    estado: Optional[str] = None
 
 class MotoResponse(MotoBase):
     '''

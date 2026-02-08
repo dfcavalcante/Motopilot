@@ -1,48 +1,129 @@
 import React, { useState, useContext } from 'react';
-import { Box, Stack, Typography, Divider, Button } from '@mui/material';
+import { Box, Stack, Typography, Divider } from '@mui/material';
 import HeaderChatBot from '../components/ChatBot/HeaderChatbot.jsx';
 import SideBar from '../components/SideBar.jsx';
 import EtapasMoto from '../components/Motos/EtapasMoto.jsx';
 import { MotoContext } from '../context/MotoContext.jsx';
 
 import DadosGerais from '../components/Motos/DadosGerais.jsx';
-import ManualMoto from '../components/Motos/DadosManual.jsx';
+import ManualMoto from '../components/Motos/DadosManual.jsx'; // Certifique-se que este é o arquivo com o PdfUploader
 import Concluido from '../components/Motos/Concluido.jsx';
 
 const CadastroDeMoto = () => {
   const { cadastrarMoto } = useContext(MotoContext);
 
+  const [loading, setLoading] = useState(false);
   const [etapaAtual, setEtapaAtual] = useState(1);
+  const [errors, setErrors] = useState({});
 
-  const [modelo, setModelo] = useState('');
-  const [numeroSerie, setNumeroSerie] = useState('');
-  const [marca, setMarca] = useState('');
-  const [ano, setAno] = useState('');
-  const [descricao, setDescricao] = useState('');
-  const [foto, setFoto] = useState(null);
+  const [dadosForm, setDadosForm] = useState({
+    modelo: '',
+    numeroSerie: '',
+    marca: '',
+    ano: '',
+    descricao: '',
+    estado: '',
+    foto: null,
+    manual_pdf_path: null,
+  });
+
+  const handleChange = (e) => {
+    const { name, value, files } = e.target;
+
+    setDadosForm((prev) => ({
+      ...prev,
+      [name]: files ? files[0] : value,
+    }));
+
+    if (errors[name]) {
+      setErrors((prev) => ({ ...prev, [name]: null }));
+    }
+  };
+
+  const validarCampos = (etapa) => {
+    const novosErros = {};
+    let ehValido = true;
+
+    if (etapa === 1) {
+      if (!dadosForm.modelo) novosErros.modelo = 'O modelo é obrigatório.';
+      if (!dadosForm.marca) novosErros.marca = 'A marca é obrigatória.';
+      if (!dadosForm.ano) novosErros.ano = 'O ano é obrigatório.';
+      if (!dadosForm.numeroSerie) novosErros.numeroSerie = 'O número de série é obrigatório.';
+      if (!dadosForm.foto) novosErros.foto = 'A foto da moto é obrigatória.';
+    }
+
+    if (Object.keys(novosErros).length > 0) {
+      setErrors(novosErros);
+      ehValido = false;
+    }
+
+    return ehValido;
+  };
 
   const handleProximo = () => {
-    setEtapaAtual((prev) => prev + 1);
+    if (validarCampos(1)) {
+      setEtapaAtual((prev) => prev + 1);
+    }
   };
 
   const handleVoltar = () => {
+    setErrors({});
     setEtapaAtual((prev) => (prev > 1 ? prev - 1 : prev));
   };
 
-  // Função final de envio (só acontece na última etapa)
-  const handleSubmit = async () => {
-    const formData = new FormData();
-    formData.append('modelo', modelo);
-    formData.append('numero_serie', numeroSerie);
-    formData.append('marca', marca);
-    formData.append('ano', ano);
-    formData.append('descricao', descricao);
-    formData.append('foto', foto); // Ajuste conforme seu backend espera
+  const handleFinalSubmit = async (arquivoPdfDoFilho) => {
+    console.log('--- INICIANDO ENVIO ---');
+    console.log('Arquivo PDF recebido do filho:', arquivoPdfDoFilho);
 
-    const sucesso = await cadastrarMoto(formData);
-    if (sucesso) {
-      alert('Moto cadastrada com sucesso!');
-      setEtapaAtual(3); // Vai para tela de sucesso
+    if (!arquivoPdfDoFilho) {
+      setErrors({ manual_pdf_path: 'O manual (PDF) é obrigatório.' });
+      return;
+    }
+
+    setLoading(true);
+    const formData = new FormData();
+
+    formData.append('marca', dadosForm.marca);
+    formData.append('modelo', dadosForm.modelo);
+    formData.append('ano', dadosForm.ano);
+    formData.append('numeroSerie', dadosForm.numeroSerie);
+    formData.append('descricao', dadosForm.descricao || '');
+
+    if (dadosForm.foto) {
+      formData.append('imagem_moto', dadosForm.foto);
+    } else {
+      console.error('ERRO: Foto está nula no state');
+      alert('Erro: A foto da moto é obrigatória');
+      setLoading(false);
+      return;
+    }
+
+    formData.append('documento_pdf', arquivoPdfDoFilho);
+
+    console.log('Conteúdo do FormData a ser enviado:');
+    for (let [key, value] of formData.entries()) {
+      console.log(`${key}:`, value);
+    }
+
+    try {
+      setDadosForm((prev) => ({ ...prev, manual_pdf_path: arquivoPdfDoFilho }));
+
+      const sucesso = await cadastrarMoto(formData);
+
+      console.log('Resposta do cadastrarMoto:', sucesso);
+
+      if (sucesso) {
+        setEtapaAtual(3);
+      } else {
+        alert(
+          'O Backend rejeitou os dados. Verifique o Console (F12) -> Network para ver o erro vermelho.'
+        );
+      }
+    } catch (error) {
+      console.error('Erro CRÍTICO ao enviar:', error);
+      alert('Erro de conexão ou código.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -58,17 +139,12 @@ const CadastroDeMoto = () => {
     >
       <SideBar />
       <Box
-        sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          flexGrow: 1,
-          ml: '24px',
-          height: '100%',
-        }}
+        sx={{ display: 'flex', flexDirection: 'column', flexGrow: 1, ml: '24px', height: '100%' }}
       >
         <Stack spacing="8px" sx={{ height: '100%' }}>
           <Box sx={{ flexShrink: 0 }}>
-            <HeaderChatBot />
+            {' '}
+            <HeaderChatBot />{' '}
           </Box>
 
           <Box
@@ -83,28 +159,33 @@ const CadastroDeMoto = () => {
               overflow: 'hidden',
             }}
           >
-            <Typography variant="h5"  mb={2}>
+            <Typography variant="h5" mb={2}>
               Adicionar Moto
             </Typography>
             <Divider sx={{ width: '90%', bgcolor: 'grey.500', height: '0.4px', mb: 2 }} />
 
             <EtapasMoto etapa={etapaAtual} />
 
-            <Box sx={{ width: '100%', flex: 1, overflowY: 'auto' }}>
+            <Box sx={{ width: '100%', flex: 1, overflowY: 'auto', mt: 2 }}>
               {etapaAtual === 1 && (
                 <DadosGerais
-                  setModelo={setModelo}
-                  setNumeroSerie={setNumeroSerie}
-                  setMarca={setMarca}
-                  setAno={setAno}
-                  setDescricao={setDescricao}
-                  setFoto={setFoto}
-                  // Passamos a função de ir para o próximo
+                  dados={dadosForm}
+                  handleChange={handleChange}
                   onNext={handleProximo}
+                  errors={errors}
                 />
               )}
 
-              {etapaAtual === 2 && <ManualMoto onBack={handleVoltar} onNext={handleProximo} />}
+              {etapaAtual === 2 && (
+                <ManualMoto
+                  dados={dadosForm}
+                  handleChange={handleChange}
+                  onBack={handleVoltar}
+                  onNext={(arquivo) => handleFinalSubmit(arquivo)}
+                  loading={loading}
+                  errors={errors}
+                />
+              )}
 
               {etapaAtual === 3 && <Concluido />}
             </Box>

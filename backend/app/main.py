@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 
 # --- IMPORTS DO BANCO DE DADOS (NOVO) ---
 from app.database.connections import engine, Base
@@ -37,6 +38,8 @@ app = FastAPI(
     description=Settings.API_DESCRIPTION,
     version=Settings.API_VERSION
 )
+
+app.mount("/manuals", StaticFiles(directory="manuals"), name="manuals")
 
 origins = [
     "http://localhost:5173", # Porta do React (Vite)

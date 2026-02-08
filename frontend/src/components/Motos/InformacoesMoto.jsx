@@ -3,18 +3,16 @@ import { Box, Stack, Divider, Typography, IconButton, Button, Chip } from '@mui/
 import HeaderChatBot from '../ChatBot/HeaderChatbot.jsx';
 import SideBar from '../SideBar.jsx';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import { useNavigate } from 'react-router-dom';
 
-const InformacoesMoto = ({ nome, modelo, marca, ano, numeroSerie, descricao }) => {
-  const navigate = useNavigate();
-  const moto = {
-    nome: 'Nome da Moto',
-    modelo: 'CB 500F',
-    ano: '2026',
-    serie: 'HNFDAF323243',
-    marca: 'Honda',
-    descricao:
-      'Lorem ipsum dolor sit amet consectetur adipiscing elit quisque faucibus ex sapien vitae pellentesque sem placerat in id cursus mi pretium tellus duis convallis tempus leo eu aenean sed diam urna tempor pulvinar vivamus fringilla lacus nec metus bibendum egestas iaculis massa nisl malesuada lacinia integer nunc posuere ut hendrerit semper vel.',
+const InformacoesMoto = ({ moto, onBack }) => {
+  const getImageUrl = (caminhoDoBanco) => {
+    const caminhoCorrigido = caminhoDoBanco.replace(/\\/g, '/');
+
+    const pathFinal = caminhoCorrigido.startsWith('/')
+      ? caminhoCorrigido.slice(1)
+      : caminhoCorrigido;
+
+    return `http://localhost:8000/${pathFinal}`;
   };
 
   return (
@@ -61,6 +59,7 @@ const InformacoesMoto = ({ nome, modelo, marca, ano, numeroSerie, descricao }) =
               }}
             >
               <IconButton
+                onClick={onBack}
                 sx={{
                   color: '#000000',
                   borderRadius: 2,
@@ -73,7 +72,7 @@ const InformacoesMoto = ({ nome, modelo, marca, ano, numeroSerie, descricao }) =
                 <ArrowBackIcon />
               </IconButton>
 
-              <Typography sx={{ fontSize: 30, fontWeight: 500 }}>Nome Moto</Typography>
+              <Typography sx={{ fontSize: 30, fontWeight: 500 }}>{moto.modelo}</Typography>
 
               <IconButton
                 sx={{
@@ -93,7 +92,7 @@ const InformacoesMoto = ({ nome, modelo, marca, ano, numeroSerie, descricao }) =
 
             {/* Chip no canto direito em cima (Dentro da Box Branca) */}
             <Chip
-              label="Ativa"
+              label={moto.estado}
               sx={{
                 position: 'absolute',
                 top: 120,
@@ -146,7 +145,17 @@ const InformacoesMoto = ({ nome, modelo, marca, ano, numeroSerie, descricao }) =
                 mb: 4,
               }}
             >
-              <img src="/images/Imagem.png" alt="Imagem Moto" style={{ width: '110px' }} />
+              <img
+                src={getImageUrl(moto.imagem_path)}
+                alt="Imagem Moto"
+                style={{
+                  width: '100%',
+                  height: '268px',
+                  objectFit: 'cover',
+                  display: 'block',
+                  borderRadius: '16px',
+                }}
+              />
             </Box>
 
             {/* Box das Informações (Cinza) */}
@@ -163,7 +172,9 @@ const InformacoesMoto = ({ nome, modelo, marca, ano, numeroSerie, descricao }) =
             >
               <Stack direction="row" justifyContent="space-between" spacing={4}>
                 <Stack spacing={2} sx={{ flex: 2 }}>
-                  <Typography sx={{ fontWeight: 500, fontSize: 30 }}>{moto.nome}</Typography>
+                  <Typography sx={{ fontWeight: 500, fontSize: 30 }}>
+                    {moto.modelo || 'Nome da Moto'}
+                  </Typography>
                   <Box>
                     <Typography
                       variant="caption"
@@ -172,7 +183,7 @@ const InformacoesMoto = ({ nome, modelo, marca, ano, numeroSerie, descricao }) =
                       Número de Série
                     </Typography>
                     <Typography variant="body1" sx={{ fontWeight: 500, fontSize: 20 }}>
-                      {moto.serie}
+                      {moto.numeroSerie}
                     </Typography>
                   </Box>
                 </Stack>
@@ -220,7 +231,7 @@ const InformacoesMoto = ({ nome, modelo, marca, ano, numeroSerie, descricao }) =
                   Descrição da máquina
                 </Typography>
                 <Typography variant="body2" sx={{ color: '#444', textAlign: 'justify' }}>
-                  {moto.descricao}
+                  {moto.descricao || 'Sem descrição disponível.'}
                 </Typography>
               </Box>
             </Box>

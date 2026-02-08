@@ -1,10 +1,16 @@
-import { Box, Button, Typography, IconButton } from '@mui/material';
+import { Box, Button, Typography } from '@mui/material';
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import InformacoesMoto from '../Motos/InformacoesMoto';
 
-const BoxMoto = ({ nomeMoto, numeroDeSerie, ano, onEnter }) => {
-  const navigate = useNavigate();
+const BoxMoto = ({ moto, onEnter }) => {
+  const getImageUrl = (caminhoDoBanco) => {
+    const caminhoCorrigido = caminhoDoBanco.replace(/\\/g, '/');
+
+    const pathFinal = caminhoCorrigido.startsWith('/')
+      ? caminhoCorrigido.slice(1)
+      : caminhoCorrigido;
+
+    return `http://localhost:8000/${pathFinal}`;
+  };
 
   return (
     <Box
@@ -22,7 +28,7 @@ const BoxMoto = ({ nomeMoto, numeroDeSerie, ano, onEnter }) => {
     >
       {/* Imagem de Fundo */}
       <img
-        src="images/Motopilot Logo.png"
+        src={getImageUrl(moto.imagem_path)}
         alt="Logo Motopilot"
         style={{ width: '100%', height: '189px', objectFit: 'cover', display: 'block' }}
       />
@@ -50,7 +56,7 @@ const BoxMoto = ({ nomeMoto, numeroDeSerie, ano, onEnter }) => {
             fontSize: '13px',
           }}
         >
-          { 'Ativa'}
+          {moto.estado}
         </Typography>
       </Box>
 
@@ -66,16 +72,16 @@ const BoxMoto = ({ nomeMoto, numeroDeSerie, ano, onEnter }) => {
       >
         <Box>
           <Typography variant="h6" fontWeight="bold" noWrap>
-            {nomeMoto}
+            {moto.modelo}
           </Typography>
           <Typography variant="body2" color="#484848" mt={1}>
-            Nº Série: {numeroDeSerie}
+            Nº Série: {moto.numeroSerie}
           </Typography>
         </Box>
 
         <Button
           variant="contained"
-          onClick={() => onEnter({ nome: nomeMoto, serie: numeroDeSerie, ano })} // Chama a função do pai
+          onClick={() => onEnter(moto)}
           sx={{
             bgcolor: '#D9D9D9',
             color: 'black',
