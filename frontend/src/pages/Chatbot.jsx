@@ -46,10 +46,6 @@ const Chatbot = () => {
     setInput("");
   };
 
-  const handleSelecionarMoto = (moto) => {
-    setMotoSelecionada(moto);
-    setModalOpen(false);
-  };
 
   const sugestoes = [
     "Qual a pressão dos pneus?",
@@ -69,14 +65,6 @@ const Chatbot = () => {
       }}
     >
       <SideBar />
-
-      <MotoSelectionDialog
-        open={modalOpen}
-        onClose={() => setModalOpen(false)}
-        onSelect={handleSelecionarMoto}
-        motos={motos}
-        loading={carregandoMotos}
-      />
 
       <Box
         sx={{

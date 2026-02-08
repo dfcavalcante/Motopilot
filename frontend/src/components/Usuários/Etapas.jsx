@@ -1,63 +1,108 @@
-import React from "react";
-import { Box, Typography } from "@mui/material";
+import React from 'react';
+import { Box, Typography } from '@mui/material';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 
-const Etapas = ({etapa}) => {
-    return (
-    <Box display="flex" alignItems="center" mb={2}>
-    {/* Etapa 1 */}
-    <Box display="flex" alignItems="center">
-        <Box
-        width={12}
-        height={12}
-        borderRadius="50%"
-        backgroundColor="#B2B2B2"
-        mr={1}
+const Etapas = ({ etapa }) => {
+  // Função para definir a opacidade: 1 se for a etapa atual, 0.4 se não for
+   const getOpacity = (stepNumber) => {
+    if (etapa === stepNumber) {
+      return 1;
+    }
+    else if(etapa > stepNumber){
+      return 1;
+    }else if(etapa < stepNumber){
+      return 0.4;
+    }
+  };
+
+  // Função auxiliar para renderizar o ícone
+  const renderIcone = (numeroEtapa) => {
+    // Se a etapa já foi concluída (é menor que a atual), mostra o check verde
+    if (etapa > numeroEtapa) {
+      return <CheckCircleIcon sx={{ fontSize: 18, color: "#a0a0a0", mr: 1 }} />;
+    }
+
+    // Se for a etapa ATUAL, mostra uma bolinha azul (ou cor de destaque)
+    if (etapa === numeroEtapa) {
+      return (
+        <CheckCircleIcon
+          sx={{
+            fontSize: 18, // Tamanho próximo ao das bolinhas
+            color: "#a0a0a0",
+            mr: 1,
+          }}
         />
-        <Typography>01 Dados Gerais</Typography>
+      );
+    }
+
+    // Se for etapa futura, bolinha cinza
+    return <Box width={12} height={12} borderRadius="50%" backgroundColor="#898989" mr={1} />;
+  };
+
+  return (
+    <Box display="flex" alignItems="center" mb={1} justifyContent="center">
+      {/* --- ETAPA 1 --- */}
+      <Box
+        display="flex"
+        alignItems="center"
+      >
+        {renderIcone(1)}
+        <Typography
+          sx={{
+            fontWeight: etapa === 1 ? 'normal' : 'normal',
+            color: etapa === 1 ? '#000' : '#000000',
+          }}
+        >
+          01 Dados Gerais
+        </Typography>
+      </Box>
+
+      <Box width={60} height={2} backgroundColor={etapa > 1 ? '#a0a0a0' : '#E0E0E0'} mx={2} />
+
+      {/* --- ETAPA 2 --- */}
+      <Box
+        display="flex"
+        alignItems="center"
+        sx={{
+          opacity: getOpacity(2),
+          transition: 'opacity 0.3s ease',
+        }}
+      >
+        {renderIcone(2)}
+        <Typography
+          sx={{
+            fontWeight: etapa === 2 ? 'normal' : 'normal',
+            color: etapa === 2 ? '#000' : '#000000',
+          }}
+        >
+          02 Criar Senha
+        </Typography>
+      </Box>
+
+      {/* Linha 2 */}
+      <Box width={60} height={2} backgroundColor={etapa > 2 ? '#a0a0a0' : '#E0E0E0'} mx={2} />
+
+      {/* --- ETAPA 3 --- */}
+      <Box
+        display="flex"
+        alignItems="center"
+        sx={{
+          opacity: getOpacity(3),
+          transition: 'opacity 0.3s ease',
+        }}
+      >
+        {renderIcone(3)}
+        <Typography
+          sx={{
+            fontWeight: etapa === 3 ? 'normal' : 'normal',
+            color: etapa === 3 ? '#000000' : '#000000',
+          }}
+        >
+          03 Concluído
+        </Typography>
+      </Box>
     </Box>
-
-    {/* Linha */}
-    <Box
-        width={40}
-        height={2}
-        backgroundColor="#B2B2B2"
-        mx={2}
-    />
-
-    {/* Etapa 2 */}
-    <Box display="flex" alignItems="center">
-        <Box
-        width={12}
-        height={12}
-        borderRadius="50%"
-        backgroundColor="#B2B2B2"
-        mr={1}
-        />
-        <Typography>02 Criar Senha</Typography>
-    </Box>
-
-    {/* Linha */}
-    <Box
-        width={40}
-        height={2}
-        backgroundColor="#B2B2B2"
-        mx={2}
-    />
-
-    {/* Etapa 3 */}
-    <Box display="flex" alignItems="center">
-        <Box
-        width={12}
-        height={12}
-        borderRadius="50%"
-        backgroundColor="#B2B2B2"
-        mr={1}
-        />
-        <Typography>03 Concluído</Typography>
-    </Box>
-    </Box>
-
-    )
-}
+  );
+};
 
 export default Etapas;

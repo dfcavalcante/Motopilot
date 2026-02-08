@@ -4,14 +4,16 @@ import { Box, Typography } from '@mui/material';
 
 // Recebe a prop onFileSelect
 const PdfUploader = ({ onFileSelect }) => {
-
-  const onDrop = useCallback((acceptedFiles) => {
-    if (acceptedFiles?.length > 0) {
-      const file = acceptedFiles[0];
-      // Envia o arquivo de volta para o pai (CadastroMoto)
-      onFileSelect(file); 
-    }
-  }, [onFileSelect]);
+  const onDrop = useCallback(
+    (acceptedFiles) => {
+      if (acceptedFiles?.length > 0) {
+        const file = acceptedFiles[0];
+        // Envia o arquivo de volta para o pai (CadastroMoto)
+        onFileSelect(file);
+      }
+    },
+    [onFileSelect]
+  );
 
   const { getRootProps, getInputProps, isDragActive, acceptedFiles } = useDropzone({
     onDrop,
@@ -22,7 +24,7 @@ const PdfUploader = ({ onFileSelect }) => {
   // Estilização condicional baseada no Drag
   const activeStyle = {
     borderColor: '#2196f3',
-    backgroundColor: '#e3f2fd'
+    backgroundColor: '#e3f2fd',
   };
 
   return (
@@ -30,7 +32,7 @@ const PdfUploader = ({ onFileSelect }) => {
       <Typography variant="subtitle2" gutterBottom>
         Anexo do Documento (PDF)
       </Typography>
-      
+
       <Box
         {...getRootProps()}
         sx={{
@@ -42,20 +44,18 @@ const PdfUploader = ({ onFileSelect }) => {
           backgroundColor: '#fafafa',
           transition: 'border .2s ease-in-out',
           ...(isDragActive ? activeStyle : {}),
-          '&:hover': { borderColor: '#999' }
+          '&:hover': { borderColor: '#999' },
         }}
       >
         <input {...getInputProps()} />
-        
+
         {acceptedFiles.length > 0 ? (
           <Typography variant="body1" color="primary" sx={{ fontWeight: 'bold' }}>
-             📄 {acceptedFiles[0].name}
+            📄 {acceptedFiles[0].name}
           </Typography>
         ) : (
           <Typography variant="body2" color="textSecondary">
-            {isDragActive 
-              ? "Solte o PDF aqui..." 
-              : "Arraste o PDF ou clique para selecionar"}
+            {isDragActive ? 'Solte o PDF aqui...' : 'Arraste o PDF ou clique para selecionar'}
           </Typography>
         )}
       </Box>

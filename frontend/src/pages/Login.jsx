@@ -24,61 +24,66 @@ const Login = () => {
   return (
     <Grid
       container
-      sx={{ 
-        minHeight: '100vh', 
+      sx={{
+        minHeight: '100vh',
         bgcolor: '#D9D9D9',
-        p: { xs: 2, md: 4 } // Padding menor no celular
+        pl: { xs: 2, md: 40 },
+        pr: { xs: 2, md: 4 },
+        py: 4,
       }}
-      alignItems='center'
-      justifyContent='center'
+      alignItems="center"
+      justifyContent="space-between"
     >
-      {/* Lado Esquerdo: Logo Principal - Esconde em telas muito pequenas se desejar, ou empilha */}
-      <Grid item xs={12} md={6} sx={{ 
-        display: 'flex', 
-        justifyContent: 'center',
-        mb: { xs: 4, md: 0 } // Espaço abaixo da logo apenas no mobile
-      }}>
-        <img 
-          src="/images/Motopilot Logo.png" 
-          alt="Motopilot Logo" 
-          style={{ 
-            maxWidth: '80%', 
-            height: 'auto', 
-            width: '400px' 
-          }} 
+      {/* Lado Esquerdo: Logo Principal */}
+      <Grid
+        item
+        xs={12}
+        md={4}
+        sx={{
+          display: 'flex',
+          justifyContent: { xs: 'center', md: 'flex-start' },
+          mb: { xs: 4, md: 0 },
+        }}
+      >
+        <img
+          src="/images/Motopilot Logo.png"
+          alt="Motopilot Logo"
+          style={{
+            maxWidth: '80%',
+            height: '300px',
+            width: '550px',
+          }}
         />
       </Grid>
 
       {/* Lado Direito: Formulário */}
-      <Grid item xs={12} md={6} sx={{ display: 'flex', justifyContent: 'center' }}>
-        <Box sx={{
-          backgroundColor: "white", 
-          borderRadius: 2, 
-          width: '100%',
-          maxWidth: 500, // Largura máxima para não ficar gigante no desktop
-          minHeight: { xs: 'auto', md: 600 }, // Altura automática no mobile
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'center',
-          boxShadow: 3,
-          p: { xs: 3, sm: 6 }, // Padding interno adaptável
-        }}>
+      <Grid item xs={12} md={8} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+        <Box
+          sx={{
+            backgroundColor: 'white',
+            borderRadius: 4,
+            width: { xs: '100%', md: '860px' }, //aq q muda a altura
+            minHeight: { xs: 'auto', md: 850 },
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            p: { xs: 6, md: 16 }, //aq q muda o padding do form, ficar mais longe das bordas
+          }}
+        >
           <Stack spacing={4} alignItems="center">
             <img src="/images/Motopilot Logo-modified.png" alt="Motopilot Logo" width="90" />
 
             <form onSubmit={handleSubmit} style={{ width: '100%' }}>
-              <InputLabel sx={{ color: 'black', fontSize: 16, mb: 1 }}>
-                Email
-              </InputLabel>
+              <InputLabel sx={{ color: 'black', fontSize: 16, mb: 1 }}>Email</InputLabel>
               <TextField
                 sx={{
-                  "& .MuiOutlinedInput-root": {
-                    borderRadius: "12px",
+                  '& .MuiOutlinedInput-root': {
+                    borderRadius: '12px',
                     backgroundColor: '#fff',
-                    "& fieldset": { borderColor: '#e0e0e0' },
+                    '& fieldset': { borderColor: '#e0e0e0' },
                   },
-                  "& input:-webkit-autofill": {
-                    WebkitBoxShadow: "0 0 0 1000px white inset",
+                  '& input:-webkit-autofill': {
+                    WebkitBoxShadow: '0 0 0 1000px white inset',
                   },
                 }}
                 fullWidth
@@ -97,14 +102,22 @@ const Login = () => {
                 }}
               />
 
-              <InputLabel sx={{ color: 'black', fontSize: 16, mt: 2, mb: 1 }}>
-                Senha
-              </InputLabel>
+              <InputLabel sx={{ color: 'black', fontSize: 16, mt: 2, mb: 1 }}>Senha</InputLabel>
               <TextField
                 sx={{
-                  "& .MuiOutlinedInput-root": {
-                    borderRadius: "12px",
+                  '& .MuiOutlinedInput-root': {
+                    borderRadius: '12px',
                     backgroundColor: '#fff',
+                    '& fieldset': { borderColor: '#e0e0e0' },
+                  },
+                  '& input:-webkit-autofill': {
+                    WebkitBoxShadow: '0 0 0 1000px white inset',
+                  },
+                  '& input': {
+                    letterSpacing: '6px', // aq é para aumentar espaço entre caracteres da senha
+                  },
+                  '& input::placeholder': {
+                    letterSpacing: 'normal',
                   },
                 }}
                 fullWidth
@@ -126,15 +139,15 @@ const Login = () => {
               />
 
               <Button
-                sx={{ 
-                  backgroundColor: "#676767", 
-                  width: "100%", 
-                  mt: 3, 
-                  height: 50, 
-                  borderRadius: 3, 
-                  fontSize: 18, 
+                sx={{
+                  backgroundColor: '#676767',
+                  width: '100%',
+                  mt: 3,
+                  height: 50,
+                  borderRadius: 3,
+                  fontSize: 18,
                   textTransform: 'none',
-                  '&:hover': { backgroundColor: '#444' }
+                  '&:hover': { backgroundColor: '#444' },
                 }}
                 type="submit"
                 variant="contained"

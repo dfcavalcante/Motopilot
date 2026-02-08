@@ -38,11 +38,12 @@ const DadosGerais = ({
       sx={{
         backgroundColor: "#E0E0E0",
         p: 8,
-        borderRadius: "8px",
+        borderRadius: "16px",
         width: "100%",
         maxWidth: "1300px",
         margin: "0 auto",
         fontFamily: "Roboto, sans-serif",
+        minHeight: "500px",
       }}
     >
       <Typography

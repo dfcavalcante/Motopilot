@@ -3,9 +3,16 @@ import { Box, Typography } from "@mui/material";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 
 const EtapasMoto = ({ etapa }) => {
-  // Função para definir a opacidade: 1 se for a etapa atual, 0.4 se não for
+  // Função para definir a opacidade: 1 se for a etapa atual ou já concluída, 0.4 se for futura
   const getOpacity = (stepNumber) => {
-    return etapa === stepNumber ? 1 : 0.4;
+    if (etapa === stepNumber) {
+      return 1;
+    }
+    else if(etapa > stepNumber){
+      return 1;
+    }else if(etapa < stepNumber){
+      return 0.4;
+    }
   };
 
   // Função auxiliar para renderizar o ícone
@@ -41,21 +48,17 @@ const EtapasMoto = ({ etapa }) => {
   };
 
   return (
-    <Box display="flex" alignItems="center" mb={1} justifyContent="center">
+    <Box display="flex" alignItems="center" mb={2} justifyContent="center" >
       {/* --- ETAPA 1 --- */}
       <Box
         display="flex"
         alignItems="center"
-        sx={{
-          opacity: getOpacity(1), // Aplica a transparência aqui
-          transition: "opacity 0.3s ease", // Transição suave
-        }}
       >
         {renderIcone(1)}
         <Typography
           sx={{
-            fontWeight: etapa === 1 ? "bold" : "normal",
-            color: etapa === 1 ? "#000" : "#666",
+            fontWeight: etapa === 1 ? "normal" : "normal",
+            color: etapa === 1 ? "#000" : "#000000",
           }}
         >
           01 Dados Gerais
@@ -82,8 +85,8 @@ const EtapasMoto = ({ etapa }) => {
         {renderIcone(2)}
         <Typography
           sx={{
-            fontWeight: etapa === 2 ? "bold" : "normal",
-            color: etapa === 2 ? "#000" : "#666",
+            fontWeight: etapa === 2 ? "normal" : "normal",
+            color: etapa === 2 ? "#000" : "#000000",
           }}
         >
           02 Manual da Moto
@@ -110,8 +113,8 @@ const EtapasMoto = ({ etapa }) => {
         {renderIcone(3)}
         <Typography
           sx={{
-            fontWeight: etapa === 3 ? "bold" : "normal",
-            color: etapa === 3 ? "#a0a0a0" : "#666",
+            fontWeight: etapa === 3 ? "normal" : "normal",
+            color: etapa === 3 ? "#000000" : "#000000",
           }}
         >
           03 Concluído
