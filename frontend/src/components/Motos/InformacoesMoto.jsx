@@ -196,7 +196,7 @@ const InformacoesMoto = ({ moto, onBack }) => {
                     >
                       Modelo
                     </Typography>
-                    <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
+                    <Typography variant="body1" sx={{ fontWeight: 500 }}>
                       {moto.modelo}
                     </Typography>
                   </Box>
@@ -207,7 +207,7 @@ const InformacoesMoto = ({ moto, onBack }) => {
                     >
                       Marca
                     </Typography>
-                    <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
+                    <Typography variant="body1" sx={{ fontWeight: '500' }}>
                       {moto.marca}
                     </Typography>
                   </Box>
@@ -220,7 +220,7 @@ const InformacoesMoto = ({ moto, onBack }) => {
                   >
                     Ano
                   </Typography>
-                  <Typography variant="body1" sx={{ fontWeight: '700' }}>
+                  <Typography variant="body1" sx={{ fontWeight: '500' }}>
                     {moto.ano}
                   </Typography>
                 </Stack>
@@ -230,9 +230,18 @@ const InformacoesMoto = ({ moto, onBack }) => {
                 <Typography variant="h6" sx={{ mb: 1 }}>
                   Descrição da máquina
                 </Typography>
-                <Typography variant="body2" sx={{ color: '#444', textAlign: 'justify' }}>
-                  {moto.descricao || 'Sem descrição disponível.'}
-                </Typography>
+
+                <Box
+                  sx={{
+                    maxHeight: '150px',
+                    overflowY: 'auto',
+                    pr: 1,
+                  }}
+                >
+                  <Typography variant="body2" sx={{ color: '#444', textAlign: 'justify' }}>
+                    {moto.descricao || 'Sem descrição disponível.'}
+                  </Typography>
+                </Box>
               </Box>
             </Box>
           </Box>

@@ -7,19 +7,22 @@ import Cadastro from '../pages/Cadastro';
 import Usuarios from '../pages/Usuarios';
 import ListagemMotos from '../pages/ListagemMotos';
 import { MotoProvider } from '../context/MotoContext';
+import { UsersProvider } from '../context/UserContext';
 
 const Routers = () => {
   return (
     <BrowserRouter>
       <MotoProvider>
-        <Routes>
-          <Route path="/" element={<Login />} />
-          <Route path="/chatbot" element={<Chatbot />} />
-          <Route path="/cadastroMoto" element={<CadastroDeMoto />} />
-          <Route path="/listagemMotos" element={<ListagemMotos />} />
-          <Route path="/cadastro" element={<Cadastro />} />
-          <Route path="/usuarios" element={<Usuarios />} />
-        </Routes>
+        <UsersProvider>
+          <Routes>
+            <Route path="/" element={<Login />} />
+            <Route path="/chatbot" element={<Chatbot />} />
+            <Route path="/cadastroMoto" element={<CadastroDeMoto />} />
+            <Route path="/listagemMotos" element={<ListagemMotos />} />
+            <Route path="/cadastro" element={<Cadastro />} />
+            <Route path="/usuarios" element={<Usuarios />} />
+          </Routes>
+        </UsersProvider>
       </MotoProvider>
     </BrowserRouter>
   );

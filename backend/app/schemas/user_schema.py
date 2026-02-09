@@ -10,11 +10,17 @@ class RoleEnum(str, Enum):
 class UserBase(BaseModel):
     nome: str
     email: EmailStr
-    cargo: RoleEnum = RoleEnum.ENGINEER # Padrão é engenheiro
+    matricula: str
+    funcao: str
+    senha: str
 
-class UserCreate(UserBase):
-    senha: str # Senha é obrigatória só na criação
-
+class UserUpdate(BaseModel):
+    nome: Optional[str] = None
+    email: Optional[EmailStr] = None
+    matricula: Optional[str] = None
+    funcao: Optional[str] = None
+    senha: Optional[str] = None
+    
 class UserResponse(UserBase):
     id: int
     # Note que NÃO devolvemos a senha aqui

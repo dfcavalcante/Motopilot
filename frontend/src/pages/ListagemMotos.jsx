@@ -96,7 +96,7 @@ const ListagemMotos = () => {
                   justifyContent: 'center',
                   width: '90%',
                   position: 'relative',
-                  mt: 2,
+                  mt: 1,
                 }}
               >
                 <Typography

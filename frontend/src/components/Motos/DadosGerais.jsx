@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Typography, TextField, Grid, Button } from '@mui/material';
+import { Box, Typography, TextField, Grid, Button, Stack } from '@mui/material';
 import ImageUploader from '../Motos/ImageUploader.jsx';
 
 const DadosGerais = ({ dados, handleChange, onNext, errors }) => {
@@ -7,7 +7,6 @@ const DadosGerais = ({ dados, handleChange, onNext, errors }) => {
     color: '#000000',
     fontSize: '15px',
     fontWeight: '500',
-    marginBottom: '4px',
     marginLeft: '2px',
   };
 
@@ -29,13 +28,16 @@ const DadosGerais = ({ dados, handleChange, onNext, errors }) => {
     <Box
       sx={{
         backgroundColor: '#E0E0E0',
-        p: 8,
+        pl: 16,
+        pr: 16,
+        pt: 4,
+        pb: 4,
         borderRadius: '16px',
         width: '100%',
         maxWidth: '1300px',
         margin: '0 auto',
         fontFamily: 'Roboto, sans-serif',
-        minHeight: '500px',
+        minHeight: '600px',
       }}
     >
       <Typography variant="h5" align="center" sx={{ mb: 4, color: '#000000', fontWeight: 400 }}>
@@ -64,74 +66,61 @@ const DadosGerais = ({ dados, handleChange, onNext, errors }) => {
         </Grid>
 
         {/* LADO DIREITO: INPUTS */}
-        <Grid item xs={12} md={7}>
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-            {/* === LINHA 1 === */}
-            <Box sx={{ display: 'flex', gap: 2, width: '100%' }}>
-              <Box sx={{ flex: 1 }}>
-                <Typography sx={labelStyle}>Modelo</Typography>
-                <TextField
-                  name="modelo"
-                  value={dados.modelo}
-                  onChange={handleChange}
-                  fullWidth
-                  placeholder="Inserir nome"
-                  variant="outlined"
-                  sx={inputSx}
-                  error={!!errors.modelo}
-                  helperText={errors.modelo}
-                />
-              </Box>
-              <Box sx={{ flex: 1 }}>
-                <Typography sx={labelStyle}>Número de Série</Typography>
-                <TextField
-                  name="numeroSerie"
-                  value={dados.numeroSerie}
-                  onChange={handleChange}
-                  fullWidth
-                  placeholder="Inserir número de série"
-                  variant="outlined"
-                  sx={inputSx}
-                  error={!!errors.numeroSerie}
-                  helperText={errors.numeroSerie}
-                />
-              </Box>
-            </Box>
+        <Stack spacing={1} sx={{ height: '100%', width: '25%', ml: 5 }}>
+          <Typography sx={labelStyle}>Modelo</Typography>
+          <TextField
+            name="modelo"
+            value={dados.modelo}
+            onChange={handleChange}
+            fullWidth
+            placeholder="Inserir nome"
+            variant="outlined"
+            sx={inputSx}
+            error={!!errors.modelo}
+            helperText={errors.modelo}
+          />
 
-            {/* === LINHA 2 === */}
-            <Box sx={{ display: 'flex', gap: 2, width: '100%' }}>
-              <Box sx={{ flex: 1 }}>
-                <Typography sx={labelStyle}>Marca</Typography>
-                <TextField
-                  name="marca"
-                  value={dados.marca}
-                  onChange={handleChange}
-                  fullWidth
-                  placeholder="Inserir Setor"
-                  variant="outlined"
-                  sx={inputSx}
-                  error={!!errors.marca}
-                  helperText={errors.marca}
-                />
-              </Box>
+          <Typography sx={labelStyle}>Número de Série</Typography>
+          <TextField
+            name="numeroSerie"
+            value={dados.numeroSerie}
+            onChange={handleChange}
+            fullWidth
+            placeholder="Inserir número de série"
+            variant="outlined"
+            sx={inputSx}
+            error={!!errors.numeroSerie}
+            helperText={errors.numeroSerie}
+          />
+        </Stack>
 
-              <Box sx={{ flex: 1 }}>
-                <Typography sx={labelStyle}>Ano</Typography>
-                <TextField
-                  name="ano"
-                  value={dados.ano}
-                  onChange={handleChange}
-                  fullWidth
-                  placeholder="DD/MM/AA"
-                  variant="outlined"
-                  sx={inputSx}
-                  error={!!errors.ano}
-                  helperText={errors.ano}
-                />
-              </Box>
-            </Box>
-          </Box>
-        </Grid>
+        <Stack spacing={1} sx={{ height: '100%', width: '25%', ml: 5 }}>
+          <Typography sx={labelStyle}>Marca</Typography>
+          <TextField
+            name="marca"
+            value={dados.marca}
+            onChange={handleChange}
+            fullWidth
+            placeholder="Inserir Setor"
+            variant="outlined"
+            sx={inputSx}
+            error={!!errors.marca}
+            helperText={errors.marca}
+          />
+
+          <Typography sx={labelStyle}>Ano</Typography>
+          <TextField
+            name="ano"
+            value={dados.ano}
+            onChange={handleChange}
+            fullWidth
+            placeholder="DD/MM/AA"
+            variant="outlined"
+            sx={inputSx}
+            error={!!errors.ano}
+            helperText={errors.ano}
+          />
+        </Stack>
       </Grid>
 
       {/* PARTE INFERIOR: DESCRIÇÃO */}

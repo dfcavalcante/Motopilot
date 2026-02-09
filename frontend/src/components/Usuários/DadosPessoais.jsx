@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import {
   Box,
   Typography,
@@ -10,6 +10,7 @@ import {
   InputLabel,
   FormHelperText,
 } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 
 const DadosPessoais = ({
   nomeCompleto,
@@ -19,18 +20,22 @@ const DadosPessoais = ({
   numeroMatricula,
   setNumeroMatricula,
   funcao,
+  setFuncao,
   onNext,
+  onClose,
 }) => {
+  const navigate = useNavigate();
+
   const [error, setError] = useState(false);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!email || !nomeCompleto || !numeroMatricula || !funcao) {
+  const handleSubmit = () => {
+    if (!nomeCompleto || !email || !numeroMatricula || !funcao) {
       setError(true);
       return;
-    } else {
-      setError(false);
     }
+
+    setError(false);
+    if (onNext) onNext();
   };
 
   return (
@@ -45,81 +50,82 @@ const DadosPessoais = ({
       minWidth={600}
     >
       <Typography mb={2} fontSize={24}>
-        {' '}
-        Dados Pessoais{' '}
+        Dados Pessoais
       </Typography>
+
+      {/* CAMPO NOME */}
       <InputLabel sx={{ color: 'black', fontSize: 16, width: '100%', mb: 1 }}>
         Nome Completo
       </InputLabel>
-
       <TextField
         variant="outlined"
         fullWidth
         size="small"
         value={nomeCompleto}
         onChange={(e) => setNomeCompleto(e.target.value)}
-        error={error}
-        placeholder={error ? 'Campo Obrigatório *' : ''}
+        error={error && !nomeCompleto}
+        placeholder={error && !nomeCompleto ? 'Campo Obrigatório *' : ''}
         sx={{
           mb: 2,
           '& .MuiOutlinedInput-root': { borderRadius: '12px' },
           '& .MuiOutlinedInput-input::placeholder': {
-            color: error ? '#FF0000' : 'inherit', //Vermelho que tá no protótipo
-            opacity: error ? 0.8 : 0.5, // Garante que o vermelho fique nítido (browsers aplicam transparência por padrão)
+            color: error && !nomeCompleto ? '#FF0000' : 'inherit',
+            opacity: error ? 0.8 : 0.5,
             fontSize: 14,
           },
         }}
       />
 
+      {/* CAMPO EMAIL */}
       <InputLabel sx={{ color: 'black', fontSize: 16, width: '100%', mb: 1 }}>Email</InputLabel>
-
       <TextField
         variant="outlined"
         fullWidth
         size="small"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
-        error={error}
-        placeholder={error ? 'Campo Obrigatório *' : ''}
+        error={error && !email}
+        placeholder={error && !email ? 'Campo Obrigatório *' : ''}
         sx={{
           mb: 2,
           '& .MuiOutlinedInput-root': { borderRadius: '12px' },
           '& .MuiOutlinedInput-input::placeholder': {
-            color: error ? '#FF0000' : 'inherit', //Vermelho que tá no protótipo
+            color: error && !email ? '#FF0000' : 'inherit',
+            opacity: error ? 0.8 : 0.5,
             fontSize: 14,
-            opacity: error ? 0.8 : 0.5, // Garante que o vermelho fique nítido (browsers aplicam transparência por padrão)
           },
         }}
       />
 
+      {/* CAMPO MATRICULA */}
       <InputLabel sx={{ color: 'black', fontSize: 16, width: '100%', mb: 1 }}>
         Número de Matrícula
       </InputLabel>
-
       <TextField
         variant="outlined"
         fullWidth
         size="small"
         value={numeroMatricula}
-        error={error}
+        error={error && !numeroMatricula}
         onChange={(e) => setNumeroMatricula(e.target.value)}
-        placeholder={error ? 'Campo Obrigatório *' : ''}
+        placeholder={error && !numeroMatricula ? 'Campo Obrigatório *' : ''}
         sx={{
           mb: 2,
           '& .MuiOutlinedInput-root': { borderRadius: '12px' },
           '& .MuiOutlinedInput-input::placeholder': {
-            color: error ? '#FF0000' : 'inherit', //Vermelho que tá no protótipo
+            color: error && !numeroMatricula ? '#FF0000' : 'inherit',
             fontSize: 14,
-            opacity: error ? 0.8 : 0.5, // Garante que o vermelho fique nítido (browsers aplicam transparência por padrão)
+            opacity: error ? 0.8 : 0.5,
           },
         }}
       />
 
+      {/* RADIOS (FUNÇÃO) */}
       <Box sx={{ width: '100%' }} mb={4}>
         <Typography sx={{ color: 'black', fontSize: 16, mb: 1 }}>Função</Typography>
 
-        <RadioGroup row sx={{ gap: 2 }}>
-          {/* Box do Administrador */}
+        <RadioGroup row sx={{ gap: 2 }} value={funcao} onChange={(e) => setFuncao(e.target.value)}>
+          {/* Admin */}
           <Box
             sx={{
               display: 'flex',
@@ -129,23 +135,20 @@ const DadosPessoais = ({
               py: 0.5,
               borderRadius: '8px',
               border: '1px solid',
-              borderColor: error ? 'error.main' : '#AEAEAE',
+              borderColor: error && !funcao ? 'error.main' : '#AEAEAE',
               flex: 1,
-              transition: 'border-color 0.2s',
-              '&:hover': {
-                borderColor: error ? 'error.dark' : 'black',
-              },
+              '&:hover': { borderColor: error && !funcao ? 'error.dark' : 'black' },
             }}
           >
             <FormControlLabel
-              value="admin"
+              value="Administrador" // Valor que vai pro backend
               control={<Radio />}
               label="Administrador"
               sx={{ width: '100%', margin: 0 }}
             />
           </Box>
 
-          {/* Box do Técnico */}
+          {/* Técnico */}
           <Box
             sx={{
               display: 'flex',
@@ -155,16 +158,13 @@ const DadosPessoais = ({
               borderRadius: '8px',
               border: '1px solid',
               height: 40,
-              borderColor: error ? 'error.main' : '#AEAEAE',
+              borderColor: error && !funcao ? 'error.main' : '#AEAEAE',
               flex: 1,
-              transition: 'border-color 0.2s',
-              '&:hover': {
-                borderColor: error ? 'error.dark' : 'black',
-              },
+              '&:hover': { borderColor: error && !funcao ? 'error.dark' : 'black' },
             }}
           >
             <FormControlLabel
-              value="tecnico"
+              value="Tecnico" // Valor que vai pro backend
               control={<Radio />}
               label="Técnico"
               sx={{ width: '100%', margin: 0 }}
@@ -172,22 +172,38 @@ const DadosPessoais = ({
           </Box>
         </RadioGroup>
 
-        {/* Mensagem de erro abaixo, se necessário */}
-        {error && (
-          <FormHelperText error sx={{ ml: 1, mt: 1 }}>
-            Campos obrigatórios *
+        {error && !funcao && (
+          <FormHelperText error sx={{ ml: 1, mt: 1, fontSize: 14, color: '#FF0000' }}>
+            Campos Obrigatórios *
           </FormHelperText>
         )}
       </Box>
 
+      {/* BOTÕES */}
       <Box display="flex" gap={2} mt={2} width="100%" justifyContent="flex-end">
-        <Button variant="contained" sx={{ backgroundColor: '#DBDBDB', color: 'black' }}>
-          Cancelar{' '}
+        <Button
+          onClick={() => navigate('/usuarios')}
+          variant="outlined"
+          sx={{
+            color: '#333',
+            borderColor: '#999',
+            borderRadius: '8px',
+            textTransform: 'none',
+          }}
+        >
+          Cancelar
         </Button>
         <Button
           variant="contained"
-          onClick={onNext}
-          sx={{ backgroundColor: '#676767', color: 'white', width: 210, height: 35 }}
+          onClick={handleSubmit}
+          sx={{
+            backgroundColor: '#676767',
+            color: 'white',
+            width: 210,
+            height: 35,
+            borderRadius: '8px',
+            textTransform: 'none',
+          }}
         >
           Próximo
         </Button>

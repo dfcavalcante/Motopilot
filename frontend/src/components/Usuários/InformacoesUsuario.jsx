@@ -26,8 +26,23 @@ const InformacoesUsuario = ({ nome, cargo, email }) => {
       gap={3}
     >
       {/* Ícone à esquerda */}
-      <Box backgroundColor="white" borderRadius="50%" p={2}>
-        <img src="/images/userIcon.png" alt="Ícone Usuário" width={16} height={20} />
+      <Box
+        sx={{
+          width: 50,
+          height: 50,
+          borderRadius: '50%',
+          backgroundColor: 'white',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          boxShadow: 1,
+        }}
+      >
+        <img
+          src="/images/userIcon.png"
+          alt="Ícone Usuário"
+          style={{ width: '16px', height: '20px' }}
+        />
       </Box>
 
       {/* Conteúdo à direita */}

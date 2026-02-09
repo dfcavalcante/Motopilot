@@ -59,27 +59,6 @@ def atualizar_moto_endpoint(moto_id: int, moto_data: MotoUpdate, db: Session = D
         raise HTTPException(status_code=404, detail="Moto não encontrada")
     return moto_atualizada
 
-@router.patch('/{moto_id}/manual', response_model=MotoResponse)
-def adicionar_manual_endpoint(
-    moto_id: int, 
-    documento_pdf: UploadFile = File(...), 
-    db: Session = Depends(get_db)
-):
-    try:
-        filename = f"{uuid.uuid4()}_{documento_pdf.filename}"
-        file_path = os.path.join(UPLOAD_DIR, filename)
-        with open(file_path, "wb") as buffer:
-            shutil.copyfileobj(documento_pdf.file, buffer)
-    except Exception as e:
-        raise HTTPException(status_code=500, detail="Erro ao salvar arquivo")
-
-    moto_com_manual = moto_service.adicionar_manual(db, moto_id, file_path)
-    
-    if not moto_com_manual:
-        raise HTTPException(status_code=404, detail="Moto não encontrada")
-        
-    return moto_com_manual
-
 @router.patch('/{moto_id}/arquivar', response_model=MotoResponse)
 def arquivar_moto_endpoint(moto_id: int, db: Session = Depends(get_db)):
     moto_arquivada = moto_service.arquivar_moto(db, moto_id)

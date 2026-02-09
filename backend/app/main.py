@@ -63,7 +63,7 @@ def read_root():
 
 # --- REGISTRO DE ROTAS ---
 app.include_router(moto_router.router)
-#app.include_router(user_router.router) # Futuro: Rota de cadastro de usuários
+app.include_router(user_router.router) # Futuro: Rota de cadastro de usuários
 #app.include_router(auth_router.router)
 app.include_router(chatbot_router.router)
 app.include_router(report_router.router)

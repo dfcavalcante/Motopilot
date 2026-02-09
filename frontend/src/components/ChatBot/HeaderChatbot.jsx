@@ -50,7 +50,7 @@ const HeaderChatBot = ({onNovoChat }) => {
         </Button>
       );
     }
-    if (location.pathname === "/listagemMotos") {
+    if (location.pathname === "/listagemMotos" || location.pathname === "/cadastroMoto") {
       return (
         <Button
         variant="outlined"
@@ -72,7 +72,7 @@ const HeaderChatBot = ({onNovoChat }) => {
         </Button>
       );
     }
-    if (location.pathname === "/usuarios") {
+    if (location.pathname === "/usuarios" || location.pathname === "/cadastro") {
       return (
         <Button
             variant="outlined"

@@ -1,22 +1,12 @@
 import React, { useState } from 'react';
-import {
-  Box,
-  Stack,
-  Divider,
-  Typography,
-  RadioGroup,
-  TextField,
-  FormControlLabel,
-  Button,
-  Radio,
-  InputLabel,
-} from '@mui/material';
+import { Box, Stack, Divider, Typography } from '@mui/material';
 import SideBar from '../components/SideBar';
 import HeaderChatBot from '../components/ChatBot/HeaderChatbot';
 import DadosPessoais from '../components/Usuários/DadosPessoais';
 import Etapas from '../components/Usuários/Etapas';
 import CriarSenha from '../components/Usuários/CriarSenha';
 import Concluido from '../components/Usuários/Concluido';
+import { UsersContext } from '../context/UserContext';
 
 const Cadastro = () => {
   const [nomeCompleto, setNomeCompleto] = React.useState('');
@@ -25,9 +15,25 @@ const Cadastro = () => {
   const [funcao, setFuncao] = React.useState('');
   const [etapa, setEtapa] = React.useState(1);
 
-  // Funções para mudar de etapa
+  const { cadastrarUser } = React.useContext(UsersContext);
+
   const proximaEtapa = () => setEtapa((prev) => prev + 1);
   const etapaAnterior = () => setEtapa((prev) => prev - 1);
+
+  const finalizarCadastro = async (senha) => {
+    const novoUsuario = {
+      nome: nomeCompleto,
+      email: email,
+      matricula: numeroMatricula,
+      funcao: funcao,
+      senha: senha,
+    };
+
+    const sucesso = await cadastrarUser(novoUsuario);
+    if (sucesso) {
+      setEtapa(3);
+    }
+  };
 
   return (
     <Box
@@ -81,15 +87,16 @@ const Cadastro = () => {
                 setNumeroMatricula={setNumeroMatricula}
                 funcao={funcao}
                 setFuncao={setFuncao}
-                onNext={proximaEtapa} // Passamos a função para o botão "Continuar"
+                onBack={etapaAnterior}
+                onNext={proximaEtapa}
               />
             )}
 
             {etapa === 2 && (
               <CriarSenha
-                onBack={etapaAnterior} // Para o botão "Voltar"
+                onBack={etapaAnterior}
                 onNext={proximaEtapa}
-                onSubmit={() => console.log('Finalizado!')}
+                onSubmit={(senha) => finalizarCadastro(senha)}
               />
             )}
 

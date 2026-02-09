@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState } from 'react';
 import {
   Box,
   Typography,
@@ -12,13 +12,12 @@ import {
 import Check from '@mui/icons-material/Check';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
-const CriarSenha = ({ onBack, onNext }) => {
+const CriarSenha = ({ onBack, onSubmit }) => {
   const [senha, setSenha] = useState('');
   const [confirmarSenha, setConfirmarSenha] = useState('');
   const [showSenha1, setShowSenha1] = useState(false);
   const [showSenha2, setShowSenha2] = useState(false);
 
-  // Lógica de validação
   const validacoes = {
     caracteres: (senha || '').length >= 8 && (senha || '').length <= 12,
     maiuscula: /[A-Z]/.test(senha || ''),
@@ -29,7 +28,12 @@ const CriarSenha = ({ onBack, onNext }) => {
   const senhasConferem = senha === confirmarSenha && confirmarSenha !== '';
   const podeAvancar = todosRequisitosMet && senhasConferem;
 
-  // Função para estilizar o item da lista
+  const handleFinalizar = () => {
+    if (onSubmit) {
+      onSubmit(senha);
+    }
+  };
+
   const renderRequirement = (label, isMet) => (
     <Stack direction="row" alignItems="center" spacing={1} sx={{ opacity: isMet ? 0.5 : 1 }}>
       <Check sx={{ fontSize: 16, color: 'black' }} />
@@ -37,7 +41,7 @@ const CriarSenha = ({ onBack, onNext }) => {
         variant="caption"
         sx={{
           color: 'black',
-          textDecoration: isMet ? 'line-through' : 'none', // Risca o texto se concluído
+          textDecoration: isMet ? 'line-through' : 'none',
           fontSize: '13px',
         }}
       >
@@ -45,6 +49,7 @@ const CriarSenha = ({ onBack, onNext }) => {
       </Typography>
     </Stack>
   );
+
   return (
     <Box
       sx={{
@@ -74,9 +79,7 @@ const CriarSenha = ({ onBack, onNext }) => {
             color: '#000000',
             borderRadius: 2,
             backgroundColor: 'rgba(0, 0, 0, 0.1)',
-            '&:hover': {
-              backgroundColor: 'rgba(0, 0, 0, 0.2)',
-            },
+            '&:hover': { backgroundColor: 'rgba(0, 0, 0, 0.2)' },
           }}
         >
           <ArrowBackIcon />
@@ -86,8 +89,7 @@ const CriarSenha = ({ onBack, onNext }) => {
         </Typography>
       </Box>
 
-      {/* --- Área Central --- */}
-
+      {/* --- Área Central (Inputs) --- */}
       <Box
         sx={{
           display: 'flex',
@@ -98,7 +100,6 @@ const CriarSenha = ({ onBack, onNext }) => {
           mt: 4,
         }}
       >
-        {/* Campo Senha */}
         <InputLabel sx={{ color: 'black', fontSize: 16, mb: 1 }}>Senha</InputLabel>
         <TextField
           type={showSenha1 ? 'text' : 'password'}
@@ -113,7 +114,7 @@ const CriarSenha = ({ onBack, onNext }) => {
                 <IconButton onClick={() => setShowSenha1(!showSenha1)} edge="end">
                   <img
                     src={showSenha1 ? '/images/olhoAberto.png' : '/images/olhoFechado.png'}
-                    alt="Mostrar senha"
+                    alt="Mostrar"
                     style={{ width: '20px' }}
                   />
                 </IconButton>
@@ -122,18 +123,11 @@ const CriarSenha = ({ onBack, onNext }) => {
           }}
           sx={{
             mb: 2,
-            '& .MuiOutlinedInput-root': {
-              borderRadius: '12px',
-              bgcolor: '#E0E0E0',
-            },
-            // Estilo para as bolinhas da senha ficarem afastadas
-            '& input[type="password"]': {
-              letterSpacing: '0.3em',
-            },
+            '& .MuiOutlinedInput-root': { borderRadius: '12px', bgcolor: '#E0E0E0' },
+            '& input[type="password"]': { letterSpacing: '0.3em' },
           }}
         />
 
-        {/* Campo Confirmar Senha */}
         <InputLabel sx={{ color: 'black', fontSize: 16, mb: 1 }}>Confirmar Senha</InputLabel>
         <TextField
           type={showSenha2 ? 'text' : 'password'}
@@ -148,7 +142,7 @@ const CriarSenha = ({ onBack, onNext }) => {
                 <IconButton onClick={() => setShowSenha2(!showSenha2)} edge="end">
                   <img
                     src={showSenha2 ? '/images/olhoAberto.png' : '/images/olhoFechado.png'}
-                    alt="Mostrar senha"
+                    alt="Mostrar"
                     style={{ width: '20px' }}
                   />
                 </IconButton>
@@ -157,18 +151,11 @@ const CriarSenha = ({ onBack, onNext }) => {
           }}
           sx={{
             mb: 2,
-            '& .MuiOutlinedInput-root': {
-              borderRadius: '12px',
-              bgcolor: '#E0E0E0',
-            },
-            // Estilo para as bolinhas da senha ficarem afastadas
-            '& input[type="password"]': {
-              letterSpacing: '0.3em',
-            },
+            '& .MuiOutlinedInput-root': { borderRadius: '12px', bgcolor: '#E0E0E0' },
+            '& input[type="password"]': { letterSpacing: '0.3em' },
           }}
         />
 
-        {/* Lista de Requisitos */}
         <Stack spacing={0.5} mt={1}>
           <Typography variant="caption" sx={{ color: 'black', fontSize: 16, mb: 1 }}>
             Sua senha deve conter
@@ -191,17 +178,15 @@ const CriarSenha = ({ onBack, onNext }) => {
             textTransform: 'none',
             px: 7,
             width: '100px',
-            '&:hover': {
-              borderColor: '#666',
-              backgroundColor: 'rgba(0,0,0,0.05)',
-            },
+            '&:hover': { borderColor: '#666', backgroundColor: 'rgba(0,0,0,0.05)' },
           }}
         >
           Cancelar
         </Button>
+
         <Button
           variant="contained"
-          onClick={onNext}
+          onClick={handleFinalizar}
           disabled={!podeAvancar}
           sx={{
             backgroundColor: '#444',
@@ -212,18 +197,11 @@ const CriarSenha = ({ onBack, onNext }) => {
             width: '140px',
             boxShadow: 'none',
             transition: 'all 0.3s ease',
-            '&:hover': {
-              backgroundColor: '#222',
-              boxShadow: 'none',
-            },
-            '&.Mui-disabled': {
-              backgroundColor: '#bbb',
-              color: '#eee',
-              cursor: 'not-allowed',
-            },
+            '&:hover': { backgroundColor: '#222', boxShadow: 'none' },
+            '&.Mui-disabled': { backgroundColor: '#bbb', color: '#eee', cursor: 'not-allowed' },
           }}
         >
-          Próximo
+          Concluir
         </Button>
       </Box>
     </Box>
