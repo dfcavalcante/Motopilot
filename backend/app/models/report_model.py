@@ -1,6 +1,6 @@
 from sqlalchemy import Float, Integer, Column, Boolean, String
 from app.schemas.report_schema import ReportBase
-from app.database.connections import Base
+from app.database import Base
 
 class Report(Base):
     __tablename__ = "relatorio"

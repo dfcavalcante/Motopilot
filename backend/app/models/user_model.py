@@ -1,12 +1,6 @@
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy.orm import relationship
-import enum
-from app.database.connections import Base
-
-# Tipos de usuarios
-class UserRole(str, enum.Enum):
-    ENGINEER = "engenheiro"
-    MANAGER = "gerente"
+from app.database import Base
 
 class User(Base):
     __tablename__ = "users"
@@ -16,7 +10,14 @@ class User(Base):
     email = Column(String, unique=True, index=True, nullable=False)
     senha_hash = Column(String, nullable=False)
     
-    # Armazena como string ("engenheiro" ou "gerente")
-    cargo = Column(String, default=UserRole.ENGINEER.value) 
+    # --- CHAVES ESTRANGEIRAS (Obrigatórias para o erro sumir) ---
+    empresa_id = Column(Integer, ForeignKey("empresas.id"))
+    cargo_id = Column(Integer, ForeignKey("cargos.id"))
+
+    # --- RELACIONAMENTOS ---
+    # back_populates="usuarios" deve bater com o que está em Empresa e Cargo
+    empresa = relationship("Empresa", back_populates="usuarios")
+    cargo = relationship("Cargo", back_populates="usuarios")
     
+    # back_populates="user" deve bater com o que está em ChatLog (singular 'user')
     chat_logs = relationship("ChatLog", back_populates="user")

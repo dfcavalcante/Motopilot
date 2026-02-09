@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 from app.services.report_service import ReportService
 from app.schemas.report_schema import ReportBase, ReportFilter, ReportResponse, ReportUpdate
-from app.database.connections import get_db
+from app.database import get_db
 from sqlalchemy.orm import Session
 
 router = APIRouter(prefix="/relatório", tags=['Relatório'])

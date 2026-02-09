@@ -1,5 +1,9 @@
-# Importamos as classes para cá para facilitar o acesso externo
+# Importa as classes dos arquivos individuais
+from .empresa_model import Empresa
+from .cargo_model import Cargo
 from .user_model import User
 from .moto_model import Moto
+from .chat_model import ChatLog # Mudou de Chat para ChatLog
 
-# Se adicionar mais modelos no futuro (ex: manual_model.py), adicione aqui.
+# (Opcional) Define o que será exportado se alguém usar "from app.models import *"
+__all__ = ["Empresa", "Cargo", "User", "Moto", "ChatLog"]

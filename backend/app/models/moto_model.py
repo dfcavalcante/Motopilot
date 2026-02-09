@@ -1,19 +1,13 @@
-from sqlalchemy import Column, Integer, String, Text
+from sqlalchemy import Column, Integer, String
 from sqlalchemy.orm import relationship
-from app.database.connections import Base
+from app.database import Base
 
 class Moto(Base):
     __tablename__ = "motos"
 
     id = Column(Integer, primary_key=True, index=True)
-    marca = Column(String(50), nullable=False)   # Ex: Honda
-    modelo = Column(String(100), nullable=False) # Ex: CBR 650R
-    ano = Column(Integer, nullable=True)         # Ex: 2023
-
-    manual_pdf_path = Column(String(255), nullable=True)
-
-    # URL da imagem da moto para exibir no chat
-    #imagem_url = Column(Text, nullable=True)
-
-    # Relacionamento com o Histórico (Uma moto aparece em vários logs)
+    marca = Column(String, index=True)
+    modelo = Column(String, index=True)
+    ano = Column(String)
+    manual_pdf_path = Column(String, nullable=True)
     chat_logs = relationship("ChatLog", back_populates="moto")

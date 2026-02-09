@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, status, Depends
 from typing import Optional
 from sqlalchemy.orm import Session
-from app.database.connections import get_db
+from app.database import get_db
 from app.services.chat_service import ChatService
 from app.schemas.chatbot_schema import ChatRequest, ChatResponse
 
