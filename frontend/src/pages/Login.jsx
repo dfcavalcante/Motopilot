@@ -62,8 +62,8 @@ const Login = () => {
           sx={{
             backgroundColor: 'white',
             borderRadius: 4,
-            width: { xs: '100%', md: '860px' }, //aq q muda a altura
-            minHeight: { xs: 'auto', md: 850 },
+            width: { xs: '100%', md: '700px' }, //aq q muda a altura
+            minHeight: { xs: 'auto', md: 800 },
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'center',

@@ -3,8 +3,13 @@ import { Box, Stack, Divider, Typography, IconButton, Button, Chip } from '@mui/
 import HeaderChatBot from '../ChatBot/HeaderChatbot.jsx';
 import SideBar from '../SideBar.jsx';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import { useNavigate } from 'react-router-dom';
+import { MotoContext } from '../../context/MotoContext.jsx';
 
 const InformacoesMoto = ({ moto, onBack }) => {
+  const navigate = useNavigate();
+  const { setMotoSelecionada } = React.useContext(MotoContext);
+
   const getImageUrl = (caminhoDoBanco) => {
     const caminhoCorrigido = caminhoDoBanco.replace(/\\/g, '/');
 
@@ -113,6 +118,10 @@ const InformacoesMoto = ({ moto, onBack }) => {
               }}
             >
               <Button
+                onClick={() => {
+                  setMotoSelecionada(moto);
+                  navigate('/chatbot');
+                }}
                 variant="contained"
                 sx={{
                   backgroundColor: '#B5B5B5',
@@ -166,7 +175,7 @@ const InformacoesMoto = ({ moto, onBack }) => {
                 p: 4,
                 width: '95%',
                 maxWidth: '1600px',
-                minHeight: '320px',
+                minHeight: '300px',
                 fontFamily: 'Roboto, sans-serif',
               }}
             >

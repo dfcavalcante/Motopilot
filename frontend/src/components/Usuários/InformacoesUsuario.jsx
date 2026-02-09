@@ -1,24 +1,17 @@
 import React from 'react';
 import {
   Box,
-  Stack,
-  Divider,
   Typography,
-  RadioGroup,
-  TextField,
-  FormControlLabel,
-  Button,
-  Radio,
-  InputLabel,
+  IconButton,
 } from '@mui/material';
 
 const InformacoesUsuario = ({ nome, cargo, email }) => {
   return (
     <Box
       backgroundColor="#B2B2B2"
-      width={435}
-      height={135}
-      borderRadius="16px"
+      width={410}
+      height={130}
+      borderRadius="18px"
       p={2}
       mt={2}
       display="flex"
@@ -35,7 +28,6 @@ const InformacoesUsuario = ({ nome, cargo, email }) => {
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
-          boxShadow: 1,
         }}
       >
         <img
@@ -61,20 +53,12 @@ const InformacoesUsuario = ({ nome, cargo, email }) => {
           </Typography>
 
           <Box display="flex" gap={1}>
-            <img
-              src="/images/lapis.png"
-              alt="Editar"
-              width={16}
-              height={16}
-              style={{ cursor: 'pointer' }}
-            />
-            <img
-              src="/images/lixeira.png"
-              alt="Excluir"
-              width={16}
-              height={16}
-              style={{ cursor: 'pointer' }}
-            />
+            <IconButton size="small" onClick={() => onEdit(usuario)}>
+          <img src="/images/lapis.png" alt="Editar" style={{ width: '14px', height: '14px' }} />
+        </IconButton>
+        <IconButton size="small" onClick={() => onDelete(usuario.id)}>
+          <img src="/images/lixeira.png" alt="Excluir" style={{ width: '14px', height: '14px' }} />
+        </IconButton>
           </Box>
         </Box>
       </Box>

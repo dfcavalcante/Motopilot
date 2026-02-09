@@ -10,6 +10,11 @@ export const MotoProvider = ({ children }) => {
 
   const BASE_URL = "http://localhost:8000";
 
+  {/*Moto para usar do Informações Moto para o Chatbot*/}
+  const [motoSelecionada, setMotoSelecionada] = useState(null);
+
+
+
   const listarMotos = async () => {
     try {
       const response = await fetch(`${BASE_URL}/motos/listar`);
@@ -113,7 +118,7 @@ export const MotoProvider = ({ children }) => {
   };
 
   return (
-    <MotoContext.Provider value={{ motos, cadastrarMoto, listarMotos, loading, erro, excluirMoto, atualizarMoto}}>
+    <MotoContext.Provider value={{ motos, cadastrarMoto, listarMotos, loading, erro, excluirMoto, atualizarMoto, motoSelecionada, setMotoSelecionada }}>
       {children}
     </MotoContext.Provider>
   );

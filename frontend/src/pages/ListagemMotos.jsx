@@ -134,7 +134,7 @@ const ListagemMotos = () => {
                 flexGrow: 100,
                 width: '100%',
                 borderRadius: '16px',
-                pl: 6,
+                pl: 8,
                 mt: 2,
                 overflowY: 'auto',
               }}

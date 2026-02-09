@@ -11,7 +11,6 @@ const UserRow = ({ usuario, onEdit, onDelete }) => {
         alignItems: 'center', 
         width: '100%', 
         py: 0.5,
-        px: 2,
         borderBottom: '1px solid #E0E0E0',
         bgcolor: 'transparent',
         '&:hover': {
@@ -21,8 +20,8 @@ const UserRow = ({ usuario, onEdit, onDelete }) => {
         transition: 'background-color 0.2s',
       }}
     >
-      {/* COLUNA 1: NOME (30%)*/}
-      <Box sx={{ width: '30%', display: 'flex', alignItems: 'center', gap: 2 }}>
+      {/* COLUNA 1: NOME (25%)*/}
+      <Box sx={{ width: '25%', display: 'flex', alignItems: 'center', gap: 2 }}>
         <Box
           sx={{
             width: 32,
@@ -50,25 +49,25 @@ const UserRow = ({ usuario, onEdit, onDelete }) => {
         </Typography>
       </Box>
 
-      {/*COLUNA 3: FUNÇÃO (25%)*/}
-      <Box sx={{ width: '15%' }}>
+      {/*COLUNA 3: FUNÇÃO (15%)*/}
+      <Box sx={{ width: '20%' }}>
         <Typography  color="black" noWrap fontSize={16}>
           {usuario.funcao}
         </Typography>
       </Box>
 
-      {/*COLUNA 4: STATUS (15%) - Centralizado*/}
+      {/*COLUNA 4: STATUS (20%) - Centralizado*/}
       <Box sx={{ width: '20%', display: 'flex', justifyContent: 'center' }}>
         <Box sx={{ width: 10, height: 10, borderRadius: '50%', bgcolor: '#C5C5C5' }} />
       </Box>
 
       {/* AÇÕES (10%) - Alinhado à direita */}
-      <Box sx={{ width: '5%', display: 'flex', justifyContent: 'flex-end' }}>
+      <Box sx={{ width: '5', display: 'flex', justifyContent: 'flex-end', gap: 1 }}>
         <IconButton size="small" onClick={() => onEdit(usuario)}>
-          <EditIcon fontSize="small" sx={{ color: '#666' }} />
+          <img src="/images/lapis.png" alt="Editar" style={{ width: '15px', height: '15px' }} />
         </IconButton>
         <IconButton size="small" onClick={() => onDelete(usuario.id)}>
-          <DeleteIcon fontSize="small" sx={{ color: '#666' }} />
+          <img src="/images/lixeira.png" alt="Excluir" style={{ width: '15px', height: '15px' }} />
         </IconButton>
       </Box>
     </Box>

@@ -61,7 +61,7 @@ const Usuarios = () => {
         pb: 2, 
       }}
     >
-      <Box sx={{ width: '30%' }}>
+      <Box sx={{ width: '25%' }}>
         <Typography color="black">Funcionário</Typography>
       </Box>
 
@@ -69,7 +69,7 @@ const Usuarios = () => {
         <Typography color="black">Email</Typography>
       </Box>
 
-      <Box sx={{ width: '15%' }}>
+      <Box sx={{ width: '20%' }}>
         <Typography color="black">Função</Typography>
       </Box>
 
@@ -182,20 +182,36 @@ const Usuarios = () => {
               </Box>
               <Box sx={{ flex: 1 }} />
             </Box>
-
+            
+            {/* Box principal que contém a listagem em si, seja em grid ou listagem */}
             <Box
               backgroundColor="#DBDBDB"
               sx={{
                 flexGrow: 100,
                 width: '100%',
                 borderRadius: '16px',
-                pl: 16,
+                pl: 12,
+                pr: 12,
                 mt: 2,
                 overflowY: 'auto',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: 1,
-              }}
+                // quando estiver em modo grid usamos CSS Grid responsivo (1..4 colunas),
+                // caso contrário mantemos o layout em coluna para a listagem
+                ...(viewMode === 'grid'
+                  ? {
+                      display: 'grid',
+                      gridTemplateColumns: {
+                        xs: 'repeat(1, 1fr)',
+                        sm: 'repeat(2, 1fr)',
+                        md: 'repeat(3, 1fr)',
+                      },
+                      alignItems:'flex-start',
+                    }
+                  : {
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: 1,
+                    }),
+               }}
             >
 
               {viewMode === 'list' && <TableHeader />}
@@ -209,13 +225,11 @@ const Usuarios = () => {
                       onDelete={excluirUser}
                     />
                   ) : (
-                    <Box sx={{ width: 'calc(50% - 16px)', minWidth: 300 }}>
                       <InformacoesUsuario
                         nome={usuario.nome}
                         cargo={usuario.funcao}
                         email={usuario.email}
                       />
-                    </Box>
                   )}
                 </React.Fragment>
               ))}

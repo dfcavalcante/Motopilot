@@ -3,10 +3,9 @@ import { MotoContext } from '../context/MotoContext';
 import { sendChatMessage } from '../context/Chatbot.js';
 
 export const useChat = () => {
-    const { motos, cadastrarMoto, listar_motos } = useContext(MotoContext);
+    const { motos, cadastrarMoto, listarMotos, motoSelecionada, setMotoSelecionada } = useContext(MotoContext);
     const [messages, setMessages] = useState([]);
     const [isLoadingChat, setIsLoadingChat] = useState(false);
-    const [motoSelecionada, setMotoSelecionada] = useState(null);
     const [carregandoMotos, setCarregandoMotos] = useState(false); // Comece como false
 
     useEffect(() => {
@@ -16,7 +15,7 @@ export const useChat = () => {
         setCarregandoMotos(true);
         try {
             // 1. Tenta listar as motos
-            const listaAtual = await listar_motos();
+            const listaAtual = await listarMotos();
             //Retirei a criação automática da moto padrão
         } catch (error) {
             console.error("Erro na inicialização:", error);

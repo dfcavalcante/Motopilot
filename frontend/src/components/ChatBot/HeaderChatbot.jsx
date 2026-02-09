@@ -151,10 +151,14 @@ const HeaderChatBot = ({onNovoChat }) => {
             border: "1px solid black",
             display: "inline-flex",
             borderRadius: "10px",
+            width: 40,
+            height: 40,
+            justifyContent: "center",
+            alignItems: "center",
           }}
         >
           <IconButton sx={{ color: "grey.700" }}>
-            <img src="/images/bell.png" alt="Notifications" width="15" />
+            <img src="/images/bell.png" alt="Notifications" width="16" />
           </IconButton>
         </Box>
       </Box>

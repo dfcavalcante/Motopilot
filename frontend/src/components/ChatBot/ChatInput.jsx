@@ -26,7 +26,7 @@ const ChatInput = ({ input, setInput, onSend }) => {
                 "& .MuiOutlinedInput-root": {
                     borderRadius: "16px",
                     "& fieldset": { borderRadius: "16px" },
-                    alignItems: 'flex-end'
+                    alignItems: 'flex-end',
                 },
             }}
             InputProps={{

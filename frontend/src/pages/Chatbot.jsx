@@ -4,11 +4,12 @@ import HeaderChatBot from "../components/ChatBot/HeaderChatbot.jsx";
 import SideBar from "../components/SideBar.jsx";
 import ChatMessage from "../components/ChatBot/ChatMessage.jsx";
 import { useChat } from "../context/useChat.js";
-import MotoSelectionDialog from "../components/ChatBot/SeleçãoMoto.jsx";
 import ChatInput from "../components/ChatBot/ChatInput.jsx";
 import TelaInicial from "../components/ChatBot/TelaInicialChat.jsx";
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 const Chatbot = () => {
+
   const {
     motos,
     motoSelecionada,
@@ -90,25 +91,29 @@ const Chatbot = () => {
               alignItems: "center",
               p: 2,
               overflow: "hidden",
+              position: 'relative',
             }}
           >
-            <Box display={"flex"} alignItems={"center"} gap={2} mb={2}>
-              <Typography fontSize={30}>{nomeChat}</Typography>
-
+            <Box display={"flex"} mb={2} alignItems="center" width="100%" px={5} gap={1} position="relative" justifyContent="center">
               <IconButton
+                onClick={() => window.history.back()}
                 sx={{
-                  padding: "5px", // Ajusta a área de clique
-                  "&:hover": { backgroundColor: "rgba(0,0,0,0.04)" },
+                  color: '#000000',
+                  borderRadius: 2,
+                  backgroundColor: '#B5B5B5',
+                  width: 40,
+                  height: 40,
+                  flexShrink: 0,
+                  position: 'absolute',
+                  left: 0,
+                  '&:hover': { backgroundColor: 'rgba(0, 0, 0, 0.2)' },
                 }}
               >
-                <img
-                  src="images/setaChat.png"
-                  alt="Editar Chat"
-                  width={10}
-                  height={7} // Aumentei um pouco para facilitar o clique
-                />
+                <ArrowBackIcon />
               </IconButton>
+              <Typography fontSize={30}>{nomeChat}</Typography>
             </Box>
+
 
             <Divider
               sx={{ width: "90%", bgcolor: "grey.700", height: "0.4px" }}
