@@ -5,7 +5,7 @@ import {
   IconButton,
 } from '@mui/material';
 
-const InformacoesUsuario = ({ nome, cargo, email }) => {
+const InformacoesUsuario = ({usuario, onEdit, onDelete, atualizando, setAtualizando }) => {
   return (
     <Box
       backgroundColor="#B2B2B2"
@@ -16,7 +16,7 @@ const InformacoesUsuario = ({ nome, cargo, email }) => {
       mt={2}
       display="flex"
       alignItems="center"
-      gap={3}
+      gap={1}
     >
       {/* Ícone à esquerda */}
       <Box
@@ -40,25 +40,25 @@ const InformacoesUsuario = ({ nome, cargo, email }) => {
       {/* Conteúdo à direita */}
       <Box flex={1}>
         <Typography fontSize={24} fontWeight={300}>
-          {nome}
+          {usuario.nome}
         </Typography>
         <Typography fontSize={20} mb={1} fontWeight={400}>
-          {cargo}
+          {usuario.cargo}
         </Typography>
 
         {/* Email + ícones alinhados */}
         <Box display="flex" alignItems="center" justifyContent="space-between">
           <Typography fontSize={16} fontWeight={300}>
-            {email}
+            {usuario.email}
           </Typography>
 
           <Box display="flex" gap={1}>
-            <IconButton size="small" onClick={() => onEdit(usuario)}>
-          <img src="/images/lapis.png" alt="Editar" style={{ width: '14px', height: '14px' }} />
-        </IconButton>
-        <IconButton size="small" onClick={() => onDelete(usuario.id)}>
-          <img src="/images/lixeira.png" alt="Excluir" style={{ width: '14px', height: '14px' }} />
-        </IconButton>
+            <IconButton size="small" onClick={() => setAtualizando(usuario)}>
+              <img src="/images/lapis.png" alt="Editar" style={{ width: '14px', height: '14px' }} />
+            </IconButton>
+            <IconButton size="small" onClick={() => onDelete(usuario.id)}>
+              <img src="/images/lixeira.png" alt="Excluir" style={{ width: '14px', height: '14px' }} />
+            </IconButton>
           </Box>
         </Box>
       </Box>

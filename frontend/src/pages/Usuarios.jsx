@@ -6,14 +6,16 @@ import BarraPesquisa from '../components/CadastroMoto/BarraPesquisa';
 import InformacoesUsuario from '../components/Usuários/InformacoesUsuario';
 import { UsersContext } from '../context/UserContext';
 import UserRow from '../components/Usuários/ListUsers';
+import TableHeader from '../components/Usuários/TableHeader';
+import UpdateUsuario from '../components/Usuários/UpdateUsuario';
 
 const Usuarios = () => {
-  const { listarUsers, users, excluirUser } = React.useContext(UsersContext);
+  const { listarUsers, users, excluirUser, atualizarUser } = React.useContext(UsersContext);
 
   const [tipoOrdenacao, setTipoOrdenacao] = useState(null);
   const [viewMode, setViewMode] = useState('list'); // 'list' ou 'grid'
   const [anchorEl, setAnchorEl] = useState(null);
-
+  const [atualizando, setAtualizando] = useState(null);
   const [input, setInput] = React.useState('');
 
   React.useEffect(() => {
@@ -46,42 +48,12 @@ const Usuarios = () => {
     return lista;
   }, [users, input, tipoOrdenacao]);
 
-  const handleEditUser = (usuario) => {
-    console.log('Editando usuário:', usuario);
+  const handleEditUser = async (novosDadosDoFormulario) => {
+    if (atualizando) {
+      await atualizarUser(atualizando.id, novosDadosDoFormulario);
+      setAtualizando(null);
+    }
   };
-
-  const TableHeader = () => (
-    <Box
-      sx={{
-        display: 'flex',
-        width: '100%',
-        mt: 3,
-        mb: 2,
-        borderBottom: '1px dashed #969696',
-        pb: 2, 
-      }}
-    >
-      <Box sx={{ width: '25%' }}>
-        <Typography color="black">Funcionário</Typography>
-      </Box>
-
-      <Box sx={{ width: '25%' }}>
-        <Typography color="black">Email</Typography>
-      </Box>
-
-      <Box sx={{ width: '20%' }}>
-        <Typography color="black">Função</Typography>
-      </Box>
-
-      <Box sx={{ width: '20%', textAlign: 'center' }}>
-        <Typography color="black">Status</Typography>
-      </Box>
-
-      <Box sx={{ width: '3.5%', textAlign: 'right' }}>
-        <Typography color="black">Ações</Typography>
-      </Box>
-    </Box>
-  );
 
   return (
     <Box
@@ -182,6 +154,15 @@ const Usuarios = () => {
               </Box>
               <Box sx={{ flex: 1 }} />
             </Box>
+
+            {atualizando && (
+              <UpdateUsuario 
+                open={!!atualizando} 
+                onClose={() => setAtualizando(null)} 
+                onSave={handleEditUser}
+                initialData={atualizando} 
+              />
+            )}
             
             {/* Box principal que contém a listagem em si, seja em grid ou listagem */}
             <Box
@@ -190,8 +171,8 @@ const Usuarios = () => {
                 flexGrow: 100,
                 width: '100%',
                 borderRadius: '16px',
-                pl: 12,
-                pr: 12,
+                pl: 16,
+                pr: 16,
                 mt: 2,
                 overflowY: 'auto',
                 // quando estiver em modo grid usamos CSS Grid responsivo (1..4 colunas),
@@ -205,13 +186,13 @@ const Usuarios = () => {
                         md: 'repeat(3, 1fr)',
                       },
                       alignItems:'flex-start',
+                      alignContent:'flex-start'
                     }
                   : {
                       display: 'flex',
                       flexDirection: 'column',
-                      gap: 1,
                     }),
-               }}
+              }}
             >
 
               {viewMode === 'list' && <TableHeader />}
@@ -223,12 +204,16 @@ const Usuarios = () => {
                       usuario={usuario}
                       onEdit={handleEditUser} 
                       onDelete={excluirUser}
+                      setAtualizando={setAtualizando}
+                      atualizando={atualizando}
                     />
                   ) : (
                       <InformacoesUsuario
-                        nome={usuario.nome}
-                        cargo={usuario.funcao}
-                        email={usuario.email}
+                        usuario={usuario}
+                        onEdit={handleEditUser}
+                        onDelete={excluirUser}
+                        setAtualizando={setAtualizando}
+                        atualizando={atualizando}
                       />
                   )}
                 </React.Fragment>

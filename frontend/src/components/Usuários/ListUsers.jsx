@@ -3,7 +3,7 @@ import { Box, Typography, IconButton } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 
-const UserRow = ({ usuario, onEdit, onDelete }) => {
+const UserRow = ({ usuario, onEdit, onDelete, setAtualizando, atualizando }) => {
   return (
     <Box
       sx={{
@@ -31,7 +31,6 @@ const UserRow = ({ usuario, onEdit, onDelete }) => {
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',
-            boxShadow: 1,
             border: '1px solid #eee',
           }}
         >
@@ -63,7 +62,7 @@ const UserRow = ({ usuario, onEdit, onDelete }) => {
 
       {/* AÇÕES (10%) - Alinhado à direita */}
       <Box sx={{ width: '5', display: 'flex', justifyContent: 'flex-end', gap: 1 }}>
-        <IconButton size="small" onClick={() => onEdit(usuario)}>
+        <IconButton size="small" onClick={() => { setAtualizando(usuario); }}>
           <img src="/images/lapis.png" alt="Editar" style={{ width: '15px', height: '15px' }} />
         </IconButton>
         <IconButton size="small" onClick={() => onDelete(usuario.id)}>

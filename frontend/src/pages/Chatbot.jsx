@@ -21,7 +21,6 @@ const Chatbot = () => {
   } = useChat();
 
   const [input, setInput] = useState("");
-  const [modalOpen, setModalOpen] = useState(!motoSelecionada);
   const [nomeChat, setNomeChat] = useState("Nome Chat");
   const [isLoading, setIsLoading] = useState(false);
 
@@ -31,7 +30,6 @@ const Chatbot = () => {
       setMessages([]); // Limpa o array de mensagens
     }
     setMotoSelecionada(null); // Limpa a moto atual
-    setModalOpen(true); // Abre o modal para nova seleção
     setNomeChat("Nome Chat"); // Reseta o nome do chat se desejar
   };
 
