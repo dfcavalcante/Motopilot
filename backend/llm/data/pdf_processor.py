@@ -45,6 +45,17 @@ def processar_manual_unico(file_path: str, moto_id: int, modelo: str, ano: str):
         
         md_text = re.sub(pattern_pneu, replacer_pneu, md_text, flags=re.MULTILINE)
         
+        # 1.2 Criação de Seção Dedicada para Pneus (Synthetic Chunking da Silva)
+        # O objetivo é isolar "Pneu dianteiro..." e "Pneu traseiro..." em um chunk 
+        # que tenha APENAS isso, pra maximizar o score de similaridade (0.78 vs 0.44).
+        # Encontra o bloco de linhas que começa com "Pneu " (já achatado)
+        pattern_block = r"(Pneu (dianteiro|traseiro).*?(\.|$)\n)+"
+        
+        def replacer_block(match):
+            return f"\n# ESPECIFICAÇÕES DOS PNEUS\nMedidas dos pneus:\n{match.group(0)}\n# DADOS TÉCNICOS (Continuação)\n"
+            
+        md_text = re.sub(pattern_block, replacer_block, md_text, flags=re.MULTILINE)
+
         # 2. Divide por Cabeçalhos (Estrutura do Manual)
         headers_to_split_on = [
             ("#", "Header 1"),
