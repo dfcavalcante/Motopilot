@@ -36,22 +36,23 @@ def inspecionar_tabela():
 
     # Agora sim, a busca vai funcionar porque os vetores são compatíveis
     results = collection.query(
-        query_texts=["60/100-17", "medida pneu traseiro", "Especificações Técnicas"],
-        n_results=5
+        query_texts=["60/100", "80/100", "medida do pneu"],
+        n_results=20
     )
 
-    print("\n--- 🔍 RESULTADO DA BUSCA (AGORA COMPATÍVEL) ---")
+    print("\n--- 🔍 RESULTADO DA BUSCA (QUERY: '60/100-17') ---")
     if not results['documents'][0]:
         print("❌ Nada encontrado.")
     else:
-        for i, doc in enumerate(results['documents'][0]):
+        for i, (doc, meta) in enumerate(zip(results['documents'][0], results['metadatas'][0])):
             print(f"\n📝 [Resultado {i+1}]:")
+            print(f"📂 Fonte: {meta.get('source')} | Moto ID: {meta.get('moto_id')}")
             print("-" * 50)
             print(doc)
             print("-" * 50)
             
-            if "Especificações" in doc:
-                print("✅ TÍTULO ENCONTRADO! (O dado está estruturado corretamente)")
+            if "pneu" in doc.lower():
+                print("✅ TERMO 'PNEU' ENCONTRADO NO TEXTO!")
 
 if __name__ == "__main__":
     inspecionar_tabela()

@@ -1,13 +1,20 @@
 from app.models.moto_model import Moto
 from app.models.chat_model import ChatLog
-# Ajuste o import conforme sua estrutura real
 from llm.services.vector_store import vector_store
 from llm.services.llm_client import llm_client
+
+# Importação da biblioteca de Re-ranking
+from flashrank import Ranker, RerankRequest
 
 class RagOrchestrator:
     def __init__(self):
         self.vector_store = vector_store
         self.llm_client = llm_client
+        
+        # Inicializa o modelo de Re-ranking (Nano/Small)
+        # Ele é leve (~40MB) e roda localmente na CPU muito rápido.
+        print("🧠 Carregando modelo de Re-ranking (FlashRank)...")
+        self.ranker = Ranker(model_name="ms-marco-MiniLM-L-12-v2")
 
     def processar_pergunta(self, db, user_id, moto_id, pergunta_texto):
         # 1. Recupera os dados da Moto
@@ -18,44 +25,67 @@ class RagOrchestrator:
 
         print(f"🤖 RAG Iniciado | Buscando no manual da moto ID: {moto_id} ({moto.modelo})")
 
-        # --- A CORREÇÃO ESTÁ AQUI ---
-        # Antes: self.vector_store.buscar_similaridade(pergunta_texto, moto.modelo)
-        # Agora: Passamos o ID para garantir que só pegamos chunks dessa moto específica
-        contexto_list = self.vector_store.buscar_similaridade(
+        # 2. Recuperação Inicial (Retrieval)
+        # IMPORTANTE: Certifique-se de que K_NEIGHBORS no config.py esteja ALTO (ex: 50).
+        # Precisamos pegar uma "rede larga" para trazer a tabela técnica que está escondida.
+        contexto_bruto = self.vector_store.buscar_similaridade(
             pergunta=pergunta_texto, 
             moto_id=moto_id
         )
+
+        if not contexto_bruto:
+            return "Desculpe, não encontrei informações sobre essa moto no manual processado."
+
+        print(f"📥 Recuperados {len(contexto_bruto)} chunks brutos. Iniciando Re-ranking...")
+
+        # 3. Re-ranking (A Mágica)
+        # Transformamos a lista de strings no formato que o FlashRank entende
+        passagens = [
+            {"id": str(i), "text": texto} 
+            for i, texto in enumerate(contexto_bruto)
+        ]
+
+        requisicao_rerank = RerankRequest(
+            query=pergunta_texto,
+            passages=passagens
+        )
+
+        # O modelo reordena baseado na relevância real com a pergunta
+        resultados_rerank = self.ranker.rerank(requisicao_rerank)
+
+        # Pegamos apenas os TOP 5 melhores depois do re-ranking
+        # Isso descarta o "lixo" de segurança que não tem a ver com a pergunta técnica
+        top_chunks = resultados_rerank[:5]
         
-        # Junta os pedacinhos de texto em um só
-        contexto_str = "\n\n".join(contexto_list)
+        # Reconstrói a string de contexto apenas com a "nata" da informação
+        contexto_refinado = [res['text'] for res in top_chunks]
+        contexto_str = "\n\n".join(contexto_refinado)
 
         print("\n" + "="*40)
-        print(f"📄 CONTEXTO RECUPERADO ({len(contexto_list)} trechos):")
-        print(contexto_str) 
+        print(f"💎 CONTEXTO REFINADO (Top {len(top_chunks)}):")
+        # Mostra o primeiro chunk (que agora deve ser a tabela técnica!)
+        if top_chunks:
+            print(f"Top 1 Score: {top_chunks[0].get('score')}")
+            print(top_chunks[0]['text'][:300] + "...") 
         print("="*40 + "\n")
 
-        if not contexto_str:
-            print("⚠️ AVISO: Nenhum contexto encontrado no banco para essa moto!")
-            # Dica: Se não achou nada, talvez valha a pena retornar logo aqui
-            # mas vamos deixar prosseguir para a IA tentar responder com conhecimento geral (opcional)
-
-        # 3. Monta o Prompt para a IA
+        # 4. Prompt do Sistema (Limpo, sem filtros manuais)
         prompt_sistema = f"""
         Você é um mecânico especialista assistente chamado Motopilot.
         Você está respondendo sobre a moto: {moto.marca} {moto.modelo} (Ano {moto.ano}).
         
         Use EXCLUSIVAMENTE o contexto abaixo retirado do manual oficial para responder.
-        Se a informação não estiver no contexto, diga: "Desculpe, essa informação não consta no manual que eu li."
+        Se a informação não estiver no contexto, diga que não encontrou.
         Seja técnico, direto e cite valores numéricos se houver.
         
-        CONTEXTO DO MANUAL:
+        CONTEXTO DO MANUAL (Ordenado por relevância):
         {contexto_str}
         """
 
-        # 4. Chama a LLM (Geração)
+        # 5. Gera a Resposta
         resposta_ia = self.llm_client.generate(prompt_sistema, pergunta_texto)
 
-        # 5. Salva o Histórico
+        # 6. Salva Log
         try:
             log = ChatLog(
                 user_id=user_id,

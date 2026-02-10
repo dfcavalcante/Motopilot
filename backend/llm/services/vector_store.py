@@ -53,7 +53,7 @@ class VectorStoreService:
         try:
             resultados = self.collection.query(
                 query_texts=[pergunta],
-                n_results=k, # Agora ele vai buscar 50 pedacinhos (Genérico)
+                n_results=50, # Aumentado para buscar mais candidatos
                 where={"moto_id": moto_id} 
             )
 
