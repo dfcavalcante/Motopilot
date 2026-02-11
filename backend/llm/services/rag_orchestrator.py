@@ -77,6 +77,7 @@ class RagOrchestrator:
         Use EXCLUSIVAMENTE o contexto abaixo retirado do manual oficial para responder.
         Se a informação não estiver no contexto, diga que não encontrou.
         Seja técnico, direto e cite valores numéricos se houver.
+        Liste passos em caso de procedimento.
         
         CONTEXTO DO MANUAL (Ordenado por relevância):
         {contexto_str}
