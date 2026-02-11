@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Session
 from app.schemas.report_schema import ReportBase, ReportFilter, ReportResponse, ReportUpdate
-from app.models.report_model import Report, ReportBase
+from app.models.report_model import Report
+from app.schemas.report_schema import ReportBase
 
 '''
 Camada de serviço responsável pelo relatórios

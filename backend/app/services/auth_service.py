@@ -2,7 +2,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import func, select, update, delete
 from app.models.user_model import User
 from app.services.security_service import get_password_hash
-from app.schemas.user_schema import UserCreate, UserBase, UserResponse
+from app.schemas.user_schema import UserBase, UserResponse
 from typing import List, Optional
 
 '''
@@ -14,13 +14,13 @@ Incluindo CRUD e listagem de Motos
 
 class Auth_service:
     @staticmethod
-    def register_user(user_data: UserCreate, db:Session) -> UserResponse:
+    def register_user(user_data: UserBase, db:Session) -> UserResponse:
         # --- Ponto CRÍTICO: Geração do Hash na Rota ---
         hashed_password = get_password_hash(user_data.senha) 
 
         # 1. Cria a instância do Modelo (User) usando o HASH
         new_user = User(
-            username=user_data.username,
+            nome=user_data.nome,
             email=user_data.email,
             hashed_password=hashed_password, # Armazenando o HASH, não a senha original
         )

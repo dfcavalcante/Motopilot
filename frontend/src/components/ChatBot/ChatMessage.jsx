@@ -28,7 +28,7 @@ const ChatMessage = ({ text, isBot }) => {
           borderRadius: isBot ? '15px 15px 15px 5px' : '15px 15px 5px 15px',
           bgcolor: isBot ? '#ffffff' : '#B5B5B5',
           color: 'black',
-          border: isBot ? '1px solid #e0e0e0' : 'none',
+          border: isBot ? '1px solid #ffffff' : 'none',
         }}
       >
         <Typography variant="body1">

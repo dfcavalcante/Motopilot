@@ -50,18 +50,6 @@ class Moto_service:
         db.refresh(db_moto)
         return db_moto
 
-    def adicionar_manual(self, db: Session, id: int, path_arquivo: str) -> Optional[MotoResponse]:
-        db_moto = db.scalars(select(Moto).where(Moto.id == id)).first()
-        if not db_moto: return None
-        
-        # db_moto.manual_pdf_path = path_arquivo
-        # db_moto.has_manual = True # Se tiver esse campo booleano
-        
-        db.add(db_moto)
-        db.commit()
-        db.refresh(db_moto)
-        return db_moto
-    
     def arquivar_moto(self, db: Session, id: int) -> Optional[MotoResponse]:
         db_moto = db.scalars(select(Moto).where(Moto.id == id)).first()
         if not db_moto: return None

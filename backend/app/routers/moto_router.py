@@ -57,34 +57,37 @@ def criar_moto_endpoint(
     background_tasks: BackgroundTasks, 
     marca: str = Form(...),
     modelo: str = Form(...),
-    ano: str = Form(...),
-    documento_pdf: UploadFile = File(...), 
+    ano: int = Form(...),
+    numeroSerie: str = Form(...), # Recebe do Front como numeroSerie
+    descricao: str = Form(None),
+    documento_pdf: UploadFile = File(...),
+    imagem_moto: UploadFile = File(...),
     db: Session = Depends(get_db)
 ):
-    # 1. Salvar Arquivo
-    try:
-        safe_filename = documento_pdf.filename.replace(" ", "_")
-        filename = f"{uuid.uuid4()}_{safe_filename}"
-        file_path = os.path.join(UPLOAD_DIR, filename)
-        
-        with open(file_path, "wb") as buffer:
-            shutil.copyfileobj(documento_pdf.file, buffer)
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Erro ao salvar arquivo: {str(e)}")
-    
-    # 2. Criar no Banco SQL
+    # 1. Salvar arquivos
+    caminho_pdf = salvar_arquivo(documento_pdf, sub_pasta="manuais")
+    caminho_imagem = salvar_arquivo(imagem_moto, sub_pasta="imagens")
+
+    # 2. Criar o Schema de Dados
+    # Nota: Mapeamos o 'numeroSerie' (do form) para 'numero_serie' (do banco/schema)
     moto_data = MotoBase(
         marca=marca,
         modelo=modelo,
-        ano=str(ano),
-        manual_pdf_path=file_path 
+        ano=ano,
+        numero_serie=numeroSerie, # <--- Atenção aqui: O Schema espera snake_case
+        estado='Ativa',
+        descricao=descricao,
+        manual_pdf_path=caminho_pdf,
+        imagem_path=caminho_imagem
     )
+    
+    # 3. Criar no Banco
     nova_moto = moto_service.criar_moto(db, moto_data)
 
-    # 3. Disparar Ingestão da IA em Segundo Plano
+    # 4. Disparar Ingestão da IA (Correção da variável)
     background_tasks.add_task(
         processar_manual_background, 
-        file_path=file_path, 
+        file_path=caminho_pdf, # <--- CORREÇÃO: Usar a variável correta 'caminho_pdf'
         moto_id=nova_moto.id, 
         modelo=modelo, 
         ano=str(ano)
@@ -92,7 +95,7 @@ def criar_moto_endpoint(
 
     return nova_moto
 
-@router.get('/', response_model=List[MotoResponse])
+@router.get('/listar', response_model=List[MotoResponse])
 def listar_motos_endpoint(db: Session = Depends(get_db)):
     return moto_service.listar_motos(db)
 
@@ -149,3 +152,23 @@ def deletar_moto_endpoint(moto_id: int, db: Session = Depends(get_db)):
     if not sucesso:
         raise HTTPException(status_code=404, detail="Moto não encontrada")
     return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+#Função auxiliar para salvar arquivos (PDFs e imagens)
+def salvar_arquivo(arquivo: UploadFile, sub_pasta: str = "") -> str | None:
+    if not arquivo or not arquivo.filename:
+        return None
+        
+    try:
+        filename = f"{uuid.uuid4()}_{arquivo.filename}"
+        
+        caminho_pasta = os.path.join(UPLOAD_DIR, sub_pasta)
+        os.makedirs(caminho_pasta, exist_ok=True)
+        
+        file_path = os.path.join(caminho_pasta, filename)
+        
+        with open(file_path, "wb") as buffer:
+            shutil.copyfileobj(arquivo.file, buffer)
+            
+        return file_path
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Erro ao salvar arquivo {arquivo.filename}: {str(e)}")

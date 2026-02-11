@@ -1,6 +1,7 @@
 from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
+from fastapi.staticfiles import StaticFiles
 
 # --- IMPORTS DO BANCO DE DADOS ---
 # Certifique-se que seu arquivo database.py está em app/config/database.py
@@ -15,9 +16,7 @@ from app.models import Empresa, Cargo, User, Moto, ChatLog
 from app.utils.init_db import criar_cargos_iniciais
 
 # --- IMPORTS DAS ROTAS ---
-from app.routers import moto_router
-from app.routers import chatbot_router
-from app.routers import report_router
+from app.routers import moto_router, chatbot_router, report_router, user_router
 # from app.routers import auth_router
 # from app.routers import user_router
 
@@ -65,7 +64,7 @@ origins = [
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"], # Mantido '*' para facilitar dev, ajuste para produção depois
+    allow_origins=origins,  # Usar lista específica (não pode ser "*" com credentials=True)
     allow_methods=["*"],
     allow_headers=["*"],
     allow_credentials=True
@@ -82,6 +81,8 @@ def read_root():
 
 # --- REGISTRO DE ROTAS ---
 app.include_router(moto_router.router)
+app.include_router(user_router.router) # Futuro: Rota de cadastro de usuários
+#app.include_router(auth_router.router)
 app.include_router(chatbot_router.router)
 app.include_router(report_router.router)
 # app.include_router(user_router.router) 

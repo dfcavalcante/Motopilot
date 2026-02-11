@@ -3,6 +3,9 @@ from typing import Optional
 from urllib.parse import quote_plus
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+CURRENT_FILE_DIR = os.path.dirname(os.path.abspath(__file__))
+BACKEND_DIR = os.path.dirname(CURRENT_FILE_DIR)
+
 class Settings(BaseSettings):
     # =================================================================
     # 1. Dados da API
@@ -37,8 +40,11 @@ class Settings(BaseSettings):
     # =================================================================
     # 3. Banco de Dados Vetorial (ChromaDB)
     # =================================================================
-    CHROMA_DB_PATH: str = os.path.join("data", "chroma_db")
+    CHROMA_DB_PATH: str = os.path.join(BACKEND_DIR, "data", "chroma_db")
     COLLECTION_NAME: str = "manuais_motos"
+
+    # Define onde fica os manuais PDF
+    MANUALS_DIR: str = os.path.join(BACKEND_DIR, "manuals")
 
     # =================================================================
     # 4. Serviços de IA (LLM e Ollama)

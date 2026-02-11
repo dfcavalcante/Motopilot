@@ -1,7 +1,11 @@
-from app.models.moto_model import Moto
-from app.models.chat_model import ChatLog
+from langchain_chroma import Chroma
+from langchain_huggingface import HuggingFaceEmbeddings
+from langchain_ollama import OllamaLLM
+from langchain_core.prompts import PromptTemplate
+from app.models.moto_model import Moto 
+from app.utils.text_utils import gerar_id_manual
+from app.config import settings
 from llm.services.vector_store import vector_store
-from llm.services.llm_client import llm_client
 
 # Importação da biblioteca de Re-ranking
 from flashrank import Ranker, RerankRequest
@@ -9,7 +13,13 @@ from flashrank import Ranker, RerankRequest
 class RagOrchestrator:
     def __init__(self):
         self.vector_store = vector_store
-        self.llm_client = llm_client
+        
+        # Inicializa LLM
+        print(f"🧠 Inicializando LLM: {settings.LLM_MODEL_NAME}")
+        self.llm_client = OllamaLLM(
+            model=settings.LLM_MODEL_NAME,
+            base_url=settings.OLLAMA_BASE_URL
+        )
         
         # Inicializa o modelo de Re-ranking (Nano/Small)
         # Ele é leve (~40MB) e roda localmente na CPU muito rápido.
@@ -21,7 +31,7 @@ class RagOrchestrator:
         moto = db.query(Moto).filter(Moto.id == moto_id).first()
         
         if not moto:
-            return "Erro: Moto não encontrada."
+            return "Erro: Moto não identificada no sistema."
 
         print(f"🤖 RAG Iniciado | Buscando no manual da moto ID: {moto_id} ({moto.modelo})")
 
@@ -81,25 +91,20 @@ class RagOrchestrator:
         
         CONTEXTO DO MANUAL (Ordenado por relevância):
         {contexto_str}
+        
+        PERGUNTA DO USUÁRIO:
+        {pergunta_texto}
         """
-
+        
         # 5. Gera a Resposta
-        resposta_ia = self.llm_client.generate(prompt_sistema, pergunta_texto)
-
-        # 6. Salva Log
         try:
-            log = ChatLog(
-                user_id=user_id,
-                moto_id=moto_id,
-                pergunta=pergunta_texto,
-                resposta_ia=resposta_ia
-            )
-            db.add(log)
-            db.commit()
+            print("🤖 Gerando resposta com LLM...")
+            # Chamada direta ao Ollama
+            resposta_ia = self.llm_client.invoke(prompt_sistema)
+            return resposta_ia
         except Exception as e:
-            print(f"Erro ao salvar log: {e}")
-
-        return resposta_ia
+            print(f"❌ Erro no LLM: {e}")
+            return "Desculpe, ocorreu um erro ao consultar o manual."
 
 # Instância global
 rag_orchestrator = RagOrchestrator()

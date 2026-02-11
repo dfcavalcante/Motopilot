@@ -17,7 +17,7 @@ const TelaInicialChat= ({ sugestoes, onSuggestionClick, children }) => {
         {/* Aqui renderizamos o Input que virá como filho */}
         {children} 
 
-        <Box sx={{ width: '100%', mt: 5 }}>
+        <Box sx={{ width: '100%', mt: 2 }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
                 <LightbulbOutlinedIcon fontSize="small" />
                 <Typography variant="body1" >Dúvidas frequentes</Typography>

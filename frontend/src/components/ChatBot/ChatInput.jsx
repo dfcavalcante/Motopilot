@@ -17,6 +17,7 @@ const ChatInput = ({ input, setInput, onSend }) => {
             fullWidth
             multiline
             maxRows={6}
+            size="small"
             variant="outlined"
             value={input}
             onChange={(e) => setInput(e.target.value)}
@@ -25,7 +26,7 @@ const ChatInput = ({ input, setInput, onSend }) => {
                 "& .MuiOutlinedInput-root": {
                     borderRadius: "16px",
                     "& fieldset": { borderRadius: "16px" },
-                    alignItems: 'flex-end'
+                    alignItems: 'flex-end',
                 },
             }}
             InputProps={{

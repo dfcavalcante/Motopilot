@@ -1,183 +1,199 @@
-import React, { useState } from 'react';
-import { useEffect } from 'react';
-import { Box, Stack, Button, TextField, Divider, Grid, Typography } from '@mui/material';
+import React, { useState, useContext } from 'react';
+import { Box, Stack, Typography, Divider } from '@mui/material';
 import HeaderChatBot from '../components/ChatBot/HeaderChatbot.jsx';
 import SideBar from '../components/SideBar.jsx';
-import PdfUploader from '../components/PdfUploader.jsx';
-import CloudUploadIcon from '@mui/icons-material/CloudUpload';
-import { MotoContext} from '../context/MotoContext.jsx';
-import { useContext } from 'react';
-import IconButton from '@mui/material/IconButton';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
-import UpdateMoto from '../components/CadastroMoto/UpdateMoto.jsx';
+import EtapasMoto from '../components/Motos/EtapasMoto.jsx';
+import { MotoContext } from '../context/MotoContext.jsx';
+
+import DadosGerais from '../components/Motos/DadosGerais.jsx';
+import ManualMoto from '../components/Motos/DadosManual.jsx'; // Certifique-se que este é o arquivo com o PdfUploader
+import Concluido from '../components/Motos/Concluido.jsx';
 
 const CadastroDeMoto = () => {
-	const { cadastrarMoto, loading, erro, motos, excluirMoto, atualizarMoto, listarMotos} = useContext(MotoContext);
-  const [arquivoPdf, setArquivoPdf] = useState(null);
-  const [editingMoto, setEditingMoto] = useState(null);
+  const { cadastrarMoto } = useContext(MotoContext);
 
-  const [formValues, setFormValues] = useState({
+  const [loading, setLoading] = useState(false);
+  const [etapaAtual, setEtapaAtual] = useState(1);
+  const [errors, setErrors] = useState({});
+
+  const [dadosForm, setDadosForm] = useState({
     modelo: '',
+    numeroSerie: '',
+    marca: '',
     ano: '',
-    marca: ''
+    descricao: '',
+    estado: '',
+    foto: null,
+    manual_pdf_path: null,
   });
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormValues((prev) => ({
+    const { name, value, files } = e.target;
+
+    setDadosForm((prev) => ({
       ...prev,
-      [name]: value
+      [name]: files ? files[0] : value,
     }));
+
+    if (errors[name]) {
+      setErrors((prev) => ({ ...prev, [name]: null }));
+    }
   };
 
-  const handleFileSelect = (arquivo) => {
-  if (arquivo && arquivo.target) {
-     if (arquivo.target.files && arquivo.target.files[0]) {
-        setArquivoPdf(arquivo.target.files[0]);
-     }
-  } else {
-     console.log("Arquivo recebido:", arquivo);
-     setArquivoPdf(arquivo);
-  }
-};
+  const validarCampos = (etapa) => {
+    const novosErros = {};
+    let ehValido = true;
 
-  const handleSubmit = async (e) => {
-    e.preventDefault(); 
+    if (etapa === 1) {
+      if (!dadosForm.modelo) novosErros.modelo = 'O modelo é obrigatório.';
+      if (!dadosForm.marca) novosErros.marca = 'A marca é obrigatória.';
+      if (!dadosForm.ano) novosErros.ano = 'O ano é obrigatório.';
+      if (!dadosForm.numeroSerie) novosErros.numeroSerie = 'O número de série é obrigatório.';
+      if (!dadosForm.foto) novosErros.foto = 'A foto da moto é obrigatória.';
+    }
 
-    if (!formValues.modelo || !arquivoPdf) {
-      alert("Por favor, preencha o modelo e anexe o PDF.");
+    if (Object.keys(novosErros).length > 0) {
+      setErrors(novosErros);
+      ehValido = false;
+    }
+
+    return ehValido;
+  };
+
+  const handleProximo = () => {
+    if (validarCampos(1)) {
+      setEtapaAtual((prev) => prev + 1);
+    }
+  };
+
+  const handleVoltar = () => {
+    setErrors({});
+    setEtapaAtual((prev) => (prev > 1 ? prev - 1 : prev));
+  };
+
+  const handleFinalSubmit = async (arquivoPdfDoFilho) => {
+    console.log('--- INICIANDO ENVIO ---');
+    console.log('Arquivo PDF recebido do filho:', arquivoPdfDoFilho);
+
+    if (!arquivoPdfDoFilho) {
+      setErrors({ manual_pdf_path: 'O manual (PDF) é obrigatório.' });
       return;
     }
 
+    setLoading(true);
     const formData = new FormData();
-    formData.append('modelo', formValues.modelo);
-    formData.append('ano', formValues.ano);
-    formData.append('marca', formValues.marca);
-    formData.append('documento_pdf', arquivoPdf);
 
-    const sucesso = await cadastrarMoto(formData);
+    formData.append('marca', dadosForm.marca);
+    formData.append('modelo', dadosForm.modelo);
+    formData.append('ano', dadosForm.ano);
+    formData.append('numeroSerie', dadosForm.numeroSerie);
+    formData.append('descricao', dadosForm.descricao || '');
 
-    if (sucesso) {
-        alert("Moto cadastrada com sucesso!");
-        setFormValues({ modelo: '', ano: '', marca: '' });
-        setArquivoPdf(null);
+    if (dadosForm.foto) {
+      formData.append('imagem_moto', dadosForm.foto);
+    } else {
+      console.error('ERRO: Foto está nula no state');
+      alert('Erro: A foto da moto é obrigatória');
+      setLoading(false);
+      return;
     }
-  };
 
-  const handleSaveUpdate = async (novosDadosDoFormulario) => {
-    if (editingMoto) {
-      await atualizarMoto(editingMoto.id, novosDadosDoFormulario);
-      setEditingMoto(null);
+    formData.append('documento_pdf', arquivoPdfDoFilho);
+
+    console.log('Conteúdo do FormData a ser enviado:');
+    for (let [key, value] of formData.entries()) {
+      console.log(`${key}:`, value);
+    }
+
+    try {
+      setDadosForm((prev) => ({ ...prev, manual_pdf_path: arquivoPdfDoFilho }));
+
+      const sucesso = await cadastrarMoto(formData);
+
+      console.log('Resposta do cadastrarMoto:', sucesso);
+
+      if (sucesso) {
+        setEtapaAtual(3);
+      } else {
+        alert(
+          'O Backend rejeitou os dados. Verifique o Console (F12) -> Network para ver o erro vermelho.'
+        );
+      }
+    } catch (error) {
+      console.error('Erro CRÍTICO ao enviar:', error);
+      alert('Erro de conexão ou código.');
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <Box 
-      sx={{ 
-        display: 'flex', 
-        height: '100vh', 
-        backgroundColor: "#989898", 
-        p: '16px', 
-        boxSizing: 'border-box'
+    <Box
+      sx={{
+        display: 'flex',
+        height: '100vh',
+        backgroundColor: '#989898',
+        p: '16px',
+        boxSizing: 'border-box',
       }}
     >
-			{/*Sidebar*/}
       <SideBar />
-
-      <Box 
-        sx={{ 
-          display: 'flex', 
-          flexDirection: 'column', 
-          flexGrow: 1, 
-          ml: '20px', 
-          height: '100%'
-        }}
+      <Box
+        sx={{ display: 'flex', flexDirection: 'column', flexGrow: 1, ml: '24px', height: '100%' }}
       >
         <Stack spacing="8px" sx={{ height: '100%' }}>
-				  {/*Header */}
           <Box sx={{ flexShrink: 0 }}>
-            <HeaderChatBot />
+            {' '}
+            <HeaderChatBot />{' '}
           </Box>
 
-					{/*Aqui começa o cadastro de moto */}
-					<Box component="form" onSubmit={handleSubmit} sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-
-          <TextField
-            label="Modelo"
-            name="modelo"
-            value={formValues.modelo}
-            onChange={handleChange}
-            placeholder="Ex: Sport"
-            variant="outlined"
-            fullWidth
-          />
-
-          <Box sx={{ display: 'flex', gap: 2 }}>
-            <TextField
-              label="Ano"
-              name="ano"
-              type="number"
-              value={formValues.ano}
-              onChange={handleChange}
-              placeholder="2024"
-              variant="outlined"
-              fullWidth
-            />
-            <TextField
-              label="Marca"
-              name="marca"
-              value={formValues.marca}
-              onChange={handleChange}
-              placeholder="Honda"
-              variant="outlined"
-              fullWidth
-            />
-          </Box>
-
-          <PdfUploader onFileSelect={handleFileSelect} />
-
-          <Button 
-            type="submit" 
-            variant="contained" 
-            color="primary" 
-            size="large"
-            startIcon={<CloudUploadIcon />} 
-            sx={{ mt: 2, py: 1.5 }}
+          <Box
+            sx={{
+              flexGrow: 1,
+              bgcolor: 'white',
+              borderRadius: '16px',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              p: 2,
+              overflow: 'hidden',
+            }}
           >
-            Cadastrar Moto
-          </Button>
+            <Typography variant="h5" mb={2}>
+              Adicionar Moto
+            </Typography>
+            <Divider sx={{ width: '90%', bgcolor: 'grey.500', height: '0.4px', mb: 2 }} />
 
-          {/* Listagem de motos cadastradas e opção de excluir */}
-          <Box sx={{ mt: 2 }}>
-            <Typography> Listagem de Motos </Typography>
-            {motos.map((moto, index) => (
-              <Box key={moto.id} sx={{ display: 'flex', alignItems: 'center', mb: 1, justifyContent: 'space-between', border: '1px solid #444', borderRadius: 2, p: 1 }}>
-              <Typography variant="body2">{moto.modelo} - {moto.ano} - {moto.marca}</Typography>
-              <IconButton onClick={() => setEditingMoto(moto)} color="primary">
-                <EditIcon />
-              </IconButton>
-              <IconButton onClick={() => excluirMoto(moto.id)} color="error">
-              <DeleteIcon />
-              </IconButton>
+            <EtapasMoto etapa={etapaAtual} />
+
+            <Box sx={{ width: '100%', flex: 1, overflowY: 'auto', mt: 2 }}>
+              {etapaAtual === 1 && (
+                <DadosGerais
+                  dados={dadosForm}
+                  handleChange={handleChange}
+                  onNext={handleProximo}
+                  errors={errors}
+                />
+              )}
+
+              {etapaAtual === 2 && (
+                <ManualMoto
+                  dados={dadosForm}
+                  handleChange={handleChange}
+                  onBack={handleVoltar}
+                  onNext={(arquivo) => handleFinalSubmit(arquivo)}
+                  loading={loading}
+                  errors={errors}
+                />
+              )}
+
+              {etapaAtual === 3 && <Concluido />}
+            </Box>
           </Box>
-            ))}
-          </Box>
+        </Stack>
+      </Box>
+    </Box>
+  );
+};
 
-        </Box>
-				</Stack>
-			</Box>
-      {editingMoto && (
-        <UpdateMoto 
-          open={!!editingMoto} // Converte objeto para boolean (true se existir objeto)
-          onClose={() => setEditingMoto(null)} 
-          onSave={handleSaveUpdate}
-          initialData={editingMoto}
-          moto={motos.find(moto => moto.id === editingMoto.id)}
-        />
-      )}
-		</Box>
-  )
-}
-
-export default CadastroDeMoto
+export default CadastroDeMoto;

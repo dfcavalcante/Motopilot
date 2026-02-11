@@ -1,8 +1,7 @@
 import { useState } from 'react';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import { Container, Box, InputAdornment, Button, TextField, Stack, Grid, InputLabel } from '@mui/material';
+import { Box, InputAdornment, Button, TextField, Stack, Grid, InputLabel } from '@mui/material';
 import WarningIcon from '@mui/icons-material/Warning';
 
 const Login = () => {
@@ -24,55 +23,67 @@ const Login = () => {
 
   return (
     <Grid
-      sx={{ bgcolor: '#D9D9D9', height: '100vh', p: '24px 24px' }}
       container
-      alignItems='center'
-      justifyContent='center'
+      sx={{
+        minHeight: '100vh',
+        bgcolor: '#D9D9D9',
+        pl: { xs: 2, md: 40 },
+        pr: { xs: 2, md: 4 },
+        py: 4,
+      }}
+      alignItems="center"
+      justifyContent="space-between"
     >
-      <Grid item xs={12} md={6} sx={{ display: 'flex', justifyContent: 'center', transform: 'translateX(-100px)' }}>
-        <img src="/images/Motopilot Logo.png" alt="Motopilot Logo" style={{ maxWidth: '100%', height: 'auto', width: '400px' }} />
+      {/* Lado Esquerdo: Logo Principal */}
+      <Grid
+        item
+        xs={12}
+        md={4}
+        sx={{
+          display: 'flex',
+          justifyContent: { xs: 'center', md: 'flex-start' },
+          mb: { xs: 4, md: 0 },
+        }}
+      >
+        <img
+          src="/images/Motopilot Logo.png"
+          alt="Motopilot Logo"
+          style={{
+            maxWidth: '80%',
+            height: '300px',
+            width: '550px',
+          }}
+        />
       </Grid>
 
-      <Grid item xs={12} md={6} sx={{ display: 'flex', justifyContent: 'center' }}>
-        <Box sx={{
-          backgroundColor: "white", 
-          borderRadius: 2, 
-          width: '100%',
-          minWidth: 800,
-          minHeight: 880,
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'center',
-          boxShadow: 3,
-          transform: 'translateX(320px)', // Ajuste de posição para direita
+      {/* Lado Direito: Formulário */}
+      <Grid item xs={12} md={8} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+        <Box
+          sx={{
+            backgroundColor: 'white',
+            borderRadius: 4,
+            width: { xs: '100%', md: '700px' }, //aq q muda a altura
+            minHeight: { xs: 'auto', md: 800 },
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            p: { xs: 6, md: 16 }, //aq q muda o padding do form, ficar mais longe das bordas
           }}
-          >
-          <Stack spacing={4} alignItems="center" sx={{ px: { xs: 4, sm: 12 }, py: 5 }}>
+        >
+          <Stack spacing={4} alignItems="center">
             <img src="/images/Motopilot Logo-modified.png" alt="Motopilot Logo" width="90" />
 
             <form onSubmit={handleSubmit} style={{ width: '100%' }}>
-              <InputLabel sx={{ color: 'black', fontSize: 16 }}>
-                Email
-              </InputLabel>
+              <InputLabel sx={{ color: 'black', fontSize: 16, mb: 1 }}>Email</InputLabel>
               <TextField
                 sx={{
-                  "& .MuiOutlinedInput-root": {
-                    borderRadius: "12px",
+                  '& .MuiOutlinedInput-root': {
+                    borderRadius: '12px',
                     backgroundColor: '#fff',
-
-                    "& fieldset": { borderColor: '#e0e0e0' },
-                    "&:hover fieldset": { borderColor: '#bdbdbd' },
-
-                    "&.Mui-focused": {
-                      backgroundColor: '#fff', // remove azul no foco
-                    },
+                    '& fieldset': { borderColor: '#e0e0e0' },
                   },
-
-                  // remove azul do autofill (Chrome)
-                  "& input:-webkit-autofill": {
-                    WebkitBoxShadow: "0 0 0 1000px white inset",
-                    WebkitTextFillColor: "#000",
-                    transition: "background-color 5000s ease-in-out 0s",
+                  '& input:-webkit-autofill': {
+                    WebkitBoxShadow: '0 0 0 1000px white inset',
                   },
                 }}
                 fullWidth
@@ -81,7 +92,7 @@ const Login = () => {
                 value={email}
                 error={error}
                 onChange={(e) => setEmail(e.target.value)}
-                margin="normal"
+                margin="dense"
                 InputProps={{
                   endAdornment: (
                     <InputAdornment position="end">
@@ -91,26 +102,22 @@ const Login = () => {
                 }}
               />
 
-              <InputLabel sx={{ color: 'black', fontSize: 16 }}>
-                Senha
-              </InputLabel>
+              <InputLabel sx={{ color: 'black', fontSize: 16, mt: 2, mb: 1 }}>Senha</InputLabel>
               <TextField
                 sx={{
-                  "& .MuiOutlinedInput-root": {
-                    borderRadius: "12px",
+                  '& .MuiOutlinedInput-root': {
+                    borderRadius: '12px',
                     backgroundColor: '#fff',
-
-                    "& fieldset": { borderColor: '#e0e0e0' },
-                    "&:hover fieldset": { borderColor: '#bdbdbd' },
-
-                    "&.Mui-focused": {
-                      backgroundColor: '#fff',
-                    },
+                    '& fieldset': { borderColor: '#e0e0e0' },
                   },
-                  "& input:-webkit-autofill": {
-                    WebkitBoxShadow: "0 0 0 1000px white inset",
-                    WebkitTextFillColor: "#000",
-                    transition: "background-color 5000s ease-in-out 0s",
+                  '& input:-webkit-autofill': {
+                    WebkitBoxShadow: '0 0 0 1000px white inset',
+                  },
+                  '& input': {
+                    letterSpacing: '6px', // aq é para aumentar espaço entre caracteres da senha
+                  },
+                  '& input::placeholder': {
+                    letterSpacing: 'normal',
                   },
                 }}
                 fullWidth
@@ -119,17 +126,9 @@ const Login = () => {
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                margin="normal"
+                margin="dense"
                 error={error}
-                
-                helperText={error ? 'Usuário ou Senha incorretos. Tente novamente ou entre em contato com o ADM' : ' '}
-                FormHelperTextProps={{
-                  sx: { 
-                    minHeight: '1.5em', 
-                    margin: 0,
-                    marginTop: '4px'
-                  }
-                }}
+                helperText={error ? 'Usuário ou Senha incorretos.' : ' '}
                 InputProps={{
                   endAdornment: (
                     <InputAdornment position="end">
@@ -140,10 +139,18 @@ const Login = () => {
               />
 
               <Button
-                sx={{ backgroundColor: "#676767", width: "100%", mt: 2, height: 50, borderRadius: 3, fontSize: 20, textTransform: 'none'}}
+                sx={{
+                  backgroundColor: '#676767',
+                  width: '100%',
+                  mt: 3,
+                  height: 50,
+                  borderRadius: 3,
+                  fontSize: 18,
+                  textTransform: 'none',
+                  '&:hover': { backgroundColor: '#444' },
+                }}
                 type="submit"
                 variant="contained"
-                
               >
                 Entrar
               </Button>

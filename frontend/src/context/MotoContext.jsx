@@ -10,22 +10,25 @@ export const MotoProvider = ({ children }) => {
 
   const BASE_URL = "http://localhost:8000";
 
-  const listar_motos = async () => {
-    try {
-        const response = await fetch(`${BASE_URL}/motos/`);
-        
-        if (!response.ok) {
-            throw new Error("Erro ao buscar motos");
-        }
+  {/*Moto para usar do Informações Moto para o Chatbot*/}
+  const [motoSelecionada, setMotoSelecionada] = useState(null);
 
-        const data = await response.json();
-        setMotos(data);
-        return data; // Retorna os dados para o useChat usar
-    } catch (error) {
-        console.error("Erro no listar_motos:", error);
-        return []; // Retorna array vazio para não quebrar o loop do chat
-    }
-  };
+
+
+  const listarMotos = async () => {
+    try {
+      const response = await fetch(`${BASE_URL}/motos/listar`);
+            
+      if (!response.ok) {
+          throw new Error("Erro ao buscar motos");
+      }
+
+      const data = await response.json();
+        setMotos(data); 
+      } catch (error) {
+          console.error("Erro no listarMotos:", error);
+        }
+    };
 
   const atualizarMoto = async (id, dadosAtualizados) => {
     setLoading(true);
@@ -115,7 +118,7 @@ export const MotoProvider = ({ children }) => {
   };
 
   return (
-    <MotoContext.Provider value={{ motos, cadastrarMoto, listar_motos, loading, erro, excluirMoto, atualizarMoto}}>
+    <MotoContext.Provider value={{ motos, cadastrarMoto, listarMotos, loading, erro, excluirMoto, atualizarMoto, motoSelecionada, setMotoSelecionada }}>
       {children}
     </MotoContext.Provider>
   );
