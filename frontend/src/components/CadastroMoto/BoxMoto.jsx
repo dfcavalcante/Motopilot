@@ -3,6 +3,10 @@ import React from 'react';
 
 const BoxMoto = ({ moto, onEnter }) => {
   const getImageUrl = (caminhoDoBanco) => {
+    if (!caminhoDoBanco) {
+      return 'https://via.placeholder.com/336x189?text=Sem+Imagem';
+    }
+
     const caminhoCorrigido = caminhoDoBanco.replace(/\\/g, '/');
 
     const pathFinal = caminhoCorrigido.startsWith('/')
@@ -28,7 +32,7 @@ const BoxMoto = ({ moto, onEnter }) => {
     >
       {/* Imagem de Fundo */}
       <img
-        src={getImageUrl(moto.imagem_path)}
+        src={getImageUrl(moto.imagemPath)}
         alt="Logo Motopilot"
         style={{ width: '100%', height: '189px', objectFit: 'cover', display: 'block' }}
       />

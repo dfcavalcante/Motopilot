@@ -19,3 +19,7 @@ chroma_db/
 
 # Manuais em PDF
 backend/manuals/*.pdf
+
+# Para não subir arquivos de uploads (imagens, etc.) Cada um tem o seu
+backend/manuals/
+backend/uploads/

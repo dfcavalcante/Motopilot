@@ -2,6 +2,7 @@ from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from fastapi.staticfiles import StaticFiles
+import os
 
 # --- IMPORTS DO BANCO DE DADOS ---
 # Certifique-se que seu arquivo database.py está em app/config/database.py
@@ -38,6 +39,9 @@ app = FastAPI(
     description=Settings.API_DESCRIPTION,
     version=Settings.API_VERSION
 )
+
+if os.path.exists("manuals"):
+    app.mount("/manuals", StaticFiles(directory="manuals"), name="manuals")
 
 # --- 2. EVENTO DE INICIALIZAÇÃO (POPULAR CARGOS) ---
 @app.on_event("startup")
@@ -81,9 +85,7 @@ def read_root():
 
 # --- REGISTRO DE ROTAS ---
 app.include_router(moto_router.router)
-app.include_router(user_router.router) # Futuro: Rota de cadastro de usuários
+app.include_router(user_router.router)
 #app.include_router(auth_router.router)
 app.include_router(chatbot_router.router)
 app.include_router(report_router.router)
-# app.include_router(user_router.router) 
-# app.include_router(auth_router.router)

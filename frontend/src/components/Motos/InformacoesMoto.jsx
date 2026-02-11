@@ -11,15 +11,20 @@ const InformacoesMoto = ({ moto, onBack }) => {
   const { setMotoSelecionada } = React.useContext(MotoContext);
 
   const getImageUrl = (caminhoDoBanco) => {
-    const caminhoCorrigido = caminhoDoBanco.replace(/\\/g, '/');
+    console.log('Caminho original do Banco:', caminhoDoBanco);
 
+    if (!caminhoDoBanco) return 'https://via.placeholder.com/336x189';
+
+    const caminhoCorrigido = caminhoDoBanco.replace(/\\/g, '/');
     const pathFinal = caminhoCorrigido.startsWith('/')
       ? caminhoCorrigido.slice(1)
       : caminhoCorrigido;
 
-    return `http://localhost:8000/${pathFinal}`;
-  };
+    const urlFinal = `http://localhost:8000/${pathFinal}`;
+    console.log('URL Final gerada:', urlFinal);
 
+    return urlFinal;
+  };
   return (
     <Box
       sx={{
@@ -155,7 +160,7 @@ const InformacoesMoto = ({ moto, onBack }) => {
               }}
             >
               <img
-                src={getImageUrl(moto.imagem_path)}
+                src={getImageUrl(moto.imagemPath)}
                 alt="Imagem Moto"
                 style={{
                   width: '100%',
