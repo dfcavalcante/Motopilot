@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box, Stack, Divider, Typography, IconButton, Button, Chip } from '@mui/material';
-import HeaderChatBot from '../ChatBot/HeaderChatbot.jsx';
-import SideBar from '../SideBar.jsx';
+import HeaderChatBot from '../../utils/HeaderChatbot.jsx';
+import SideBar from '../../utils/SideBar.jsx';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { useNavigate } from 'react-router-dom';
 import { MotoContext } from '../../context/MotoContext.jsx';
