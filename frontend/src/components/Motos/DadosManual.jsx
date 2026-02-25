@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Box, Typography, Button, IconButton } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import PdfUploader from '../PdfUploader.jsx';
+import PdfUploader from '../../utils/PdfUploader.jsx';
 
 const ManualMoto = ({ onBack, onNext }) => {
   const [arquivo, setArquivo] = useState(null);

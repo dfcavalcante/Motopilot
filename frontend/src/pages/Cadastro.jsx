@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Box, Stack, Divider, Typography } from '@mui/material';
-import SideBar from '../components/SideBar';
-import HeaderChatBot from '../components/ChatBot/HeaderChatbot';
+import BaseFront from '../utils/BaseFront';
 import DadosPessoais from '../components/Usuários/DadosPessoais';
 import Etapas from '../components/Usuários/Etapas';
 import CriarSenha from '../components/Usuários/CriarSenha';
@@ -36,75 +35,41 @@ const Cadastro = () => {
   };
 
   return (
-    <Box
-      sx={{
-        display: 'flex',
-        height: '100vh',
-        bgcolor: '#989898',
-        p: '16px',
-        boxSizing: 'border-box',
-      }}
+    <BaseFront
+      icone="/images/adicionarUsuario.png"
+      width="22"
+      height={22}
+      nome={'Adicionar Usuários'}
     >
-      <SideBar />
+      {/* O componente de Etapas recebe o número atual para pintar a bolinha certa */}
+      <Etapas etapa={etapa} />
 
-      <Box
-        sx={{ display: 'flex', flexDirection: 'column', flexGrow: 1, ml: '20px', height: '100%' }}
-      >
-        <Stack spacing="8px" sx={{ height: '100%' }}>
-          <Box sx={{ flexShrink: 0 }}>
-            <HeaderChatBot />
-          </Box>
+      {/* LÓGICA DE TROCA DE ETAPAS */}
+      {etapa === 1 && (
+        <DadosPessoais
+          nomeCompleto={nomeCompleto}
+          setNomeCompleto={setNomeCompleto}
+          email={email}
+          setEmail={setEmail}
+          numeroMatricula={numeroMatricula}
+          setNumeroMatricula={setNumeroMatricula}
+          funcao={funcao}
+          setFuncao={setFuncao}
+          onBack={etapaAnterior}
+          onNext={proximaEtapa}
+        />
+      )}
 
-          <Box
-            sx={{
-              flexGrow: 1,
-              bgcolor: 'white',
-              borderRadius: '16px',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              p: 4,
-              overflow: 'hidden',
-            }}
-          >
-            <Box display={'flex'} mb={2} alignItems="center" gap={2}>
-              <img src="/images/adicionarUsuario.png" alt="Usuários" width="22" height={22} />
-              <Typography fontSize={30}> Adicionar Usuário</Typography>
-            </Box>
-            <Divider sx={{ width: '90%', bgcolor: 'grey.700', height: '0.4px', mb: 2 }} />
+      {etapa === 2 && (
+        <CriarSenha
+          onBack={etapaAnterior}
+          onNext={proximaEtapa}
+          onSubmit={(senha) => finalizarCadastro(senha)}
+        />
+      )}
 
-            {/* O componente de Etapas recebe o número atual para pintar a bolinha certa */}
-            <Etapas etapa={etapa} />
-
-            {/* LÓGICA DE TROCA DE ETAPAS */}
-            {etapa === 1 && (
-              <DadosPessoais
-                nomeCompleto={nomeCompleto}
-                setNomeCompleto={setNomeCompleto}
-                email={email}
-                setEmail={setEmail}
-                numeroMatricula={numeroMatricula}
-                setNumeroMatricula={setNumeroMatricula}
-                funcao={funcao}
-                setFuncao={setFuncao}
-                onBack={etapaAnterior}
-                onNext={proximaEtapa}
-              />
-            )}
-
-            {etapa === 2 && (
-              <CriarSenha
-                onBack={etapaAnterior}
-                onNext={proximaEtapa}
-                onSubmit={(senha) => finalizarCadastro(senha)}
-              />
-            )}
-
-            {etapa === 3 && <Concluido />}
-          </Box>
-        </Stack>
-      </Box>
-    </Box>
+      {etapa === 3 && <Concluido />}
+    </BaseFront>
   );
 };
 

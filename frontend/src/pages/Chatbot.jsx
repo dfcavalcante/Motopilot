@@ -34,13 +34,14 @@ const Chatbot = () => {
     if (typeof setMessages === 'function') {
       setMessages([]); // Limpa o array de mensagens
     }
-    setMotoSelecionada(motoSelecionada); //ainda usa a mesma moto selecionada de antes
+    setMotoSelecionada(null); // Limpa a moto atual
     setNomeChat('Nome Chat'); // Reseta o nome do chat se desejar
   };
 
   const handleSendClick = () => {
     if (input.trim()) {
       enviarMensagem(input);
+      setInput('');
       setInput('');
     }
   };
@@ -92,7 +93,7 @@ const Chatbot = () => {
               flexDirection: 'column',
               alignItems: 'center',
               p: 2,
-              overflowY: 'auto',
+              overflow: 'hidden',
               position: 'relative',
             }}
           >
@@ -139,6 +140,7 @@ const Chatbot = () => {
                     flexGrow: 1,
                     width: '100%',
                     maxWidth: 720,
+                    overflowY: 'auto',
                     display: 'flex',
                     flexDirection: 'column',
                     mb: 2,
@@ -150,6 +152,7 @@ const Chatbot = () => {
                   {isLoadingChat && <Loading />}
                   <div ref={messagesEndRef} />
                 </Box>
+
                 <ChatInput input={input} setInput={setInput} onSend={handleSendClick} />
               </>
             )}

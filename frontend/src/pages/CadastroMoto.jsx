@@ -1,12 +1,12 @@
 import React, { useState, useContext } from 'react';
 import { Box, Stack, Typography, Divider } from '@mui/material';
-import HeaderChatBot from '../components/ChatBot/HeaderChatbot.jsx';
-import SideBar from '../components/SideBar.jsx';
+import HeaderChatBot from '../utils/HeaderChatbot.jsx';
+import SideBar from '../utils/SideBar.jsx';
 import EtapasMoto from '../components/Motos/EtapasMoto.jsx';
 import { MotoContext } from '../context/MotoContext.jsx';
 
 import DadosGerais from '../components/Motos/DadosGerais.jsx';
-import ManualMoto from '../components/Motos/DadosManual.jsx'; // Certifique-se que este é o arquivo com o PdfUploader
+import ManualMoto from '../components/Motos/DadosManual.jsx';
 import Concluido from '../components/Motos/Concluido.jsx';
 
 const CadastroDeMoto = () => {
