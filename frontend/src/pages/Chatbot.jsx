@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Box, Stack, Divider, Typography, IconButton } from '@mui/material';
 import HeaderChatBot from '../components/ChatBot/HeaderChatbot.jsx';
 import SideBar from '../components/SideBar.jsx';
@@ -21,6 +21,13 @@ const Chatbot = () => {
 
   const [input, setInput] = useState('');
   const [nomeChat, setNomeChat] = useState('Nome Chat');
+  const messagesEndRef = useRef(null);
+
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [messages, isLoadingChat]);
 
   // Lógica para resetar a conversa
   const handleNovoChat = () => {
@@ -85,7 +92,7 @@ const Chatbot = () => {
               flexDirection: 'column',
               alignItems: 'center',
               p: 2,
-              overflow: 'hidden',
+              overflowY: 'auto',
               position: 'relative',
             }}
           >
@@ -132,7 +139,6 @@ const Chatbot = () => {
                     flexGrow: 1,
                     width: '100%',
                     maxWidth: 720,
-                    overflowY: 'auto',
                     display: 'flex',
                     flexDirection: 'column',
                     mb: 2,
@@ -142,8 +148,8 @@ const Chatbot = () => {
                     <ChatMessage key={index} text={msg.text} isBot={msg.isBot} />
                   ))}
                   {isLoadingChat && <Loading />}
+                  <div ref={messagesEndRef} />
                 </Box>
-
                 <ChatInput input={input} setInput={setInput} onSend={handleSendClick} />
               </>
             )}

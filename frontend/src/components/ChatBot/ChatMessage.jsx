@@ -31,7 +31,7 @@ const ChatMessage = ({ text, isBot }) => {
           border: isBot ? '1px solid #ffffff' : 'none',
         }}
       >
-        <Typography variant="body1">
+        <Typography variant="body1" sx={{ wordBreak: 'break-word' }}>
           {text}
         </Typography>
       </Box>
