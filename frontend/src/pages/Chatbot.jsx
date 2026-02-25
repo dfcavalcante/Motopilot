@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Box, Stack, Divider, Typography, IconButton } from '@mui/material';
-import HeaderChatBot from '../components/ChatBot/HeaderChatbot.jsx';
-import SideBar from '../components/SideBar.jsx';
+import HeaderChatBot from '../utils/HeaderChatbot.jsx';
+import SideBar from '../utils/SideBar.jsx';
 import ChatMessage from '../components/ChatBot/ChatMessage.jsx';
 import { useChat } from '../context/useChat.js';
 import ChatInput from '../components/ChatBot/ChatInput.jsx';
@@ -11,10 +11,12 @@ import Loading from '../components/ChatBot/Loading.jsx';
 
 const Chatbot = () => {
   const {
+    motos,
     motoSelecionada,
     setMotoSelecionada,
     messages,
     setMessages,
+    carregandoMotos,
     enviarMensagem,
     isLoadingChat,
   } = useChat();
@@ -41,7 +43,6 @@ const Chatbot = () => {
   const handleSendClick = () => {
     if (input.trim()) {
       enviarMensagem(input);
-      setInput('');
       setInput('');
     }
   };
@@ -93,7 +94,7 @@ const Chatbot = () => {
               flexDirection: 'column',
               alignItems: 'center',
               p: 2,
-              overflow: 'hidden',
+              overflowY: 'auto',
               position: 'relative',
             }}
           >
@@ -140,7 +141,6 @@ const Chatbot = () => {
                     flexGrow: 1,
                     width: '100%',
                     maxWidth: 720,
-                    overflowY: 'auto',
                     display: 'flex',
                     flexDirection: 'column',
                     mb: 2,
@@ -149,7 +149,9 @@ const Chatbot = () => {
                   {messages.map((msg, index) => (
                     <ChatMessage key={index} text={msg.text} isBot={msg.isBot} />
                   ))}
-                  {isLoadingChat && <Loading />}
+                  {isLoadingChat && (
+                    <Loading/>
+                  )}
                   <div ref={messagesEndRef} />
                 </Box>
 

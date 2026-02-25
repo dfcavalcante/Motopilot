@@ -41,34 +41,47 @@ const Cadastro = () => {
       height={22}
       nome={'Adicionar Usuários'}
     >
-      {/* O componente de Etapas recebe o número atual para pintar a bolinha certa */}
-      <Etapas etapa={etapa} />
+      <Box
+        sx={{
+          flexGrow: 1,
+          bgcolor: 'white',
+          borderRadius: '16px',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          p: 2,
+          overflow: 'hidden',
+        }}
+      >
+        {/* O componente de Etapas recebe o número atual para pintar a bolinha certa */}
+        <Etapas etapa={etapa} />
 
-      {/* LÓGICA DE TROCA DE ETAPAS */}
-      {etapa === 1 && (
-        <DadosPessoais
-          nomeCompleto={nomeCompleto}
-          setNomeCompleto={setNomeCompleto}
-          email={email}
-          setEmail={setEmail}
-          numeroMatricula={numeroMatricula}
-          setNumeroMatricula={setNumeroMatricula}
-          funcao={funcao}
-          setFuncao={setFuncao}
-          onBack={etapaAnterior}
-          onNext={proximaEtapa}
-        />
-      )}
+        {/* LÓGICA DE TROCA DE ETAPAS */}
+        {etapa === 1 && (
+          <DadosPessoais
+            nomeCompleto={nomeCompleto}
+            setNomeCompleto={setNomeCompleto}
+            email={email}
+            setEmail={setEmail}
+            numeroMatricula={numeroMatricula}
+            setNumeroMatricula={setNumeroMatricula}
+            funcao={funcao}
+            setFuncao={setFuncao}
+            onBack={etapaAnterior}
+            onNext={proximaEtapa}
+          />
+        )}
 
-      {etapa === 2 && (
-        <CriarSenha
-          onBack={etapaAnterior}
-          onNext={proximaEtapa}
-          onSubmit={(senha) => finalizarCadastro(senha)}
-        />
-      )}
+        {etapa === 2 && (
+          <CriarSenha
+            onBack={etapaAnterior}
+            onNext={proximaEtapa}
+            onSubmit={(senha) => finalizarCadastro(senha)}
+          />
+        )}
 
-      {etapa === 3 && <Concluido />}
+        {etapa === 3 && <Concluido />}
+      </Box>
     </BaseFront>
   );
 };
