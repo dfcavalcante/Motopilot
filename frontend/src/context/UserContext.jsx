@@ -1,4 +1,4 @@
-import { createContext, useState } from 'react';
+import { createContext, useState, useCallback } from 'react';
 import React from 'react';
 
 export const UsersContext = createContext();
@@ -11,7 +11,7 @@ export const UsersProvider = ({ children }) => {
   const BASE_URL = 'http://localhost:8000';
 
   // --- LISTAR ---
-  const listarUsers = async () => {
+  const listarUsers = useCallback(async () => {
     try {
       const response = await fetch(`${BASE_URL}/users/listar`);
 
@@ -21,13 +21,15 @@ export const UsersProvider = ({ children }) => {
 
       const data = await response.json();
       setUsers(data);
+      return data;
     } catch (error) {
       console.error('Erro no listarUsers:', error);
+      return [];
     }
-  };
+  }, [BASE_URL]);
 
   // --- ATUALIZAR ---
-  const atualizarUser = async (id, dadosAtualizados) => {
+  const atualizarUser = useCallback(async (id, dadosAtualizados) => {
     setLoading(true);
     setErro(null);
     try {
@@ -52,88 +54,100 @@ export const UsersProvider = ({ children }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   // --- EXCLUIR ---
-  const excluirUser = async (id) => {
-    setLoading(true);
-    setErro(null);
-    try {
-      const response = await fetch(`${BASE_URL}/users/${id}/deletar`, {
-        method: 'DELETE',
-      });
-      if (!response.ok) {
-        throw new Error('Erro ao excluir User');
+  const excluirUser = useCallback(
+    async (id) => {
+      setLoading(true);
+      setErro(null);
+      try {
+        const response = await fetch(`${BASE_URL}/users/${id}/deletar`, {
+          method: 'DELETE',
+        });
+        if (!response.ok) {
+          throw new Error('Erro ao excluir User');
+        }
+        setUsers((prev) => prev.filter((User) => User.id !== id));
+      } catch (error) {
+        console.error(error);
+        setErro(error.message);
+      } finally {
+        setLoading(false);
       }
-      setUsers((prev) => prev.filter((User) => User.id !== id));
-    } catch (error) {
-      console.error(error);
-      setErro(error.message);
-    } finally {
-      setLoading(false);
-    }
-  };
+    },
+    [BASE_URL]
+  );
 
-// --- VERIFICAÇÕES ---
-  const verificarMatricula = async (matricula) => {
-    try {
-      const response = await fetch(`${BASE_URL}/users/check/${encodeURIComponent(matricula)}`);
-      if (!response.ok) {
-        throw new Error('Erro ao verificar matrícula');
+  // --- VERIFICAÇÕES ---
+  const verificarMatricula = useCallback(
+    async (matricula) => {
+      try {
+        const response = await fetch(`${BASE_URL}/users/check/${encodeURIComponent(matricula)}`);
+        if (!response.ok) {
+          throw new Error('Erro ao verificar matrícula');
+        }
+        const data = await response.json();
+        return data.exists;
+      } catch (error) {
+        console.error('Erro no verificar matrícula:', error);
+        return false;
       }
-      const data = await response.json();
-      return data.exists;
-    } catch (error) {
-      console.error('Erro no verificar matrícula:', error);
-      return false; 
-    }
-  };
+    },
+    [BASE_URL]
+  );
 
-  const verificarEmail = async (email) => {
-    try {
-      const response = await fetch(`${BASE_URL}/users/check-email/${encodeURIComponent(email)}`);
-      if (!response.ok) {
-        throw new Error('Erro ao verificar email');
+  const verificarEmail = useCallback(
+    async (email) => {
+      try {
+        const response = await fetch(`${BASE_URL}/users/check-email/${encodeURIComponent(email)}`);
+        if (!response.ok) {
+          throw new Error('Erro ao verificar email');
+        }
+        const data = await response.json();
+        return data.exists;
+      } catch (error) {
+        console.error('Erro no verificar email:', error);
+        return false;
       }
-      const data = await response.json();
-      return data.exists;
-    } catch (error) {
-      console.error('Erro no verificar email:', error);
-      return false;
-    }
-  };
+    },
+    [BASE_URL]
+  );
 
-// --- CADASTRAR ---
-  const cadastrarUser = async (dados) => {
-    setLoading(true);
-    setErro(null);
+  // --- CADASTRAR ---
+  const cadastrarUser = useCallback(
+    async (dados) => {
+      setLoading(true);
+      setErro(null);
 
-    try {
-      const response = await fetch(`${BASE_URL}/users/`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(dados),
-      });
+      try {
+        const response = await fetch(`${BASE_URL}/users/`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(dados),
+        });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        const msg = errorData.detail || 'Erro ao cadastrar User';
-        throw new Error(msg);
+        if (!response.ok) {
+          const errorData = await response.json();
+          const msg = errorData.detail || 'Erro ao cadastrar User';
+          throw new Error(msg);
+        }
+
+        const novaUser = await response.json();
+        setUsers((prev) => [...prev, novaUser]);
+        return true;
+      } catch (error) {
+        console.error(error);
+        setErro(error.message);
+        return false;
+      } finally {
+        setLoading(false);
       }
-
-      const novaUser = await response.json();
-      setUsers((prev) => [...prev, novaUser]);
-      return true;
-    } catch (error) {
-      console.error(error);
-      setErro(error.message);
-      return false;
-    } finally {
-      setLoading(false);
-    }
-  };
+    },
+    [BASE_URL]
+  );
 
   return (
     <UsersContext.Provider
@@ -152,4 +166,4 @@ export const UsersProvider = ({ children }) => {
       {children}
     </UsersContext.Provider>
   );
-};;;
+};

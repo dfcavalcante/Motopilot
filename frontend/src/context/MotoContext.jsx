@@ -1,4 +1,4 @@
-import { createContext, useState } from 'react';
+import { createContext, useEffect, useState } from 'react';
 import React from 'react';
 
 export const MotoContext = createContext();
@@ -10,10 +10,29 @@ export const MotoProvider = ({ children }) => {
 
   const BASE_URL = 'http://localhost:8000';
 
-  {
-    /*Moto para usar do Informações Moto para o Chatbot*/
-  }
-  const [motoSelecionada, setMotoSelecionada] = useState(null);
+  //Moto para usar do Informações Moto para o Chatbot*/
+
+  const [motoSelecionada, setMotoSelecionada] = useState(() => {
+    try {
+      const stored = localStorage.getItem('motoSelecionada');
+      return stored ? JSON.parse(stored) : null;
+    } catch (error) {
+      console.error('Erro ao carregar motoSelecionada:', error);
+      return null;
+    }
+  });
+
+  useEffect(() => {
+    try {
+      if (motoSelecionada) {
+        localStorage.setItem('motoSelecionada', JSON.stringify(motoSelecionada));
+      } else {
+        localStorage.removeItem('motoSelecionada');
+      }
+    } catch (error) {
+      console.error('Erro ao salvar motoSelecionada:', error);
+    }
+  }, [motoSelecionada]);
 
   const listarMotos = async () => {
     try {

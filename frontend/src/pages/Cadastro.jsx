@@ -1,39 +1,25 @@
-import React, { useState } from 'react';
-import { Box, Stack, Divider, Typography } from '@mui/material';
+import React from 'react';
+import { Box } from '@mui/material';
 import BaseFront from '../utils/BaseFront';
 import DadosPessoais from '../components/Usuários/DadosPessoais';
 import Etapas from '../components/Usuários/Etapas';
 import CriarSenha from '../components/Usuários/CriarSenha';
 import Concluido from '../components/Usuários/Concluido';
-import { UsersContext } from '../context/UserContext';
+import { HookUsers } from '../hooks/HookUsers';
 
 const Cadastro = () => {
-  const [nomeCompleto, setNomeCompleto] = React.useState('');
-  const [email, setEmail] = React.useState('');
-  const [numeroMatricula, setNumeroMatricula] = React.useState('');
-  const [funcao, setFuncao] = React.useState('');
-  const [etapa, setEtapa] = React.useState(1);
-
-  const { cadastrarUser, verificarMatricula } = React.useContext(UsersContext);
-
-  const proximaEtapa = () => setEtapa((prev) => prev + 1);
-  const etapaAnterior = () => setEtapa((prev) => prev - 1);
-
-  const finalizarCadastro = async (senha) => {
-    const novoUsuario = {
-      nome: nomeCompleto,
-      email: email,
-      matricula: numeroMatricula,
-      funcao: funcao,
-      senha: senha,
-    };
-
-    const sucesso = await cadastrarUser(novoUsuario);
-    if (sucesso) {
-      setEtapa(3);
-    }
-  };
-
+  const {
+    etapaAtual,
+    loading,
+    errors,
+    register,
+    watch,
+    handleProximo,
+    handleVoltar,
+    onSubmitForm,
+    handleSubmit,
+    control,
+  } = HookUsers();
 
   return (
     <BaseFront
@@ -54,34 +40,34 @@ const Cadastro = () => {
           overflow: 'hidden',
         }}
       >
-        {/* O componente de Etapas recebe o número atual para pintar a bolinha certa */}
-        <Etapas etapa={etapa} />
+        <Etapas etapa={etapaAtual} />
 
-        {/* LÓGICA DE TROCA DE ETAPAS */}
-        {etapa === 1 && (
-          <DadosPessoais
-            nomeCompleto={nomeCompleto}
-            setNomeCompleto={setNomeCompleto}
-            email={email}
-            setEmail={setEmail}
-            numeroMatricula={numeroMatricula}
-            setNumeroMatricula={setNumeroMatricula}
-            funcao={funcao}
-            setFuncao={setFuncao}
-            onBack={etapaAnterior}
-            onNext={proximaEtapa}
-          />
-        )}
+        <form
+          onSubmit={handleSubmit(onSubmitForm)}
+          style={{ width: '100%', display: 'flex', justifyContent: 'center' }}
+        >
+          {etapaAtual === 1 && (
+            <DadosPessoais
+              register={register}
+              errors={errors}
+              onNext={handleProximo}
+              loading={loading}
+              control={control}
+            />
+          )}
 
-        {etapa === 2 && (
-          <CriarSenha
-            onBack={etapaAnterior}
-            onNext={proximaEtapa}
-            onSubmit={(senha) => finalizarCadastro(senha)}
-          />
-        )}
+          {etapaAtual === 2 && (
+            <CriarSenha
+              register={register}
+              errors={errors}
+              watch={watch}
+              onBack={handleVoltar}
+              loading={loading}
+            />
+          )}
 
-        {etapa === 3 && <Concluido />}
+          {etapaAtual === 3 && <Concluido />}
+        </form>
       </Box>
     </BaseFront>
   );

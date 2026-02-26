@@ -9,11 +9,10 @@ import { MotoContext } from '../../context/MotoContext.jsx';
 const InformacoesMoto = ({ moto, onBack }) => {
   const navigate = useNavigate();
   const { setMotoSelecionada } = React.useContext(MotoContext);
+  const fallbackSrc = '/images/Motopilot.jpeg';
 
   const getImageUrl = (caminhoDoBanco) => {
-    console.log('Caminho original do Banco:', caminhoDoBanco);
-
-    if (!caminhoDoBanco) return 'https://via.placeholder.com/336x189';
+    if (!caminhoDoBanco) return fallbackSrc;
 
     const caminhoCorrigido = caminhoDoBanco.replace(/\\/g, '/');
     const pathFinal = caminhoCorrigido.startsWith('/')
@@ -21,11 +20,9 @@ const InformacoesMoto = ({ moto, onBack }) => {
       : caminhoCorrigido;
 
     const urlFinal = `http://localhost:8000/${pathFinal}`;
-    console.log('URL Final gerada:', urlFinal);
-
     return urlFinal;
   };
-  
+
   return (
     <Box
       sx={{
@@ -42,7 +39,7 @@ const InformacoesMoto = ({ moto, onBack }) => {
       >
         <Stack spacing="8px" sx={{ height: '100%' }}>
           <Box sx={{ flexShrink: 0 }}>
-            <Header/>
+            <Header />
           </Box>
 
           {/* BOX BRANCA PRINCIPAL */}
@@ -163,6 +160,11 @@ const InformacoesMoto = ({ moto, onBack }) => {
               <img
                 src={getImageUrl(moto.imagemPath)}
                 alt="Imagem Moto"
+                onError={(event) => {
+                  if (event.currentTarget.src !== fallbackSrc) {
+                    event.currentTarget.src = fallbackSrc;
+                  }
+                }}
                 style={{
                   width: '100%',
                   height: '268px',
