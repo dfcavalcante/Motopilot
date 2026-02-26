@@ -35,3 +35,40 @@ class ChatService:
                 "moto_id": moto_id,
                 "usuario_id": usuario_id
             }
+
+    def listar_historico(self, usuario_id: int):
+        """Retorna todo o histórico de conversas de um usuário."""
+        return (
+            self.db.query(ChatLog)
+            .filter(ChatLog.user_id == usuario_id)
+            .order_by(ChatLog.created_at.desc())
+            .all()
+        )
+
+    def listar_historico_por_moto(self, moto_id: int):
+        """Retorna todo o histórico de conversas de uma moto (todos os usuários)."""
+        return (
+            self.db.query(ChatLog)
+            .filter(ChatLog.moto_id == moto_id)
+            .order_by(ChatLog.created_at.desc())
+            .all()
+        )
+
+    def listar_historico_usuario_moto(self, usuario_id: int, moto_id: int):
+        """Retorna o histórico de conversas de um usuário com uma moto específica."""
+        return (
+            self.db.query(ChatLog)
+            .filter(ChatLog.user_id == usuario_id, ChatLog.moto_id == moto_id)
+            .order_by(ChatLog.created_at.desc())
+            .all()
+        )
+
+    def limpar_historico_moto(self, moto_id: int):
+        """Deleta todo o histórico de conversas de uma moto."""
+        quantidade = (
+            self.db.query(ChatLog)
+            .filter(ChatLog.moto_id == moto_id)
+            .delete()
+        )
+        self.db.commit()
+        return quantidade
