@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box, Stack, Typography, Divider } from '@mui/material';
 import SideBar from './SideBar';
-import HeaderChatBot from './HeaderChatbot';
+import Header from './Header.jsx';
 
 const BaseFront = ({ nome, icone, height, width, children }) => {
   return (
@@ -21,7 +21,7 @@ const BaseFront = ({ nome, icone, height, width, children }) => {
       >
         <Stack spacing="8px" sx={{ height: '100%' }}>
           <Box sx={{ flexShrink: 0 }}>
-            <HeaderChatBot />
+            <Header />
           </Box>
           <Box
             sx={{

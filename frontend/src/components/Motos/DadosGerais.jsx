@@ -1,8 +1,46 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Box, Typography, TextField, Grid, Button, Stack } from '@mui/material';
 import ImageUploader from '../Motos/ImageUploader.jsx';
 
-const DadosGerais = ({ dados, handleChange, onNext, errors }) => {
+const DadosGerais = ({
+  dados,
+  handleChange,
+  onNext,
+  errors,
+  motos,
+  setErrors,
+  verificarNumeroSerie,
+}) => {
+  useEffect(() => {
+    const checkSerie = async () => {
+      if (!dados.numeroSerie || !setErrors) return;
+      let message = null;
+      const localDup = motos.some((moto) => moto.numero_serie === dados.numeroSerie);
+      if (localDup) {
+        message = `O número de série '${dados.numeroSerie}' já está registrado no sistema.`;
+      } else if (verificarNumeroSerie) {
+        const exists = await verificarNumeroSerie(dados.numeroSerie);
+        if (exists) {
+          message = `O número de série '${dados.numeroSerie}' já está registrado no sistema.`;
+        }
+      }
+      if (message) {
+        setErrors((prev) => ({
+          ...prev,
+          numeroSerie: message,
+        }));
+      } else {
+        setErrors((prev) => {
+          const newErr = { ...prev };
+          delete newErr.numeroSerie;
+          return newErr;
+        });
+      }
+    };
+    checkSerie();
+  }, [dados.numeroSerie, motos, setErrors, verificarNumeroSerie]);
+  
+
   const labelStyle = {
     color: '#000000',
     fontSize: '15px',
@@ -46,7 +84,7 @@ const DadosGerais = ({ dados, handleChange, onNext, errors }) => {
 
       <Grid container spacing={4}>
         {/* LADO ESQUERDO: FOTO */}
-        <Grid item xs={12} md={5}>
+        <Grid>
           <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
             <ImageUploader
               onFileSelect={(file) => handleChange({ target: { name: 'foto', files: [file] } })}

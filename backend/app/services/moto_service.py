@@ -61,3 +61,10 @@ class Moto_service:
         db.commit()
         db.refresh(db_moto)
         return db_moto
+    
+    def verificar_numero_serie_existente(self, db: Session, numero_serie: str) -> bool:
+        """Verifica se um número de série já existe no banco de dados. Verificação pro frontend"""
+        moto_existente = db.scalars(
+            select(Moto).where(Moto.numero_serie == numero_serie)
+        ).first()
+        return moto_existente is not None

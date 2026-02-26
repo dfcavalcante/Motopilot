@@ -50,6 +50,7 @@ const ListagemMotos = () => {
 
   return (
     <BaseFront icone={null} width={null} height={null} nome={'Motos'}>
+      {/* Filtro e Ordenação */}
       <Box
         sx={{
           display: 'flex',

@@ -11,6 +11,7 @@ import {
   FormHelperText,
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import { UsersContext } from '../../context/UserContext';
 
 const DadosPessoais = ({
   nomeCompleto,
@@ -22,13 +23,36 @@ const DadosPessoais = ({
   funcao,
   setFuncao,
   onNext,
-  onClose,
 }) => {
   const navigate = useNavigate();
 
   const [error, setError] = useState(false);
+  const [errors, setErrors] = useState({});
+  const { verificarMatricula, verificarEmail } = useContext(UsersContext);
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
+    if (numeroMatricula && verificarMatricula) {
+      const exists = await verificarMatricula(numeroMatricula);
+      if (exists) {
+        setErrors((prev) => ({
+          ...prev,
+          numeroMatricula: `A matrícula '${numeroMatricula}' já está registrada no sistema.`,
+        }));
+        return;
+      }
+    }
+
+    if(email && verificarEmail) {
+      const emailExists = await verificarEmail(email);
+      if (emailExists) { 
+        setErrors((prev) => ({
+          ...prev,
+          email: `O email '${email}' já está registrado no sistema.`,
+        }));
+        return;
+      }
+    }
+
     if (!nomeCompleto || !email || !numeroMatricula || !funcao) {
       setError(true);
       return;
@@ -85,6 +109,7 @@ const DadosPessoais = ({
         value={email}
         onChange={(e) => setEmail(e.target.value)}
         error={error && !email}
+        helperText={errors.email}
         placeholder={error && !email ? 'Campo Obrigatório *' : ''}
         sx={{
           mb: 2,
@@ -107,6 +132,7 @@ const DadosPessoais = ({
         size="small"
         value={numeroMatricula}
         error={error && !numeroMatricula}
+        helperText={errors.numeroMatricula}
         onChange={(e) => setNumeroMatricula(e.target.value)}
         placeholder={error && !numeroMatricula ? 'Campo Obrigatório *' : ''}
         sx={{
@@ -116,6 +142,10 @@ const DadosPessoais = ({
             color: error && !numeroMatricula ? '#FF0000' : 'inherit',
             fontSize: 14,
             opacity: error ? 0.8 : 0.5,
+          },
+          '¨&.MuiFormHelperText-root': {
+            color: '#FF0000',
+            fontSize: 14,
           },
         }}
       />

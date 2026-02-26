@@ -13,7 +13,7 @@ export const UsersProvider = ({ children }) => {
   // --- LISTAR ---
   const listarUsers = async () => {
     try {
-      const response = await fetch(`${BASE_URL}/users/listar`); 
+      const response = await fetch(`${BASE_URL}/users/listar`);
 
       if (!response.ok) {
         throw new Error('Erro ao buscar Users');
@@ -31,7 +31,7 @@ export const UsersProvider = ({ children }) => {
     setLoading(true);
     setErro(null);
     try {
-      const response = await fetch(`${BASE_URL}/users/${id}/atualizar`, { 
+      const response = await fetch(`${BASE_URL}/users/${id}/atualizar`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -74,12 +74,42 @@ export const UsersProvider = ({ children }) => {
     }
   };
 
+// --- VERIFICAÇÕES ---
+  const verificarMatricula = async (matricula) => {
+    try {
+      const response = await fetch(`${BASE_URL}/users/check/${encodeURIComponent(matricula)}`);
+      if (!response.ok) {
+        throw new Error('Erro ao verificar matrícula');
+      }
+      const data = await response.json();
+      return data.exists;
+    } catch (error) {
+      console.error('Erro no verificar matrícula:', error);
+      return false; 
+    }
+  };
+
+  const verificarEmail = async (email) => {
+    try {
+      const response = await fetch(`${BASE_URL}/users/check-email/${encodeURIComponent(email)}`);
+      if (!response.ok) {
+        throw new Error('Erro ao verificar email');
+      }
+      const data = await response.json();
+      return data.exists;
+    } catch (error) {
+      console.error('Erro no verificar email:', error);
+      return false;
+    }
+  };
+
+// --- CADASTRAR ---
   const cadastrarUser = async (dados) => {
     setLoading(true);
     setErro(null);
 
     try {
-      const response = await fetch(`${BASE_URL}/users/`, { 
+      const response = await fetch(`${BASE_URL}/users/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -95,11 +125,11 @@ export const UsersProvider = ({ children }) => {
 
       const novaUser = await response.json();
       setUsers((prev) => [...prev, novaUser]);
-      return true; 
+      return true;
     } catch (error) {
       console.error(error);
       setErro(error.message);
-      return false; 
+      return false;
     } finally {
       setLoading(false);
     }
@@ -107,17 +137,19 @@ export const UsersProvider = ({ children }) => {
 
   return (
     <UsersContext.Provider
-      value={{ 
-        users, 
-        cadastrarUser, 
-        listarUsers, 
-        loading, 
-        erro, 
-        excluirUser, 
-        atualizarUser 
+      value={{
+        users,
+        cadastrarUser,
+        listarUsers,
+        loading,
+        erro,
+        excluirUser,
+        atualizarUser,
+        verificarMatricula,
+        verificarEmail,
       }}
     >
       {children}
     </UsersContext.Provider>
   );
-};
+};;;

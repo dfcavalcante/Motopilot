@@ -1,6 +1,6 @@
-import React, { useState, useContext } from 'react';
-import { Box, Stack, Typography, Divider } from '@mui/material';
-import HeaderChatBot from '../utils/HeaderChatbot.jsx';
+import React, { useState, useContext, useEffect } from 'react';
+import { Box, Stack, Typography, Divider, alertTitleClasses } from '@mui/material';
+import Header from '../utils/Header.jsx';
 import SideBar from '../utils/SideBar.jsx';
 import EtapasMoto from '../components/Motos/EtapasMoto.jsx';
 import { MotoContext } from '../context/MotoContext.jsx';
@@ -10,11 +10,16 @@ import ManualMoto from '../components/Motos/DadosManual.jsx';
 import Concluido from '../components/Motos/Concluido.jsx';
 
 const CadastroDeMoto = () => {
-  const { cadastrarMoto } = useContext(MotoContext);
+  const { cadastrarMoto, erro, motos, listarMotos, verificarNumeroSerie } = useContext(MotoContext);
 
   const [loading, setLoading] = useState(false);
   const [etapaAtual, setEtapaAtual] = useState(1);
   const [errors, setErrors] = useState({});
+
+  // Carregar lista de motos quando o componente monta
+  useEffect(() => {
+    listarMotos();
+  }, [listarMotos]);
 
   const [dadosForm, setDadosForm] = useState({
     modelo: '',
@@ -48,7 +53,14 @@ const CadastroDeMoto = () => {
       if (!dadosForm.modelo) novosErros.modelo = 'O modelo é obrigatório.';
       if (!dadosForm.marca) novosErros.marca = 'A marca é obrigatória.';
       if (!dadosForm.ano) novosErros.ano = 'O ano é obrigatório.';
+
+      // Validar se o número de série já existe
+      if (motos.some((moto) => moto.numero_serie === dadosForm.numeroSerie)) {
+        novosErros.numeroSerie = `O número de série '${dadosForm.numeroSerie}' já está registrado no sistema.`;
+      }
+
       if (!dadosForm.numeroSerie) novosErros.numeroSerie = 'O número de série é obrigatório.';
+
       if (!dadosForm.foto) novosErros.foto = 'A foto da moto é obrigatória.';
     }
 
@@ -60,10 +72,23 @@ const CadastroDeMoto = () => {
     return ehValido;
   };
 
-  const handleProximo = () => {
-    if (validarCampos(1)) {
-      setEtapaAtual((prev) => prev + 1);
+  const handleProximo = async () => {
+    // valida os campos básicos
+    if (!validarCampos(1)) return;
+
+    // bloqueia também se backend indicar duplicação (em caso de motos não carregadas)
+    if (dadosForm.numeroSerie && verificarNumeroSerie) {
+      const exists = await verificarNumeroSerie(dadosForm.numeroSerie);
+      if (exists) {
+        setErrors((prev) => ({
+          ...prev,
+          numeroSerie: `O número de série '${dadosForm.numeroSerie}' já está registrado no sistema.`,
+        }));
+        return;
+      }
     }
+
+    setEtapaAtual((prev) => prev + 1);
   };
 
   const handleVoltar = () => {
@@ -115,9 +140,16 @@ const CadastroDeMoto = () => {
       if (sucesso) {
         setEtapaAtual(3);
       } else {
-        alert(
-          'O Backend rejeitou os dados. Verifique o Console (F12) -> Network para ver o erro vermelho.'
-        );
+        // Exibir erro específico do backend
+        if (erro && erro.includes('já está registrado')) {
+          setErrors({ numeroSerie: erro });
+          alert(`⚠️ ${erro}`);
+        } else {
+          alert(
+            erro ||
+              'O Backend rejeitou os dados. Verifique o Console (F12) -> Network para ver o erro vermelho.'
+          );
+        }
       }
     } catch (error) {
       console.error('Erro CRÍTICO ao enviar:', error);
@@ -144,7 +176,7 @@ const CadastroDeMoto = () => {
         <Stack spacing="8px" sx={{ height: '100%' }}>
           <Box sx={{ flexShrink: 0 }}>
             {' '}
-            <HeaderChatBot />{' '}
+            <Header />{' '}
           </Box>
 
           <Box
@@ -173,6 +205,9 @@ const CadastroDeMoto = () => {
                   handleChange={handleChange}
                   onNext={handleProximo}
                   errors={errors}
+                  motos={motos}
+                  setErrors={setErrors}
+                  verificarNumeroSerie={verificarNumeroSerie}
                 />
               )}
 

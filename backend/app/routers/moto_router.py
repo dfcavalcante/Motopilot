@@ -25,7 +25,6 @@ moto_service = Moto_service()
 UPLOAD_DIR = "manuals"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
-# --- FUNÇÃO CORRIGIDA (Substitua a sua antiga por esta) ---
 def processar_manual_background(file_path: str, moto_id: int, modelo: str, ano: str):
     """
     Chama o processador INTELIGENTE (Markdown) e salva no ChromaDB.
@@ -50,7 +49,7 @@ def processar_manual_background(file_path: str, moto_id: int, modelo: str, ano: 
     except Exception as e:
         print(f"❌ [IA] Erro na task de background: {e}")
 
-# --- ROTAS (Permanecem iguais) ---
+# --- ROTAS ---
 
 @router.post("/", response_model=MotoResponse, status_code=status.HTTP_201_CREATED)
 def criar_moto_endpoint(
@@ -64,6 +63,13 @@ def criar_moto_endpoint(
     imagem_moto: UploadFile = File(...),
     db: Session = Depends(get_db)
 ):
+    # 0. Validar se número de série já existe
+    if moto_service.verificar_numero_serie_existente(db, numeroSerie):
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=f"Número de série '{numeroSerie}' já está registrado no sistema."
+        )
+
     # 1. Salvar arquivos
     caminho_pdf = salvar_arquivo(documento_pdf, sub_pasta="manuais")
     caminho_imagem = salvar_arquivo(imagem_moto, sub_pasta="imagens")
@@ -95,10 +101,12 @@ def criar_moto_endpoint(
 
     return nova_moto
 
+# --- LISTAR ---
 @router.get('/listar', response_model=List[MotoResponse])
 def listar_motos_endpoint(db: Session = Depends(get_db)):
     return moto_service.listar_motos(db)
 
+# --- ATUALIZAR ---
 @router.patch('/{moto_id}/atualizar', response_model=MotoResponse)
 def atualizar_moto_endpoint(moto_id: int, moto_data: MotoUpdate, db: Session = Depends(get_db)):
     moto_atualizada = moto_service.atualizar_moto(db, moto_id, moto_data)
@@ -115,7 +123,7 @@ def adicionar_manual_endpoint(
 ):
     moto_existente = moto_service.buscar_moto_por_id(db, moto_id)
     if not moto_existente:
-         raise HTTPException(status_code=404, detail="Moto não encontrada")
+        raise HTTPException(status_code=404, detail="Moto não encontrada")
 
     try:
         safe_filename = documento_pdf.filename.replace(" ", "_")
@@ -139,6 +147,7 @@ def adicionar_manual_endpoint(
         
     return moto_com_manual
 
+# --- ARQUIVAR ---
 @router.patch('/{moto_id}/arquivar', response_model=MotoResponse)
 def arquivar_moto_endpoint(moto_id: int, db: Session = Depends(get_db)):
     moto_arquivada = moto_service.arquivar_moto(db, moto_id)
@@ -146,6 +155,7 @@ def arquivar_moto_endpoint(moto_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Moto não encontrada")
     return moto_arquivada
 
+# --- DELETAR --- 
 @router.delete('/{moto_id}/deletar', status_code=status.HTTP_204_NO_CONTENT)
 def deletar_moto_endpoint(moto_id: int, db: Session = Depends(get_db)):
     sucesso = moto_service.deletar_moto(db, moto_id)
@@ -153,7 +163,7 @@ def deletar_moto_endpoint(moto_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Moto não encontrada")
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
-#Função auxiliar para salvar arquivos (PDFs e imagens)
+# --- FUNÇÃO AUXILIAR PARA SALVAR ARQUIVOS ---
 def salvar_arquivo(arquivo: UploadFile, sub_pasta: str = "") -> str | None:
     if not arquivo or not arquivo.filename:
         return None
@@ -172,3 +182,11 @@ def salvar_arquivo(arquivo: UploadFile, sub_pasta: str = "") -> str | None:
         return file_path
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Erro ao salvar arquivo {arquivo.filename}: {str(e)}")
+    
+
+# --- VERIFICAÇÕES ---
+@router.get('/check/{numero_serie}')
+def verificar_numero_serie_endpoint(numero_serie: str, db: Session = Depends(get_db)):
+    """Retorna `{{"exists": true}}` se o número de série já estiver no banco."""
+    exists = moto_service.verificar_numero_serie_existente(db, numero_serie)
+    return {"exists": exists}

@@ -14,7 +14,7 @@ const Cadastro = () => {
   const [funcao, setFuncao] = React.useState('');
   const [etapa, setEtapa] = React.useState(1);
 
-  const { cadastrarUser } = React.useContext(UsersContext);
+  const { cadastrarUser, verificarMatricula } = React.useContext(UsersContext);
 
   const proximaEtapa = () => setEtapa((prev) => prev + 1);
   const etapaAnterior = () => setEtapa((prev) => prev - 1);
@@ -33,6 +33,7 @@ const Cadastro = () => {
       setEtapa(3);
     }
   };
+
 
   return (
     <BaseFront

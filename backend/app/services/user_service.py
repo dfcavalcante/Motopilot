@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Session
 from app.models.user_model import User
 from app.schemas.user_schema import UserBase, UserUpdate
+from sqlalchemy import select
 
 class UserService:
     def __init__(self, db: Session):
@@ -50,4 +51,19 @@ class UserService:
         self.db.commit()
         self.db.refresh(user)
         
-        return user
+        return 
+    
+    # --- VERIFICAÇÕES ---
+    def verificar_matricula_existente(self, db: Session,matricula: str) -> bool:
+        """Verifica se um número de série já existe no banco de dados. Verificação pro frontend"""
+        user_existente = db.scalars(
+            select(User).where(User.matricula == matricula)
+        ).first()
+        return user_existente is not None
+    
+    def verificar_email_existente(self, db: Session,email: str) -> bool:
+        """Verifica se um número de série já existe no banco de dados. Verificação pro frontend"""
+        user_existente = db.scalars(
+            select(User).where(User.email == email)
+        ).first()
+        return user_existente is not None

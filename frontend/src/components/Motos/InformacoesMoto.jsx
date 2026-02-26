@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box, Stack, Divider, Typography, IconButton, Button, Chip } from '@mui/material';
-import HeaderChatBot from '../../utils/HeaderChatbot.jsx';
+import Header from '../../utils/Header.jsx';
 import SideBar from '../../utils/SideBar.jsx';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { useNavigate } from 'react-router-dom';
@@ -25,6 +25,7 @@ const InformacoesMoto = ({ moto, onBack }) => {
 
     return urlFinal;
   };
+  
   return (
     <Box
       sx={{
@@ -41,7 +42,7 @@ const InformacoesMoto = ({ moto, onBack }) => {
       >
         <Stack spacing="8px" sx={{ height: '100%' }}>
           <Box sx={{ flexShrink: 0 }}>
-            <HeaderChatBot />
+            <Header/>
           </Box>
 
           {/* BOX BRANCA PRINCIPAL */}

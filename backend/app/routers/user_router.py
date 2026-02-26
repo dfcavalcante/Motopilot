@@ -59,3 +59,16 @@ def delete_user(user_id: int, db: Session = Depends(get_db)):
     db.delete(user)
     db.commit()
     return None
+
+# --- VERIFICAÇÕES --- 
+@router.get('/check/{matricula}')
+def verificar_matricula_endpoint(matricula: str, db: Session = Depends(get_db)):
+    """Retorna {"exists": true} se a matrícula já estiver no banco."""
+    exists = db.query(User).filter(User.matricula == matricula).first() is not None
+    return {"exists": exists}
+
+@router.get('/check-email/{email}')
+def verificar_email_endpoint(email: str, db: Session = Depends(get_db)):
+    """Retorna {"exists": true} se o email já estiver no banco."""
+    exists = db.query(User).filter(User.email == email).first() is not None
+    return {"exists": exists}

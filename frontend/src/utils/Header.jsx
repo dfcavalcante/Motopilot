@@ -1,12 +1,10 @@
-import { useState } from 'react';
-import { Box, Typography, Button, IconButton, Divider, TextField } from '@mui/material';
+
+import { Box, Typography, Button, IconButton} from '@mui/material';
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import EditIcon from '@mui/icons-material/Edit';
-import CheckIcon from '@mui/icons-material/Check';
 
 // Pequena Header em cima do Chatbot, tem os ícones, nome e novo chat
-const HeaderChatBot = ({ onNovoChat }) => {
+const Header = ({ onNovoChat }) => {
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -159,4 +157,4 @@ const HeaderChatBot = ({ onNovoChat }) => {
   );
 };
 
-export default HeaderChatBot;
+export default Header;
