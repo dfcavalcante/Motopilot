@@ -21,6 +21,16 @@ class ChatService:
                 pergunta_texto=pergunta
             )
             
+            # Salva a conversa no banco de dados
+            log = ChatLog(
+                pergunta=pergunta,
+                resposta_ia=resposta_texto,
+                user_id=usuario_id,
+                moto_id=moto_id
+            )
+            self.db.add(log)
+            self.db.commit()
+            
             # Retorno padronizado para o Router/Frontend
             return {
                 "resposta": resposta_texto,
