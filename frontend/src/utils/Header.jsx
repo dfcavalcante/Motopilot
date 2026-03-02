@@ -148,7 +148,7 @@ const Header = ({ onNovoChat }) => {
             alignItems: 'center',
           }}
         >
-          <IconButton sx={{ color: 'grey.700' }}>
+          <IconButton sx={{ color: 'grey.700' }} onClick={() => navigate('/notificacoes')}>
             <img src="/images/bell.png" alt="Notifications" width="16" />
           </IconButton>
         </Box>
