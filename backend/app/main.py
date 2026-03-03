@@ -11,15 +11,14 @@ from app.database import engine, Base, get_db
 # --- IMPORTS DOS MODELS (CRUCIAL) ---
 # Importamos TODOS os models aqui para o SQLAlchemy criar as tabelas
 # (Isso assume que você criou o __init__.py na pasta models conforme conversamos)
-from app.models import Empresa, Cargo, User, Moto, ChatLog
+from app.models import Empresa, Cargo, User, Moto, ChatLog, Report
 
 # --- IMPORTS DE UTILITÁRIOS ---
 from app.utils.init_db import criar_cargos_iniciais
 
 # --- IMPORTS DAS ROTAS ---
-from app.routers import moto_router, chatbot_router, report_router, user_router
+from app.routers import moto_router, chatbot_router, report_router, user_router, dashboard_router
 # from app.routers import auth_router
-# from app.routers import user_router
 
 # --- CONFIGURAÇÕES ---
 try:
@@ -88,4 +87,5 @@ app.include_router(moto_router.router)
 app.include_router(user_router.router)
 #app.include_router(auth_router.router)
 app.include_router(chatbot_router.router)
-#app.include_router(report_router.router)
+app.include_router(report_router.router)
+app.include_router(dashboard_router.router)

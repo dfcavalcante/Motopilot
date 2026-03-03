@@ -2,7 +2,8 @@ import os
 from sqlalchemy.orm import Session
 from sqlalchemy import select
 from app.models.moto_model import Moto
-from app.schemas.moto_schema import MotoBase, MotoUpdate, MotoResponse
+from app.models.report_model import Report
+from app.schemas.moto_schema import MotoBase, MotoUpdate, MotoResponse, ConcluirManutencaoRequest
 from typing import List, Optional
 
 class Moto_service:
@@ -17,6 +18,9 @@ class Moto_service:
     #Esse aqui é o sem filtro
     def listar_motos(self, db: Session) -> List[Moto]: 
         return list(db.scalars(select(Moto)).all())
+
+    def buscar_moto_por_id(self, db: Session, id: int) -> Optional[Moto]:
+        return db.scalars(select(Moto).where(Moto.id == id)).first()
 
     #Deleta a moto e seu manual associado
     def deletar_moto(self, db: Session, id: int) -> bool:
@@ -61,3 +65,45 @@ class Moto_service:
         db.commit()
         db.refresh(db_moto)
         return db_moto
+
+    def concluir_manutencao(self, db: Session, moto_id: int, dados: ConcluirManutencaoRequest) -> dict:
+        """
+        Conclui a manutenção de uma moto e gera o relatório na mesma transação.
+        Se qualquer etapa falhar, tudo é revertido (rollback automático).
+        
+        Retorna um dict com a moto atualizada e o relatório criado.
+        """
+        # 1. Buscar a moto
+        db_moto = db.scalars(select(Moto).where(Moto.id == moto_id)).first()
+        if not db_moto:
+            return None
+        
+        if db_moto.estado == "Concluída":
+            raise ValueError("Esta moto já foi concluída.")
+
+        try:
+            # 2. Alterar status para "Concluída"
+            db_moto.estado = "Concluída"
+
+            # 3. Criar o relatório vinculado
+            novo_relatorio = Report(
+                moto_id=moto_id,
+                cliente_id=dados.cliente_id,
+                diagnostico=dados.diagnostico,
+                mecanicos=dados.mecanicos,
+                atividades=dados.atividades,
+                pecas=dados.pecas,
+                observacoes=dados.observacoes,
+            )
+            db.add(novo_relatorio)
+
+            # 4. Commit atômico — moto + relatório salvos juntos
+            db.commit()
+            db.refresh(db_moto)
+            db.refresh(novo_relatorio)
+
+            return {"moto": db_moto, "relatorio": novo_relatorio}
+
+        except Exception as e:
+            db.rollback()
+            raise e

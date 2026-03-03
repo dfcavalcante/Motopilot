@@ -23,3 +23,6 @@ class User(Base):
     
     # back_populates="user" deve bater com o que está em ChatLog (singular 'user')
     chat_logs = relationship("ChatLog", back_populates="user")
+    
+    # Motos delegadas a este mecânico
+    motos_atribuidas = relationship("Moto", back_populates="mecanico")

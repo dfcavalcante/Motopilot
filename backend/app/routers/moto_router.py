@@ -13,7 +13,7 @@ from llm.services.vector_store import vector_store
 from llm.data.pdf_processor import processar_manual_unico
 
 # Imports internos
-from app.schemas.moto_schema import (MotoBase, MotoUpdate, MotoResponse)
+from app.schemas.moto_schema import (MotoBase, MotoUpdate, MotoResponse, ConcluirManutencaoRequest)
 from app.services.moto_service import Moto_service
 from app.database import get_db
 
@@ -152,6 +152,32 @@ def deletar_moto_endpoint(moto_id: int, db: Session = Depends(get_db)):
     if not sucesso:
         raise HTTPException(status_code=404, detail="Moto não encontrada")
     return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+@router.post('/{moto_id}/concluir', status_code=status.HTTP_200_OK)
+def concluir_manutencao_endpoint(
+    moto_id: int,
+    dados: ConcluirManutencaoRequest,
+    db: Session = Depends(get_db)
+):
+    """
+    Conclui a manutenção de uma moto e gera o relatório automaticamente.
+    A moto tem seu estado alterado para 'Concluída' e um Report é criado
+    na mesma transação (atômico).
+    """
+    try:
+        resultado = moto_service.concluir_manutencao(db, moto_id, dados)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+    if not resultado:
+        raise HTTPException(status_code=404, detail="Moto não encontrada")
+
+    return {
+        "message": "Manutenção concluída com sucesso!",
+        "moto_id": resultado["moto"].id,
+        "moto_estado": resultado["moto"].estado,
+        "relatorio_id": resultado["relatorio"].id
+    }
 
 #Função auxiliar para salvar arquivos (PDFs e imagens)
 def salvar_arquivo(arquivo: UploadFile, sub_pasta: str = "") -> str | None:

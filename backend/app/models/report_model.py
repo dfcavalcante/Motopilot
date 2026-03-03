@@ -28,6 +28,6 @@ class Report(Base):
     # 2. Removemos 'back_populates' por enquanto para evitar erro se as outras 
     #    classes (User e Moto) ainda não tiverem o campo 'relatorios' criado.
     cliente = relationship("User")
-    moto = relationship("Moto")
+    moto = relationship("Moto", back_populates="relatorios")
 
     # TODO: fotos e assinatura digital
