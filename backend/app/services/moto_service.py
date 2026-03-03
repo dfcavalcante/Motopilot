@@ -4,6 +4,7 @@ from sqlalchemy import select
 from app.models.moto_model import Moto
 from app.schemas.moto_schema import MotoBase, MotoUpdate, MotoResponse
 from typing import List, Optional
+from app.services.notification_service import NotificationService
 
 class Moto_service:
     def criar_moto(self, db: Session, moto_data: MotoBase) -> MotoResponse:
@@ -12,6 +13,7 @@ class Moto_service:
         db.add(db_moto)
         db.commit()
         db.refresh(db_moto)
+        NotificationService(db).notificar_moto("criado", db_moto.id, db_moto.marca, db_moto.modelo)
         return db_moto
 
     #Esse aqui é o sem filtro
@@ -33,6 +35,7 @@ class Moto_service:
         
         db.delete(db_moto)
         db.commit()
+        NotificationService(db).notificar_moto("deletado", id, db_moto.marca, db_moto.modelo)
         return True
 
     def atualizar_moto(self, db: Session, id: int, moto_data: MotoUpdate) -> Optional[MotoResponse]:
@@ -48,6 +51,7 @@ class Moto_service:
         db.add(db_moto)
         db.commit()
         db.refresh(db_moto)
+        NotificationService(db).notificar_moto("atualizado", db_moto.id, db_moto.marca, db_moto.modelo)
         return db_moto
 
     def arquivar_moto(self, db: Session, id: int) -> Optional[MotoResponse]:
@@ -60,6 +64,7 @@ class Moto_service:
         db.add(db_moto)
         db.commit()
         db.refresh(db_moto)
+        NotificationService(db).notificar_moto("arquivado", db_moto.id, db_moto.marca, db_moto.modelo)
         return db_moto
     
     def verificar_numero_serie_existente(self, db: Session, numero_serie: str) -> bool:

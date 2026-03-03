@@ -10,6 +10,29 @@ export const UsersProvider = ({ children }) => {
 
   const BASE_URL = 'http://localhost:8000';
 
+  const extrairMensagemErro = (errorData, fallback) => {
+    if (!errorData) return fallback;
+
+    const { detail } = errorData;
+    if (Array.isArray(detail)) {
+      return detail
+        .map((item) => {
+          if (item?.msg) {
+            const caminho = Array.isArray(item.loc) ? item.loc.join('.') : '';
+            return caminho ? `${caminho}: ${item.msg}` : item.msg;
+          }
+          return String(item);
+        })
+        .join(' | ');
+    }
+
+    if (typeof detail === 'string') {
+      return detail;
+    }
+
+    return fallback;
+  };
+
   // --- LISTAR ---
   const listarUsers = useCallback(async () => {
     try {
@@ -43,7 +66,7 @@ export const UsersProvider = ({ children }) => {
 
       if (!response.ok) {
         const errorData = await response.json();
-        const msg = errorData.detail || 'Erro ao atualizar User';
+        const msg = extrairMensagemErro(errorData, 'Erro ao atualizar User');
         throw new Error(msg);
       }
       const UserAtualizada = await response.json();
@@ -121,17 +144,25 @@ export const UsersProvider = ({ children }) => {
       setErro(null);
 
       try {
+        const payload = {
+          nome: dados.nomeCompleto,
+          email: dados.email,
+          matricula: dados.numeroMatricula,
+          funcao: dados.funcao,
+          senha: dados.senha,
+        };
+
         const response = await fetch(`${BASE_URL}/users/`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify(dados),
+          body: JSON.stringify(payload),
         });
 
         if (!response.ok) {
           const errorData = await response.json();
-          const msg = errorData.detail || 'Erro ao cadastrar User';
+          const msg = extrairMensagemErro(errorData, 'Erro ao cadastrar User');
           throw new Error(msg);
         }
 

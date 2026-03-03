@@ -9,7 +9,7 @@ class NotificationResponse(BaseModel):
     atividade: str
     titulo: str
     mensagem: str
-    is_read: bool
+    lido: bool
     criado_em: datetime
 
     model_config = ConfigDict(from_attributes=True)

@@ -2,11 +2,13 @@ from sqlalchemy.orm import Session
 from app.models.user_model import User
 from app.schemas.user_schema import UserBase, UserUpdate
 from sqlalchemy import select
+from app.services.notification_service import NotificationService
 
 class UserService:
     def __init__(self, db: Session):
         self.db = db
-
+        self.notificacao = NotificationService(db)
+        
     def create_user(self, user_schema: UserBase):
         user_exists = self.db.query(User).filter(User.email == user_schema.email).first()
         if user_exists:
@@ -27,7 +29,7 @@ class UserService:
         self.db.add(new_user)
         self.db.commit()
         self.db.refresh(new_user)
-        
+        self.notificacao.notificar_usuario("criado", new_user.id, new_user.nome)
         return new_user
     
     def update_user(self, user_id: int, user_update: UserUpdate):
@@ -50,8 +52,19 @@ class UserService:
         
         self.db.commit()
         self.db.refresh(user)
+        self.notificacao.notificar_usuario("atualizado", user.id, user.nome)
         
         return 
+    
+    def deletar_usuario(self, user_id: int):
+        user = self.db.query(User).filter(User.id == user_id).first()
+        if not user:
+            raise ValueError("Usuário não encontrado.")
+        
+        self.db.delete(user)
+        self.db.commit()
+        self.notificacao.notificar_usuario("deletado", user.id, user.nome)
+        return True
     
     # --- VERIFICAÇÕES ---
     def verificar_matricula_existente(self, db: Session,matricula: str) -> bool:

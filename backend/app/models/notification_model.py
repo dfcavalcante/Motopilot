@@ -13,4 +13,5 @@ class Notification(Base):
     atividade = Column(String(20), nullable=False, index=True)
     titulo = Column(String(120), nullable=False)
     mensagem = Column(Text, nullable=False)
+    lido = Column(Boolean, nullable=False, default=False, server_default="0", index=True)
     criado_em = Column(DateTime(timezone=True), server_default=func.now(), nullable=False, index=True)
