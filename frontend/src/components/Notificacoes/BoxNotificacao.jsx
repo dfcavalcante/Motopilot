@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box, Stack, Typography, Checkbox } from '@mui/material';
-const BoxNotificacao = ({ check, titulo, descricao, data }) => {
+const BoxNotificacao = ({ check, titulo, descricao, data, onToggleRead }) => {
   const [isChecked, setIsChecked] = React.useState(check);
 
   React.useEffect(() => {
@@ -25,7 +25,14 @@ const BoxNotificacao = ({ check, titulo, descricao, data }) => {
     >
       <Checkbox
         checked={isChecked}
-        onChange={(event) => setIsChecked(event.target.checked)}
+        onChange={(event) => {
+          const novoValor = event.target.checked;
+          setIsChecked(novoValor);
+          if (novoValor && onToggleRead) {
+            onToggleRead();
+          }
+        }}
+        disabled={isChecked}
         disableRipple
         icon={
           <Box

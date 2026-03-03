@@ -1,36 +1,27 @@
 import React from 'react';
 import { Box, Divider, Typography, IconButton } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import { useContext, useEffect } from 'react';
 import SideBar from '../utils/SideBar.jsx';
 import ExtendHeader from '../components/Notificacoes/ExtendHeader.jsx';
 import BoxNotificacao from '../components/Notificacoes/BoxNotificacao.jsx';
+import { NotificacaoContext } from '../context/NotificacoesContext.jsx';
 
-const exemplo = [
-  {
-    id: 1,
-    check: false,
-    titulo: 'Titulo da mensagem',
-    descricao:
-      "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s",
-    data: '18 Fev',
-  },
-  {
-    id: 2,
-    check: false,
-    titulo: 'Outra mensagem',
-    descricao: 'Outra descrição de notificação',
-    data: '19 Fev',
-  },
-  {
-    id: 3,
-    check: false,
-    titulo: 'Mais uma mensagem',
-    descricao: 'Mais uma descrição de notificação',
-    data: '20 Fev',
-  },
-];
 const Notificacoes = () => {
   const navigate = useNavigate();
+  const { notificacoes, listarNotificacoes, marcarComoLida } = useContext(NotificacaoContext);
+
+  useEffect(() => {
+    listarNotificacoes();
+  }, [listarNotificacoes]);
+
+  const formatarData = (dataIso) => {
+    if (!dataIso) return '';
+    return new Date(dataIso).toLocaleDateString('pt-BR', {
+      day: '2-digit',
+      month: 'short',
+    });
+  };
 
   return (
     <Box
@@ -98,15 +89,22 @@ const Notificacoes = () => {
             </Box>
 
             <Box sx={{ width: '100%', overflowY: 'auto', pb: 2 }}>
-              {exemplo.map((notificacao) => (
+              {(notificacoes || []).map((notificacao) => (
                 <BoxNotificacao
                   key={notificacao.id}
-                  check={notificacao.check}
+                  check={notificacao.lido}
                   titulo={notificacao.titulo}
-                  descricao={notificacao.descricao}
-                  data={notificacao.data}
+                  descricao={notificacao.mensagem}
+                  data={formatarData(notificacao.criado_em)}
+                  onToggleRead={() => marcarComoLida(notificacao.id)}
                 />
               ))}
+
+              {(!notificacoes || notificacoes.length === 0) && (
+                <Typography align="center" sx={{ py: 3 }}>
+                  Nenhuma notificação encontrada.
+                </Typography>
+              )}
             </Box>
           </Box>
         </ExtendHeader>
