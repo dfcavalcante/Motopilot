@@ -2,7 +2,7 @@ import React from 'react';
 import { Box } from '@mui/material';
 import BaseFront from '../utils/BaseFront.jsx';
 import EtapasMoto from '../components/Motos/EtapasMoto.jsx';
-import HookCadastroMoto from '../hooks/HookCadastroMoto.jsx'; 
+import HookCadastroMoto from '../hooks/HookCadastroMoto.jsx';
 
 import DadosGerais from '../components/Motos/DadosGerais.jsx';
 import ManualMoto from '../components/Motos/DadosManual.jsx';
@@ -10,8 +10,16 @@ import Concluido from '../components/Motos/Concluido.jsx';
 
 const CadastroDeMoto = () => {
   const {
-    etapaAtual, loading, errors, register, setValue, watch,
-    handleSubmit, onSubmitForm, handleProximo, handleVoltar
+    etapaAtual,
+    loading,
+    errors,
+    register,
+    setValue,
+    watch,
+    handleSubmit,
+    onSubmitForm,
+    handleProximo,
+    handleVoltar,
   } = HookCadastroMoto();
 
   return (
@@ -30,25 +38,25 @@ const CadastroDeMoto = () => {
       >
         <EtapasMoto etapa={etapaAtual} />
 
-        <Box 
-          component="form" 
-          onSubmit={handleSubmit(onSubmitForm)} 
-          sx={{ width: '100%', flex: 1, overflowY: 'auto', mt: 2 }}
+        <Box
+          component="form"
+          onSubmit={handleSubmit(onSubmitForm)}
+          sx={{ width: '100%', flex: 1, overflowY: 'hidden', mt: 2 }}
         >
           {etapaAtual === 1 && (
             <DadosGerais
-              register={register}   
-              setValue={setValue}    // Usado para o upload da foto
-              errors={errors}        //Mensagens de erro do Zod
-              onNext={handleProximo} 
-              watch={watch}        
+              register={register}
+              setValue={setValue} // Usado para o upload da foto
+              errors={errors} //Mensagens de erro do Zod
+              onNext={handleProximo}
+              watch={watch}
             />
           )}
 
           {etapaAtual === 2 && (
             <ManualMoto
-              setValue={setValue}    // Usado para o upload do PDF
-              errors={errors}        
+              setValue={setValue} // Usado para o upload do PDF
+              errors={errors}
               onBack={handleVoltar}
               loading={loading}
               watch={watch}

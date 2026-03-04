@@ -32,7 +32,6 @@ const BoxNotificacao = ({ check, titulo, descricao, data, onToggleRead }) => {
             onToggleRead();
           }
         }}
-        disabled={isChecked}
         disableRipple
         icon={
           <Box

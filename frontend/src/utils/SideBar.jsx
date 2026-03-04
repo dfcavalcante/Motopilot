@@ -11,14 +11,40 @@ const SideBar = ({ historico = [] }) => {
   const menus = [
     {
       name: 'Início',
-      link: '/chatbot',
+      link: '/home',
       icon: <img src="/images/Home.svg" alt="Logo" width="20" />,
+    },
+    {
+      name: 'Chatbot',
+      link: '/chatbot',
+      icon: <img src="/images/IA.png" alt="Logo" width="20" />,
     },
     {
       name: 'Motos',
       link: '/listagemMotos',
-      icon: <img src="/images/Folder.svg" alt="Logo" width="20" />,
+      icon: <img src="/images/cube.png" alt="Logo" width="20" />,
     },
+    {
+      name: 'Nao sei',
+      link: '/naosei',
+      icon: <img src="/images/setas.png" alt="Logo" width="17" />,
+    },
+    {
+      name: 'Nao sei',
+      link: '/naosei2',
+      icon: <img src="/images/shoppingCart.png" alt="Logo" width="20" />,
+    },
+    {
+      name: 'Nao sei',
+      link: '/naosei3',
+      icon: <img src="/images/grafico.png" alt="Logo" width="20" />,
+    },
+    {
+      name: 'Relatórios',
+      link: '/relatorios',
+      icon: <img src="/images/report.png" alt="Logo" width="20" />,
+    },
+
     {
       name: 'Usuários',
       link: '/usuarios',
