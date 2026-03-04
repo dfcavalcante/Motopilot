@@ -1,14 +1,19 @@
-import { useState } from 'react';
-import { Box, Typography, Button, IconButton, Divider, TextField } from '@mui/material';
-import React from 'react';
+import { Box, Typography, Button, IconButton } from '@mui/material';
+import React, { useContext, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import EditIcon from '@mui/icons-material/Edit';
-import CheckIcon from '@mui/icons-material/Check';
+import { NotificacaoContext } from '../context/NotificacoesContext.jsx';
 
 // Pequena Header em cima do Chatbot, tem os ícones, nome e novo chat
-const HeaderChatBot = ({ onNovoChat }) => {
+const Header = ({ onNovoChat }) => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { notificacoes, listarNotificacoes } = useContext(NotificacaoContext);
+
+  useEffect(() => {
+    listarNotificacoes();
+  }, [listarNotificacoes]);
+
+  const temNotificacaoNaoLida = (notificacoes || []).some((notificacao) => !notificacao.lido);
 
   const handleCadastroMoto = (e) => {
     e.preventDefault();
@@ -148,15 +153,29 @@ const HeaderChatBot = ({ onNovoChat }) => {
             height: 40,
             justifyContent: 'center',
             alignItems: 'center',
+            position: 'relative',
           }}
         >
-          <IconButton sx={{ color: 'grey.700' }}>
+          <IconButton sx={{ color: 'grey.700' }} onClick={() => navigate('/notificacoes')}>
             <img src="/images/bell.png" alt="Notifications" width="16" />
           </IconButton>
+          {temNotificacaoNaoLida && (
+            <Box
+              sx={{
+                position: 'absolute',
+                top: 6,
+                right: 7,
+                width: 8,
+                height: 8,
+                borderRadius: '50%',
+                bgcolor: '#FF3B30',
+              }}
+            />
+          )}
         </Box>
       </Box>
     </Box>
   );
 };
 
-export default HeaderChatBot;
+export default Header;

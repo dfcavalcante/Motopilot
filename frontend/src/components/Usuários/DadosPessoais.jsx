@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React from 'react';
 import {
   Box,
   Typography,
@@ -10,33 +10,11 @@ import {
   InputLabel,
   FormHelperText,
 } from '@mui/material';
+import { Controller } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 
-const DadosPessoais = ({
-  nomeCompleto,
-  setNomeCompleto,
-  email,
-  setEmail,
-  numeroMatricula,
-  setNumeroMatricula,
-  funcao,
-  setFuncao,
-  onNext,
-  onClose,
-}) => {
+const DadosPessoais = ({ register, errors, onNext, loading, control }) => {
   const navigate = useNavigate();
-
-  const [error, setError] = useState(false);
-
-  const handleSubmit = () => {
-    if (!nomeCompleto || !email || !numeroMatricula || !funcao) {
-      setError(true);
-      return;
-    }
-
-    setError(false);
-    if (onNext) onNext();
-  };
 
   return (
     <Box
@@ -58,42 +36,30 @@ const DadosPessoais = ({
         Nome Completo
       </InputLabel>
       <TextField
+        {...register('nomeCompleto')}
         variant="outlined"
         fullWidth
         size="small"
-        value={nomeCompleto}
-        onChange={(e) => setNomeCompleto(e.target.value)}
-        error={error && !nomeCompleto}
-        placeholder={error && !nomeCompleto ? 'Campo Obrigatório *' : ''}
+        error={!!errors.nomeCompleto}
+        helperText={errors.nomeCompleto?.message}
         sx={{
           mb: 2,
           '& .MuiOutlinedInput-root': { borderRadius: '12px' },
-          '& .MuiOutlinedInput-input::placeholder': {
-            color: error && !nomeCompleto ? '#FF0000' : 'inherit',
-            opacity: error ? 0.8 : 0.5,
-            fontSize: 14,
-          },
         }}
       />
 
       {/* CAMPO EMAIL */}
       <InputLabel sx={{ color: 'black', fontSize: 16, width: '100%', mb: 1 }}>Email</InputLabel>
       <TextField
+        {...register('email')}
         variant="outlined"
         fullWidth
         size="small"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        error={error && !email}
-        placeholder={error && !email ? 'Campo Obrigatório *' : ''}
+        error={!!errors.email}
+        helperText={errors.email?.message}
         sx={{
           mb: 2,
           '& .MuiOutlinedInput-root': { borderRadius: '12px' },
-          '& .MuiOutlinedInput-input::placeholder': {
-            color: error && !email ? '#FF0000' : 'inherit',
-            opacity: error ? 0.8 : 0.5,
-            fontSize: 14,
-          },
         }}
       />
 
@@ -102,21 +68,15 @@ const DadosPessoais = ({
         Número de Matrícula
       </InputLabel>
       <TextField
+        {...register('numeroMatricula')}
         variant="outlined"
         fullWidth
         size="small"
-        value={numeroMatricula}
-        error={error && !numeroMatricula}
-        onChange={(e) => setNumeroMatricula(e.target.value)}
-        placeholder={error && !numeroMatricula ? 'Campo Obrigatório *' : ''}
+        error={!!errors.numeroMatricula}
+        helperText={errors.numeroMatricula?.message}
         sx={{
           mb: 2,
           '& .MuiOutlinedInput-root': { borderRadius: '12px' },
-          '& .MuiOutlinedInput-input::placeholder': {
-            color: error && !numeroMatricula ? '#FF0000' : 'inherit',
-            fontSize: 14,
-            opacity: error ? 0.8 : 0.5,
-          },
         }}
       />
 
@@ -124,59 +84,71 @@ const DadosPessoais = ({
       <Box sx={{ width: '100%' }} mb={4}>
         <Typography sx={{ color: 'black', fontSize: 16, mb: 1 }}>Função</Typography>
 
-        <RadioGroup row sx={{ gap: 2 }} value={funcao} onChange={(e) => setFuncao(e.target.value)}>
-          {/* Admin */}
-          <Box
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              px: 2,
-              height: 40,
-              py: 0.5,
-              borderRadius: '8px',
-              border: '1px solid',
-              borderColor: error && !funcao ? 'error.main' : '#AEAEAE',
-              flex: 1,
-              '&:hover': { borderColor: error && !funcao ? 'error.dark' : 'black' },
-            }}
-          >
-            <FormControlLabel
-              value="Administrador" // Valor que vai pro backend
-              control={<Radio />}
-              label="Administrador"
-              sx={{ width: '100%', margin: 0 }}
-            />
-          </Box>
+        <Controller
+          name="funcao"
+          control={control}
+          rules={{ required: 'Selecione uma função' }}
+          render={({ field }) => (
+            <>
+              <RadioGroup
+                row
+                sx={{ gap: 2 }}
+                {...field}
+                onChange={(e) => field.onChange(e.target.value)}
+              >
+                {/* Admin */}
+                <Box
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    px: 2,
+                    height: 40,
+                    py: 0.5,
+                    borderRadius: '8px',
+                    border: '1px solid',
+                    borderColor: errors.funcao ? 'error.main' : '#AEAEAE',
+                    flex: 1,
+                  }}
+                >
+                  <FormControlLabel
+                    value="Administrador"
+                    control={<Radio />}
+                    label="Administrador"
+                    sx={{ width: '100%', margin: 0 }}
+                  />
+                </Box>
 
-          {/* Técnico */}
-          <Box
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              px: 2,
-              py: 0.5,
-              borderRadius: '8px',
-              border: '1px solid',
-              height: 40,
-              borderColor: error && !funcao ? 'error.main' : '#AEAEAE',
-              flex: 1,
-              '&:hover': { borderColor: error && !funcao ? 'error.dark' : 'black' },
-            }}
-          >
-            <FormControlLabel
-              value="Tecnico" // Valor que vai pro backend
-              control={<Radio />}
-              label="Técnico"
-              sx={{ width: '100%', margin: 0 }}
-            />
-          </Box>
-        </RadioGroup>
+                {/* Técnico */}
+                <Box
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    px: 2,
+                    py: 0.5,
+                    borderRadius: '8px',
+                    border: '1px solid',
+                    height: 40,
+                    borderColor: errors.funcao ? 'error.main' : '#AEAEAE',
+                    flex: 1,
+                  }}
+                >
+                  <FormControlLabel
+                    value="Tecnico"
+                    control={<Radio />}
+                    label="Tecnico"
+                    sx={{ width: '100%', margin: 0 }}
+                  />
+                </Box>
+              </RadioGroup>
 
-        {error && !funcao && (
-          <FormHelperText error sx={{ ml: 1, mt: 1, fontSize: 14, color: '#FF0000' }}>
-            Campos Obrigatórios *
-          </FormHelperText>
-        )}
+              {errors.funcao && (
+                <FormHelperText error sx={{ ml: 1, mt: 1, fontSize: 14 }}>
+                  {errors.funcao.message}
+                </FormHelperText>
+              )}
+            </>
+          )}
+        />
       </Box>
 
       {/* BOTÕES */}
@@ -184,6 +156,7 @@ const DadosPessoais = ({
         <Button
           onClick={() => navigate('/usuarios')}
           variant="outlined"
+          disabled={loading}
           sx={{
             color: '#333',
             borderColor: '#999',
@@ -195,7 +168,8 @@ const DadosPessoais = ({
         </Button>
         <Button
           variant="contained"
-          onClick={handleSubmit}
+          onClick={onNext} // Dispara a função que está no Hook (que valida e avança)
+          disabled={loading}
           sx={{
             backgroundColor: '#676767',
             color: 'white',
@@ -205,7 +179,7 @@ const DadosPessoais = ({
             textTransform: 'none',
           }}
         >
-          Próximo
+          {loading ? 'Verificando...' : 'Próximo'}
         </Button>
       </Box>
     </Box>

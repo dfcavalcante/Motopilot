@@ -1,13 +1,13 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Box, Typography, Button, IconButton } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import PdfUploader from '../../utils/PdfUploader.jsx';
 
-const ManualMoto = ({ onBack, onNext }) => {
-  const [arquivo, setArquivo] = useState(null);
+const ManualMoto = ({ onBack, setValue, watch, loading }) => {
+  const arquivoAtual = watch('manual_pdf_path');
 
   const handleFileSelect = (file) => {
-    setArquivo(file);
+    setValue('manual_pdf_path', file, { shouldValidate: true });
   };
 
   return (
@@ -27,7 +27,7 @@ const ManualMoto = ({ onBack, onNext }) => {
         justifyContent: 'space-between',
       }}
     >
-      {/* --- Cabeçalho (Mantido igual) --- */}
+      {/* --- Cabeçalho --- */}
       <Box sx={{ position: 'relative', mb: 2 }}>
         <IconButton
           onClick={onBack}
@@ -50,7 +50,7 @@ const ManualMoto = ({ onBack, onNext }) => {
         </Typography>
       </Box>
 
-      {/* --- Área Central (Agora usando o PdfUploader) --- */}
+      {/* --- Área Central (PdfUploader) --- */}
       <Box
         sx={{
           flexGrow: 1,
@@ -60,13 +60,12 @@ const ManualMoto = ({ onBack, onNext }) => {
           py: 2,
         }}
       >
-        {/* Container para manter a largura original de 600px */}
         <Box sx={{ width: '600px' }}>
-          <PdfUploader onFileSelect={handleFileSelect} />
+          <PdfUploader onFileSelect={handleFileSelect} arquivoAtual={arquivoAtual} />
         </Box>
       </Box>
 
-      {/* --- Rodapé (Mantido igual) --- */}
+      {/* --- Rodapé --- */}
       <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, mt: 2, mr: 10 }}>
         <Button
           variant="outlined"
@@ -84,12 +83,12 @@ const ManualMoto = ({ onBack, onNext }) => {
             },
           }}
         >
-          Cancelar
+          Voltar
         </Button>
         <Button
+          type="submit"
           variant="contained"
-          onClick={() => onNext(arquivo)}
-          disabled={!arquivo}
+          disabled={!arquivoAtual || loading}
           sx={{
             backgroundColor: '#888',
             color: 'white',
@@ -102,7 +101,7 @@ const ManualMoto = ({ onBack, onNext }) => {
             '&.Mui-disabled': { backgroundColor: '#bbb', color: '#eee' },
           }}
         >
-          Próximo
+          {loading ? 'Salvando...' : 'Finalizar'}
         </Button>
       </Box>
     </Box>

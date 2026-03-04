@@ -33,6 +33,27 @@ const Concluido = () => {
         Cadastro realizado com sucesso!
         <br />A conta foi criada e já pode ser acessada pelo usuário.
       </Typography>
+
+      <Box sx={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
+        <Button
+          variant="contained"
+          sx={{
+            backgroundColor: '#666',
+            color: '#FFF',
+            textTransform: 'none',
+            height: '48px',
+            width: '350px',
+            borderRadius: '8px',
+            fontWeight: 'bold',
+            '&:hover': {
+              backgroundColor: '#444',
+            },
+          }}
+          onClick={() => window.location.href = '/usuarios'} // Redireciona para a página de usuários
+        >
+          <Typography sx={{ fontSize: '16px' }}>Voltar para Usuários</Typography>
+        </Button>
+      </Box>
     </Box>
   );
 };

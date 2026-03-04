@@ -12,31 +12,26 @@ import {
 import Check from '@mui/icons-material/Check';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
-const CriarSenha = ({ onBack, onSubmit }) => {
-  const [senha, setSenha] = useState('');
-  const [confirmarSenha, setConfirmarSenha] = useState('');
+
+const CriarSenha = ({ onBack, register, errors, watch, loading }) => {
   const [showSenha1, setShowSenha1] = useState(false);
   const [showSenha2, setShowSenha2] = useState(false);
 
+  const senhaAtual = watch('senha') || '';
+  const confirmarSenhaAtual = watch('confirmarSenha') || '';
+
   const validacoes = {
-    caracteres: (senha || '').length >= 8 && (senha || '').length <= 12,
-    maiuscula: /[A-Z]/.test(senha || ''),
-    numero: /[0-9]/.test(senha || ''),
+    caracteres: senhaAtual.length >= 8 && senhaAtual.length <= 12,
+    maiuscula: /[A-Z]/.test(senhaAtual),
+    numero: /[0-9]/.test(senhaAtual),
   };
 
-  const todosRequisitosMet = validacoes.caracteres && validacoes.maiuscula && validacoes.numero;
-  const senhasConferem = senha === confirmarSenha && confirmarSenha !== '';
-  const podeAvancar = todosRequisitosMet && senhasConferem;
-
-  const handleFinalizar = () => {
-    if (onSubmit) {
-      onSubmit(senha);
-    }
-  };
+  const senhasConferem = senhaAtual === confirmarSenhaAtual && confirmarSenhaAtual !== '';
+  const podeAvancar = validacoes.caracteres && validacoes.maiuscula && validacoes.numero && senhasConferem;
 
   const renderRequirement = (label, isMet) => (
     <Stack direction="row" alignItems="center" spacing={1} sx={{ opacity: isMet ? 0.5 : 1 }}>
-      <Check sx={{ fontSize: 16, color: 'black' }} />
+      <Check sx={{ fontSize: 16, color: isMet ? 'black' : 'grey' }} />
       <Typography
         variant="caption"
         sx={{
@@ -72,6 +67,7 @@ const CriarSenha = ({ onBack, onSubmit }) => {
       <Box sx={{ position: 'relative', mb: 2 }}>
         <IconButton
           onClick={onBack}
+          disabled={loading}
           sx={{
             position: 'absolute',
             left: 0,
@@ -90,33 +86,21 @@ const CriarSenha = ({ onBack, onSubmit }) => {
       </Box>
 
       {/* --- Área Central (Inputs) --- */}
-      <Box
-        sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          width: '100%',
-          maxWidth: '400px',
-          margin: '0 auto',
-          mt: 4,
-        }}
-      >
+      <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%', maxWidth: '400px', margin: '0 auto', mt: 4 }}>
         <InputLabel sx={{ color: 'black', fontSize: 16, mb: 1 }}>Senha</InputLabel>
         <TextField
           type={showSenha1 ? 'text' : 'password'}
           variant="outlined"
           fullWidth
           size="small"
-          value={senha}
-          onChange={(e) => setSenha(e.target.value)}
+          {...register('senha')} 
+          error={!!errors.senha}
+          helperText={errors.senha?.message}
           InputProps={{
             endAdornment: (
               <InputAdornment position="end">
                 <IconButton onClick={() => setShowSenha1(!showSenha1)} edge="end">
-                  <img
-                    src={showSenha1 ? '/images/olhoAberto.png' : '/images/olhoFechado.png'}
-                    alt="Mostrar"
-                    style={{ width: '20px' }}
-                  />
+                  <img src={showSenha1 ? '/images/olhoAberto.png' : '/images/olhoFechado.png'} alt="Mostrar" style={{ width: '20px' }} />
                 </IconButton>
               </InputAdornment>
             ),
@@ -134,17 +118,14 @@ const CriarSenha = ({ onBack, onSubmit }) => {
           variant="outlined"
           fullWidth
           size="small"
-          value={confirmarSenha}
-          onChange={(e) => setConfirmarSenha(e.target.value)}
+          {...register('confirmarSenha')}
+          error={!!errors.confirmarSenha}
+          helperText={errors.confirmarSenha?.message}
           InputProps={{
             endAdornment: (
               <InputAdornment position="end">
                 <IconButton onClick={() => setShowSenha2(!showSenha2)} edge="end">
-                  <img
-                    src={showSenha2 ? '/images/olhoAberto.png' : '/images/olhoFechado.png'}
-                    alt="Mostrar"
-                    style={{ width: '20px' }}
-                  />
+                  <img src={showSenha2 ? '/images/olhoAberto.png' : '/images/olhoFechado.png'} alt="Mostrar" style={{ width: '20px' }} />
                 </IconButton>
               </InputAdornment>
             ),
@@ -163,6 +144,7 @@ const CriarSenha = ({ onBack, onSubmit }) => {
           {renderRequirement('de 8 a 12 caracteres', validacoes.caracteres)}
           {renderRequirement('1 letra maiúscula', validacoes.maiuscula)}
           {renderRequirement('1 número', validacoes.numero)}
+          {renderRequirement('Senhas coincidem', senhasConferem)}
         </Stack>
       </Box>
 
@@ -171,6 +153,7 @@ const CriarSenha = ({ onBack, onSubmit }) => {
         <Button
           variant="outlined"
           onClick={onBack}
+          disabled={loading}
           sx={{
             color: '#333',
             borderColor: '#999',
@@ -181,13 +164,13 @@ const CriarSenha = ({ onBack, onSubmit }) => {
             '&:hover': { borderColor: '#666', backgroundColor: 'rgba(0,0,0,0.05)' },
           }}
         >
-          Cancelar
+          Voltar
         </Button>
 
         <Button
+          type="submit"
           variant="contained"
-          onClick={handleFinalizar}
-          disabled={!podeAvancar}
+          disabled={!podeAvancar || loading}
           sx={{
             backgroundColor: '#444',
             color: 'white',
@@ -201,7 +184,7 @@ const CriarSenha = ({ onBack, onSubmit }) => {
             '&.Mui-disabled': { backgroundColor: '#bbb', color: '#eee', cursor: 'not-allowed' },
           }}
         >
-          Concluir
+          {loading ? 'Salvando...' : 'Concluir'}
         </Button>
       </Box>
     </Box>

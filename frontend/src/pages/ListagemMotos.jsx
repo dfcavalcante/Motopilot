@@ -7,13 +7,12 @@ import BarraPesquisa from '../components/CadastroMoto/BarraPesquisa';
 import InformacoesMoto from '../components/Motos/InformacoesMoto';
 
 const ListagemMotos = () => {
-  const { listarMotos, motos, excluirMoto, atualizarMoto } = useContext(MotoContext);
+  const { listarMotos, motos, excluirMoto, atualizarMoto, motoSelecionada, setMotoSelecionada } =
+    useContext(MotoContext);
 
   const [input, setInput] = useState('');
   const [anchorEl, setAnchorEl] = useState(null);
   const [tipoOrdenacao, setTipoOrdenacao] = useState(null);
-  const [motoSelecionada, setMotoSelecionada] = useState(null);
-
   useEffect(() => {
     listarMotos();
   }, []);
@@ -50,39 +49,35 @@ const ListagemMotos = () => {
 
   return (
     <BaseFront icone={null} width={null} height={null} nome={'Motos'}>
-      <Box
-        sx={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          width: '90%',
-          position: 'relative',
-          mt: 1,
-        }}
-      >
-        <Typography sx={{ position: 'absolute', left: 0, fontWeight: '500', color: 'grey.900' }}>
-          Ordenar
-        </Typography>
-        <IconButton
-          onClick={handleClickOrdernar}
-          sx={{
-            position: 'absolute',
-            left: 70,
-            width: 20,
-            height: 20,
-            borderRadius: '4px',
-            border: '1px solid #E0E0E0',
-          }}
-        >
-          <img src="/images/linhaPraBaixo.png" alt="Ordenar" style={{ width: '10px' }} />
-        </IconButton>
+      <Box display="flex" alignItems="center" mt={1} sx={{ width: '100%', px: 2 }}>
+        <Box display="flex" alignItems="center" gap={3} sx={{ flex: 1 }}>
+          <Box display="flex" alignItems="center" gap={1} ml={9}>
+            <Typography sx={{ fontWeight: '500', color: 'grey.900' }}>Ordenar</Typography>
+            <IconButton
+              onClick={handleClickOrdernar}
+              sx={{
+                width: 20,
+                height: 20,
+                borderRadius: '4px',
+                border: '1px solid #E0E0E0',
+                backgroundColor: 'white',
+              }}
+            >
+              <img src="/images/linhaPraBaixo.png" alt="Ordenar" style={{ width: '10px' }} />
+            </IconButton>
 
-        <Menu anchorEl={anchorEl} open={openMenu} onClose={handleCloseMenu}>
-          <MenuItem onClick={() => handleSelectOrder('AZ')}>Modelo A-Z</MenuItem>
-          <MenuItem onClick={() => handleSelectOrder('ZA')}>Modelo Z-A</MenuItem>
-        </Menu>
+            <Menu anchorEl={anchorEl} open={openMenu} onClose={handleCloseMenu}>
+              <MenuItem onClick={() => handleSelectOrder('AZ')}>Modelo A - Z</MenuItem>
+              <MenuItem onClick={() => handleSelectOrder('ZA')}>Modelo Z - A</MenuItem>
+            </Menu>
+          </Box>
+        </Box>
 
-        <BarraPesquisa input={input} setInput={setInput} />
+        <Box sx={{ width: '580px' }}>
+          <BarraPesquisa input={input} setInput={setInput} />
+        </Box>
+
+        <Box sx={{ flex: 1 }} />
       </Box>
 
       {/* Grid de Motos */}

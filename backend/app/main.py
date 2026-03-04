@@ -14,10 +14,14 @@ from app.database import engine, Base, get_db
 from app.models import Empresa, Cargo, User, Moto, ChatLog, Report
 
 # --- IMPORTS DE UTILITÁRIOS ---
-from app.utils.init_db import criar_cargos_iniciais
+from app.utils.init_db import (
+    criar_cargos_iniciais,
+    garantir_coluna_lido_notificacoes,
+    garantir_coluna_mecanico_id_motos,
+)
 
 # --- IMPORTS DAS ROTAS ---
-from app.routers import moto_router, chatbot_router, report_router, user_router, dashboard_router
+from app.routers import moto_router, chatbot_router, report_router, user_router, dashboard_router, notificacoes_router
 # from app.routers import auth_router
 
 # --- CONFIGURAÇÕES ---
@@ -52,6 +56,8 @@ def on_startup():
     db = next(get_db()) # Abre uma sessão temporária
     try:
         print("🔄 Verificando cargos iniciais...")
+        garantir_coluna_lido_notificacoes(db)
+        garantir_coluna_mecanico_id_motos(db)
         criar_cargos_iniciais(db)
     except Exception as e:
         print(f"❌ Erro ao inicializar banco: {e}")
@@ -89,3 +95,4 @@ app.include_router(user_router.router)
 app.include_router(chatbot_router.router)
 app.include_router(report_router.router)
 app.include_router(dashboard_router.router)
+app.include_router(notificacoes_router.router)
