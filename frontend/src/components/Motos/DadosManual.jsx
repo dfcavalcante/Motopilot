@@ -18,7 +18,6 @@ const ManualMoto = ({ onBack, setValue, watch, loading }) => {
         borderRadius: '16px',
         width: '100%',
         maxWidth: '800px',
-        minHeight: '620px',
         margin: '0 auto',
         fontFamily: 'Roboto, sans-serif',
         boxShadow: '0px 4px 10px rgba(0,0,0,0.1)',

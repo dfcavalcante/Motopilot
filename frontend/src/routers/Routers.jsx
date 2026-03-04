@@ -7,6 +7,8 @@ import Cadastro from '../pages/Cadastro';
 import Usuarios from '../pages/Usuarios';
 import ListagemMotos from '../pages/ListagemMotos';
 import Notificacoes from '../pages/Notificacoes';
+import Dashboard from '../pages/Dashboard';
+import Relatorio from '../pages/HistoricoRelatorios';
 import { MotoProvider } from '../context/MotoContext';
 import { UsersProvider } from '../context/UserContext';
 import { NotificacaoProvider } from '../context/NotificacoesContext';
@@ -25,6 +27,8 @@ const Routers = () => {
               <Route path="/cadastro" element={<Cadastro />} />
               <Route path="/usuarios" element={<Usuarios />} />
               <Route path="/notificacoes" element={<Notificacoes />} />
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/relatorios" element={<Relatorio />} />
             </Routes>
           </NotificacaoProvider>
         </UsersProvider>
