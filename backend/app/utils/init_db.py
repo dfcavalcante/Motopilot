@@ -39,3 +39,25 @@ def garantir_coluna_lido_notificacoes(db: Session):
 
     db.commit()
     print("✅ Migração aplicada: coluna notifications.lido criada")
+
+
+def garantir_coluna_mecanico_id_motos(db: Session):
+    """Garante que a coluna `mecanico_id` exista na tabela `motos` em bancos já criados."""
+    bind = db.get_bind()
+    inspector = inspect(bind)
+
+    if "motos" not in inspector.get_table_names():
+        return
+
+    colunas = {coluna["name"] for coluna in inspector.get_columns("motos")}
+    if "mecanico_id" in colunas:
+        return
+
+    dialect = bind.dialect.name
+    if dialect == "postgresql":
+        db.execute(text("ALTER TABLE motos ADD COLUMN mecanico_id INTEGER REFERENCES users(id)"))
+    else:
+        db.execute(text("ALTER TABLE motos ADD COLUMN mecanico_id INTEGER"))
+
+    db.commit()
+    print("✅ Migração aplicada: coluna motos.mecanico_id criada")
