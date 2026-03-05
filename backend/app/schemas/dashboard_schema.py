@@ -6,6 +6,7 @@ class DashboardGerenteResponse(BaseModel):
     total_motos: int
     total_manutencoes_realizadas: int
     motos_aguardando_manutencao: int
+    pecas: list[dict]
 
     model_config = ConfigDict(populate_by_name=True)
 

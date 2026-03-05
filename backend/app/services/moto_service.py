@@ -90,7 +90,6 @@ class Moto_service:
             # 2. Alterar status para "Concluída"
             db_moto.estado = "Concluída"
 
-            # 3. Criar o relatório vinculado
             novo_relatorio = Report(
                 moto_id=moto_id,
                 cliente_id=dados.cliente_id,

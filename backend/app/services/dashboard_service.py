@@ -1,5 +1,6 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import func
+from collections import Counter
 
 from app.models.user_model import User
 from app.models.moto_model import Moto
@@ -30,11 +31,27 @@ class DashboardService:
             .scalar() or 0
         )
 
+        # Buscar peças para montar o ranking
+        relatorios_com_pecas = db.query(Report.pecas).filter(Report.pecas != None, Report.pecas != "").all()
+        contador_pecas = Counter()
+        
+        for r in relatorios_com_pecas:
+            # Assuming 'pecas' is stored as comma-separated values
+            pecas_list = [p.strip().capitalize() for p in r.pecas.split(',') if p.strip()]
+            contador_pecas.update(pecas_list)
+            
+        # Converter para o formato { "nome": str, "quantidade": int } e já vem ordenado via most_common()
+        ranking_pecas = [
+            {"nome": peca, "quantidade": qtd}
+            for peca, qtd in contador_pecas.most_common()
+        ]
+
         return DashboardGerenteResponse(
             total_usuarios=total_usuarios,
             total_motos=total_motos,
             total_manutencoes_realizadas=total_manutencoes,
-            motos_aguardando_manutencao=motos_pendentes
+            motos_aguardando_manutencao=motos_pendentes,
+            pecas=ranking_pecas
         )
 
     @staticmethod

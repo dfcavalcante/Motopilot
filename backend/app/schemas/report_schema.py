@@ -13,11 +13,9 @@ class ReportBase(BaseModel):
     pecas: Optional[str] = Field(None, example="motor, pedal e buzina")
 
     #Mecânico(s) responsáveis pela manutenção
-    # Mecânico(s) responsáveis pela manutenção
     mecanicos: str = Field(..., example="Marquinhos do Prompt")
     atividades: str = Field(..., example="Troca de pedal, troca de motor")
 
-    
     #Peças que foram substituídas (se houver)
     pecas: Optional[str] = Field(None, example="motor, pedal e buzina")
     observacoes: Optional[str] = Field(None, example="Foi observado que a moto é de um modelo especial que saiu de linha por possuir defeitos de fábrica")
