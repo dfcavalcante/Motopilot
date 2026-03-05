@@ -1,13 +1,12 @@
 import React from 'react';
 import { Box, Divider, Typography, IconButton } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
+
 import { useContext, useEffect } from 'react';
 import BaseFront from '../utils/BaseFront';
 import BoxNotificacao from '../components/Notificacoes/BoxNotificacao.jsx';
 import { NotificacaoContext } from '../context/NotificacoesContext.jsx';
 
 const Notificacoes = () => {
-  const navigate = useNavigate();
   const { notificacoes, listarNotificacoes, marcarComoLida } = useContext(NotificacaoContext);
 
   useEffect(() => {

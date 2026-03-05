@@ -37,7 +37,7 @@ const DadosGerais = ({ register, setValue, errors, onNext, watch }) => {
         maxWidth: '1300px',
         margin: '0 auto',
         fontFamily: 'Roboto, sans-serif',
-        minHeight: '600px',
+        overflow: 'visible',
       }}
     >
       <Typography variant="h5" align="center" sx={{ mb: 4, color: '#000000', fontWeight: 400 }}>
@@ -69,13 +69,13 @@ const DadosGerais = ({ register, setValue, errors, onNext, watch }) => {
         <Stack spacing={1} sx={{ height: '100%', width: '25%', ml: 5 }}>
           <Typography sx={labelStyle}>Modelo</Typography>
           <TextField
-            {...register('modelo')} 
+            {...register('modelo')}
             fullWidth
             placeholder="Inserir nome"
             variant="outlined"
             sx={inputSx}
             error={!!errors.modelo}
-            helperText={errors.modelo?.message} 
+            helperText={errors.modelo?.message}
           />
 
           <Typography sx={labelStyle}>Número de Série</Typography>
@@ -95,7 +95,7 @@ const DadosGerais = ({ register, setValue, errors, onNext, watch }) => {
           <TextField
             {...register('marca')}
             fullWidth
-            placeholder="Inserir Marca" 
+            placeholder="Inserir Marca"
             variant="outlined"
             sx={inputSx}
             error={!!errors.marca}

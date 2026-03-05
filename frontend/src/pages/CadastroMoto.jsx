@@ -33,7 +33,6 @@ const CadastroDeMoto = () => {
           flexDirection: 'column',
           alignItems: 'center',
           p: 2,
-          overflow: 'hidden',
         }}
       >
         <EtapasMoto etapa={etapaAtual} />
@@ -41,13 +40,13 @@ const CadastroDeMoto = () => {
         <Box
           component="form"
           onSubmit={handleSubmit(onSubmitForm)}
-          sx={{ width: '100%', flex: 1, overflowY: 'hidden', mt: 2 }}
+          sx={{ width: '100%', flex: 1, mt: 2 }}
         >
           {etapaAtual === 1 && (
             <DadosGerais
               register={register}
-              setValue={setValue} // Usado para o upload da foto
-              errors={errors} //Mensagens de erro do Zod
+              setValue={setValue} 
+              errors={errors} 
               onNext={handleProximo}
               watch={watch}
             />
@@ -55,7 +54,7 @@ const CadastroDeMoto = () => {
 
           {etapaAtual === 2 && (
             <ManualMoto
-              setValue={setValue} // Usado para o upload do PDF
+              setValue={setValue} 
               errors={errors}
               onBack={handleVoltar}
               loading={loading}

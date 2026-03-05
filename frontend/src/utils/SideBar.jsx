@@ -11,7 +11,7 @@ const SideBar = ({ historico = [] }) => {
   const menus = [
     {
       name: 'Início',
-      link: '/home',
+      link: '/dashboard',
       icon: <img src="/images/Home.svg" alt="Logo" width="20" />,
     },
     {
