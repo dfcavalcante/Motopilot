@@ -38,6 +38,7 @@ def get_user(user_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Usuário não encontrado")
     return user
 
+# --- ATUALIZAR USUÁRIO ---
 @router.patch("/{user_id}/atualizar", response_model=UserResponse)
 def update_user(user_id: int, user_update: UserUpdate, db: Session = Depends(get_db)):
     service = UserService(db)
@@ -52,10 +53,24 @@ def update_user(user_id: int, user_update: UserUpdate, db: Session = Depends(get
 # --- DELETAR USUÁRIO ---
 @router.delete("/{user_id}/deletar", status_code=status.HTTP_204_NO_CONTENT)
 def delete_user(user_id: int, db: Session = Depends(get_db)):
-    user = db.query(User).filter(User.id == user_id).first()
-    if not user:
-        raise HTTPException(status_code=404, detail="Usuário não encontrado")
-    
-    db.delete(user)
-    db.commit()
-    return None
+    service = UserService(db)
+    try:
+        service.deletar_usuario(user_id)
+    except ValueError as erro:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=str(erro)
+        )
+
+# --- VERIFICAÇÕES --- 
+@router.get('/check/{matricula}')
+def verificar_matricula_endpoint(matricula: str, db: Session = Depends(get_db)):
+    """Retorna {"exists": true} se a matrícula já estiver no banco."""
+    exists = db.query(User).filter(User.matricula == matricula).first() is not None
+    return {"exists": exists}
+
+@router.get('/check-email/{email}')
+def verificar_email_endpoint(email: str, db: Session = Depends(get_db)):
+    """Retorna {"exists": true} se o email já estiver no banco."""
+    exists = db.query(User).filter(User.email == email).first() is not None
+    return {"exists": exists}

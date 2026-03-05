@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Box, Stack, Divider, Typography, IconButton } from '@mui/material';
-import HeaderChatBot from '../utils/HeaderChatbot.jsx';
+import Header from '../utils/Header.jsx';
 import SideBar from '../utils/SideBar.jsx';
 import ChatMessage from '../components/ChatBot/ChatMessage.jsx';
 import { useChat } from '../context/useChat.js';
@@ -11,12 +11,10 @@ import Loading from '../components/ChatBot/Loading.jsx';
 
 const Chatbot = () => {
   const {
-    motos,
     motoSelecionada,
     setMotoSelecionada,
     messages,
     setMessages,
-    carregandoMotos,
     enviarMensagem,
     isLoadingChat,
   } = useChat();
@@ -82,7 +80,7 @@ const Chatbot = () => {
       >
         <Stack spacing="8px" sx={{ height: '100%' }}>
           <Box sx={{ flexShrink: 0 }}>
-            <HeaderChatBot onNovoChat={handleNovoChat} />
+            <Header onNovoChat={handleNovoChat} />
           </Box>
 
           <Box

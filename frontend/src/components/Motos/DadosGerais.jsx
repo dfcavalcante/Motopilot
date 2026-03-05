@@ -2,7 +2,7 @@ import React from 'react';
 import { Box, Typography, TextField, Grid, Button, Stack } from '@mui/material';
 import ImageUploader from '../Motos/ImageUploader.jsx';
 
-const DadosGerais = ({ dados, handleChange, onNext, errors }) => {
+const DadosGerais = ({ register, setValue, errors, onNext, watch }) => {
   const labelStyle = {
     color: '#000000',
     fontSize: '15px',
@@ -46,11 +46,11 @@ const DadosGerais = ({ dados, handleChange, onNext, errors }) => {
 
       <Grid container spacing={4}>
         {/* LADO ESQUERDO: FOTO */}
-        <Grid item xs={12} md={5}>
+        <Grid>
           <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
             <ImageUploader
-              onFileSelect={(file) => handleChange({ target: { name: 'foto', files: [file] } })}
-              arquivo={dados.foto}
+              arquivo={watch('foto')}
+              onFileSelect={(file) => setValue('foto', file, { shouldValidate: true })}
             />
 
             {errors.foto && (
@@ -59,7 +59,7 @@ const DadosGerais = ({ dados, handleChange, onNext, errors }) => {
                 color="error"
                 sx={{ mt: 1, textAlign: 'center', fontSize: '0.9rem' }}
               >
-                {errors.foto}
+                {errors.foto.message}
               </Typography>
             )}
           </Box>
@@ -69,56 +69,48 @@ const DadosGerais = ({ dados, handleChange, onNext, errors }) => {
         <Stack spacing={1} sx={{ height: '100%', width: '25%', ml: 5 }}>
           <Typography sx={labelStyle}>Modelo</Typography>
           <TextField
-            name="modelo"
-            value={dados.modelo}
-            onChange={handleChange}
+            {...register('modelo')} 
             fullWidth
             placeholder="Inserir nome"
             variant="outlined"
             sx={inputSx}
             error={!!errors.modelo}
-            helperText={errors.modelo}
+            helperText={errors.modelo?.message} 
           />
 
           <Typography sx={labelStyle}>Número de Série</Typography>
           <TextField
-            name="numeroSerie"
-            value={dados.numeroSerie}
-            onChange={handleChange}
+            {...register('numeroSerie')}
             fullWidth
             placeholder="Inserir número de série"
             variant="outlined"
             sx={inputSx}
             error={!!errors.numeroSerie}
-            helperText={errors.numeroSerie}
+            helperText={errors.numeroSerie?.message}
           />
         </Stack>
 
         <Stack spacing={1} sx={{ height: '100%', width: '25%', ml: 5 }}>
           <Typography sx={labelStyle}>Marca</Typography>
           <TextField
-            name="marca"
-            value={dados.marca}
-            onChange={handleChange}
+            {...register('marca')}
             fullWidth
-            placeholder="Inserir Setor"
+            placeholder="Inserir Marca" 
             variant="outlined"
             sx={inputSx}
             error={!!errors.marca}
-            helperText={errors.marca}
+            helperText={errors.marca?.message}
           />
 
           <Typography sx={labelStyle}>Ano</Typography>
           <TextField
-            name="ano"
-            value={dados.ano}
-            onChange={handleChange}
+            {...register('ano')}
             fullWidth
             placeholder="DD/MM/AA"
             variant="outlined"
             sx={inputSx}
             error={!!errors.ano}
-            helperText={errors.ano}
+            helperText={errors.ano?.message}
           />
         </Stack>
       </Grid>
@@ -127,10 +119,8 @@ const DadosGerais = ({ dados, handleChange, onNext, errors }) => {
       <Box sx={{ mt: 2, width: '100%' }}>
         <Typography sx={{ fontSize: 15, mb: 0.5, ml: 0.5 }}>Descrição da Moto</Typography>
         <TextField
+          {...register('descricao')}
           fullWidth
-          name="descricao"
-          value={dados.descricao}
-          onChange={handleChange}
           multiline
           rows={5}
           placeholder="Descreva detalhes adicionais sobre a moto, como estado de conservação, histórico de manutenção, etc."
@@ -143,7 +133,7 @@ const DadosGerais = ({ dados, handleChange, onNext, errors }) => {
             },
           }}
           error={!!errors.descricao}
-          helperText={errors.descricao}
+          helperText={errors.descricao?.message}
         />
       </Box>
 
@@ -162,7 +152,7 @@ const DadosGerais = ({ dados, handleChange, onNext, errors }) => {
           Cancelar
         </Button>
         <Button
-          onClick={onNext}
+          onClick={onNext} // Valida os dados da etapa 1 e avança se tudo estiver ok
           variant="contained"
           sx={{
             backgroundColor: '#666',

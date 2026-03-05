@@ -3,7 +3,10 @@ import Login from "./pages/Login.jsx";
 
 function App() {
   return (
-    <Login />
+    <div className="App">
+      <Login />
+      <ToastContainer position="top-right" autoClose={3000} theme="colored" />
+    </div>
   );
 }
 

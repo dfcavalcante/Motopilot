@@ -1,0 +1,124 @@
+import { useState, useContext, useEffect } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+import { toast } from 'react-toastify'; 
+import { MotoContext } from '../context/MotoContext.jsx';
+
+// Molde do formulário e regras de validação usando Zod
+const motoSchema = z.object({
+  modelo: z.string().min(1, 'O modelo é obrigatório.'),
+  marca: z.string().min(1, 'A marca é obrigatória.'),
+  ano: z.string().min(4, 'O ano deve ter 4 dígitos.'),
+  numeroSerie: z.string().min(1, 'O número de série é obrigatório.'),
+  descricao: z.string().optional(),
+  foto: z.any().refine((file) => file, 'A foto da moto é obrigatória.'),
+  manual_pdf_path: z.any().optional(), // Validado no segundo passo
+});
+
+export const HookCadastroMoto = () => {
+  const { cadastrarMoto, erro: erroContexto, motos, listarMotos, verificarNumeroSerie } = useContext(MotoContext);
+  
+  const [etapaAtual, setEtapaAtual] = useState(1);
+  const [loading, setLoading] = useState(false);
+
+  const {
+    register,       
+    handleSubmit, 
+    trigger,       
+    setError,       
+    setValue,      
+    watch,          
+    formState: { errors } 
+  } = useForm({
+    resolver: zodResolver(motoSchema),
+    defaultValues: {
+      modelo: '', marca: '', ano: '', numeroSerie: '', descricao: ''
+    }
+  });
+
+  useEffect(() => {
+    listarMotos();
+  }, []);
+
+  const handleProximo = async () => {
+    // Validação da etapa 1: campos obrigatórios
+    const camposValidos = await trigger(['modelo', 'marca', 'ano', 'numeroSerie', 'foto']);
+    if (!camposValidos) {
+      toast.warning('Preencha os campos obrigatórios.'); // <-- Notificação visual
+      return;
+    }
+
+    const numeroSerieAtual = watch('numeroSerie');
+
+    // Validação de Duplicidade no State
+    if (motos.some((moto) => moto.numero_serie === numeroSerieAtual)) {
+      setError('numeroSerie', { type: 'manual', message: 'Este número de série já está registrado.' });
+      return;
+    }
+
+    // Validação de Duplicidade no Backend
+    if (verificarNumeroSerie) {
+      const exists = await verificarNumeroSerie(numeroSerieAtual);
+      if (exists) {
+        setError('numeroSerie', { type: 'manual', message: 'Este número de série já está registrado.' });
+        return;
+      }
+    }
+
+    setEtapaAtual((prev) => prev + 1);
+  };
+
+  const handleVoltar = () => {
+    setEtapaAtual((prev) => (prev > 1 ? prev - 1 : prev));
+  };
+
+  const onSubmitForm = async (data) => {
+    if (!data.manual_pdf_path) {
+      setError('manual_pdf_path', { type: 'manual', message: 'O manual (PDF) é obrigatório.' });
+      toast.error('Adicione o manual em PDF para continuar.');
+      return;
+    }
+
+    setLoading(true);
+
+    const formData = new FormData();
+    formData.append('marca', data.marca);
+    formData.append('modelo', data.modelo);
+    formData.append('ano', data.ano);
+    formData.append('numeroSerie', data.numeroSerie);
+    formData.append('descricao', data.descricao || '');
+    formData.append('imagem_moto', data.foto[0] || data.foto); 
+    formData.append('documento_pdf', data.manual_pdf_path);
+
+    try {
+      const sucesso = await cadastrarMoto(formData);
+
+      if (sucesso) {
+        setEtapaAtual(3);
+      } else {
+        const msgErro = erroContexto || 'Erro ao cadastrar moto.';
+        toast.error(msgErro); // Toast de erro específico do contexto ou genérico
+      }
+    } catch (error) {
+      toast.error('Erro inesperado de conexão.'); // Toast de erro genérico para falhas de conexão ou outras exceções
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return {
+    etapaAtual,
+    loading,
+    errors,
+    register,        
+    setValue,        
+    handleSubmit,    
+    onSubmitForm,      
+    handleProximo,
+    handleVoltar,
+    watch,
+  };
+};
+
+export default HookCadastroMoto;

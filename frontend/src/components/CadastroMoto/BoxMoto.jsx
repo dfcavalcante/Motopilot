@@ -2,9 +2,11 @@ import { Box, Button, Typography } from '@mui/material';
 import React from 'react';
 
 const BoxMoto = ({ moto, onEnter }) => {
+  const fallbackSrc = '/images/Motopilot.jpeg';
+
   const getImageUrl = (caminhoDoBanco) => {
     if (!caminhoDoBanco) {
-      return 'https://via.placeholder.com/336x189?text=Sem+Imagem';
+      return fallbackSrc;
     }
 
     const caminhoCorrigido = caminhoDoBanco.replace(/\\/g, '/');
@@ -34,6 +36,11 @@ const BoxMoto = ({ moto, onEnter }) => {
       <img
         src={getImageUrl(moto.imagemPath)}
         alt="Logo Motopilot"
+        onError={(event) => {
+          if (event.currentTarget.src !== fallbackSrc) {
+            event.currentTarget.src = fallbackSrc;
+          }
+        }}
         style={{ width: '100%', height: '189px', objectFit: 'cover', display: 'block' }}
       />
 
