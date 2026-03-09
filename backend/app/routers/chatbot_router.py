@@ -3,7 +3,7 @@ from typing import List, Optional
 from sqlalchemy.orm import Session
 from app.database import get_db
 from app.services.chat_service import ChatService
-from app.schemas.chatbot_schema import ChatRequest, ChatResponse, ChatHistoricoItem
+from app.schemas.chatbot_schema import ChatRequest, ChatResponse, ChatHistoricoItem, FinalizarChatRequest, FinalizarChatResponse
 
 # --- ROTA ---
 router = APIRouter(prefix="/chatbot", tags=["Chatbot"])
@@ -15,6 +15,14 @@ def conversar(request: ChatRequest, db: Session = Depends(get_db)):
     service = ChatService(db)
     return service.gerar_resposta(request.pergunta, request.usuario_id, request.moto_id)
 
+@router.post("/finalizar", response_model=FinalizarChatResponse)
+def finalizar_conversa(request: FinalizarChatRequest, db: Session = Depends(get_db)):
+    """
+    Encerra a conversa e gera um resumo (Diagnóstico, Atividades, Observações)
+    para o relatório de manutenção usando LLM.
+    """
+    service = ChatService(db)
+    return service.finalizar_chat(request.usuario_id, request.moto_id)
 
 # ---- HISTÓRICO ----
 

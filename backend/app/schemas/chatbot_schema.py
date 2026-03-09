@@ -22,3 +22,12 @@ class ChatHistoricoItem(BaseModel):
 
     class Config:
         from_attributes = True
+
+class FinalizarChatRequest(BaseModel):
+    usuario_id: int
+    moto_id: int
+
+class FinalizarChatResponse(BaseModel):
+    diagnostico: str
+    atividades: str
+    observacoes: str

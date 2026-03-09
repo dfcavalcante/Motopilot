@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Session
-from llm.services.rag_orchestrator import rag_orchestrator  # <--- Importamos a INSTÂNCIA, não a classe
-from app.models.chat_model import ChatLog # Importante para quando você descomentar o histórico
+from llm.services.rag_orchestrator import rag_orchestrator
+from app.models.chat_model import ChatLog
+import json
 
 class ChatService:
     def __init__(self, db: Session):
@@ -44,6 +45,51 @@ class ChatService:
                 "resposta": "Desculpe, o assistente encontrou um erro interno ao processar os manuais.",
                 "moto_id": moto_id,
                 "usuario_id": usuario_id
+            }
+
+    def finalizar_chat(self, usuario_id: int, moto_id: int) -> dict:
+        print(f"🔄 ChatService: Finalizando conversa Moto ID {moto_id}...")
+        
+        # 1. Recupera histórico
+        logs = self.listar_historico_usuario_moto(usuario_id, moto_id)
+        
+        if not logs:
+            return {
+                "diagnostico": "Sem conversa anterior registrada.",
+                "atividades": "-",
+                "observacoes": "-"
+            }
+
+        # Inverte pois order_by é desc (do mais atual pro mais antigo), 
+        # e o LLM entende melhor cronológico
+        logs_cronologicos = list(reversed(logs))
+        
+        # 2. Formatar histórico como string
+        historico_str = ""
+        for log in logs_cronologicos:
+            historico_str += f"Mecânico: {log.pergunta}\n"
+            historico_str += f"IA: {log.resposta_ia}\n\n"
+            
+        # 3. Chamar LLM para resumo
+        resposta_bruta = self.rag.resumir_manutencao(historico_str)
+        
+        # 4. Tentar limpar e parsear JSON
+        try:
+            # Algumas IAs ainda teimam em colocar marcações markdown
+            clean_str = resposta_bruta.replace("```json", "").replace("```", "").strip()
+            dados_parsed = json.loads(clean_str)
+            
+            return {
+                "diagnostico": dados_parsed.get("diagnostico", "Não especificado."),
+                "atividades": dados_parsed.get("atividades", "Não especificado."),
+                "observacoes": dados_parsed.get("observacoes", "Não especificado."),
+            }
+        except json.JSONDecodeError as e:
+            print(f"❌ Erro de parse JSON no resumo: {e} | Retorno foi: {resposta_bruta}")
+            return {
+                "diagnostico": "Erro ao extrair informações. Reveja a conversa manualmente.",
+                "atividades": "-",
+                "observacoes": f"Log bruto do LLM: {resposta_bruta[:150]}..."
             }
 
     def listar_historico(self, usuario_id: int):
