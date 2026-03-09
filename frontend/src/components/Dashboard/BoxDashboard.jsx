@@ -4,8 +4,8 @@ import { Box, Stack, Typography } from '@mui/material';
 const BoxDashboard = ({ icone, titulo, descricao, numero }) => {
   return (
     <Box
-      width={375}
-      height={150}
+      width={390}
+      height={160}
       borderRadius={4}
       p={2}
       display="flex"
@@ -34,7 +34,7 @@ const BoxDashboard = ({ icone, titulo, descricao, numero }) => {
             </Typography>
           </Box>
 
-          <Typography fontSize={25} variant="body-2" fontWeight={600}>
+          <Typography fontSize={32} variant="body-2" fontWeight={600}>
             {numero}
           </Typography>
         </Stack>

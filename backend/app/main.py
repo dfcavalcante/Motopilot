@@ -96,9 +96,4 @@ app.include_router(user_router.router)
 app.include_router(chatbot_router.router)
 app.include_router(report_router.router)
 app.include_router(dashboard_router.router)
-<<<<<<< HEAD
 app.include_router(notificacoes_router.router)
-#app.include_router(report_router.router) #Quando tiver o report pronto, é só descomentar isso e criar o report_router.py
-=======
-app.include_router(notificacoes_router.router)
->>>>>>> 593f553492a5629ad06f8fbc429500d8add43f61
