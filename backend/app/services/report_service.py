@@ -11,7 +11,10 @@ Criar, excluir, arquivar, alterar, listar, filtrar, exportar
 class ReportService():
     @staticmethod
     def criar_relatorio(db: Session, relatorio_data: ReportBase) -> ReportResponse:
-        db_relatorio = Report(**relatorio_data.model_dump())
+        relatorio_dict = relatorio_data.model_dump()
+        if relatorio_dict.get("pecas") is not None:
+            relatorio_dict["pecas"] = ", ".join(relatorio_dict["pecas"])
+        db_relatorio = Report(**relatorio_dict)
 
         db.add(db_relatorio)
         db.commit()
@@ -56,6 +59,8 @@ class ReportService():
             return None
 
         relatorio_dict = relatorio_data.model_dump(exclude_unset=True)
+        if "pecas" in relatorio_dict and relatorio_dict["pecas"] is not None:
+            relatorio_dict["pecas"] = ", ".join(relatorio_dict["pecas"])
         for key, value in relatorio_dict.items():
             setattr(db_relatorio, key, value)
 

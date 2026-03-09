@@ -106,6 +106,52 @@ def criar_moto_endpoint(
 def listar_motos_endpoint(db: Session = Depends(get_db)):
     return moto_service.listar_motos(db)
 
+# --- PEÇAS ---
+@router.get('/pecas', response_model=List[str])
+def listar_pecas_disponiveis():
+    return [
+        "Óleo do Motor",
+        "Filtro de Óleo",
+        "Filtro de Ar",
+        "Vela de Ignição",
+        "Pastilha de Freio Dianteira",
+        "Pastilha de Freio Traseira",
+        "Lona de Freio",
+        "Pneu Dianteiro",
+        "Pneu Traseiro",
+        "Câmara de Ar",
+        "Bateria",
+        "Kit Relação (Coroa, Pinhão e Corrente)",
+        "Lâmpada do Farol",
+        "Lâmpada da Lanterna Traseira",
+        "Lâmpadas dos Piscas",
+        "Cabo de Embreagem",
+        "Cabo de Acelerador",
+        "Cabo de Freio",
+        "Fluido de Freio",
+        "Líquido de Arrefecimento",
+        "Rolamento de Roda",
+        "Retentor de Bengala",
+        "Óleo de Bengala",
+        "Bucha da Balança",
+        "Amortecedor Traseiro",
+        "Fusíveis",
+        "Relé de Partida",
+        "Estator",
+        "Regulador Retificador",
+        "Bomba de Combustível",
+        "Filtro de Combustível",
+        "Mangueiras de Combustível",
+        "Cabo de Velocímetro",
+        "Sensor de Velocidade",
+        "Manete de Freio",
+        "Manete de Embreagem",
+        "Pedal de Câmbio",
+        "Pedal de Freio",
+        "Retrovisores",
+        "Capa do Banco"
+    ]
+
 # --- ATUALIZAR ---
 @router.patch('/{moto_id}/atualizar', response_model=MotoResponse)
 def atualizar_moto_endpoint(moto_id: int, moto_data: MotoUpdate, db: Session = Depends(get_db)):

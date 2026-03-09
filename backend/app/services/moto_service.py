@@ -96,7 +96,7 @@ class Moto_service:
                 diagnostico=dados.diagnostico,
                 mecanicos=dados.mecanicos,
                 atividades=dados.atividades,
-                pecas=dados.pecas,
+                pecas=", ".join(dados.pecas) if dados.pecas else None,
                 observacoes=dados.observacoes,
             )
             db.add(novo_relatorio)

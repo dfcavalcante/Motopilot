@@ -50,7 +50,7 @@ class ConcluirManutencaoRequest(BaseModel):
     diagnostico: str
     mecanicos: str
     atividades: str
-    pecas: Optional[str] = None
+    pecas: Optional[list[str]] = None
     observacoes: Optional[str] = None
 
     model_config = ConfigDict(populate_by_name=True)

@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 from typing import Optional
 from datetime import datetime
 
@@ -10,14 +10,14 @@ class ReportBase(BaseModel):
     moto_id:  int = Field(..., example=1)
     cliente_id: int = Field(..., example=2)
     diagnostico: str = Field(..., example="O diagnóstico que foi feito é que teve um reator da moto que explodiu e o pedal que saltou pra fora bla bla")
-    pecas: Optional[str] = Field(None, example="motor, pedal e buzina")
+    pecas: Optional[list[str]] = Field(None, example=["motor", "pedal", "buzina"])
 
     #Mecânico(s) responsáveis pela manutenção
     mecanicos: str = Field(..., example="Marquinhos do Prompt")
     atividades: str = Field(..., example="Troca de pedal, troca de motor")
 
     #Peças que foram substituídas (se houver)
-    pecas: Optional[str] = Field(None, example="motor, pedal e buzina")
+    pecas: Optional[list[str]] = Field(None, example=["motor", "pedal", "buzina"])
     observacoes: Optional[str] = Field(None, example="Foi observado que a moto é de um modelo especial que saiu de linha por possuir defeitos de fábrica")
 
     #TODO: falta o campo de anexação de fotos que ainda não sei como adicionar que será Optional
@@ -34,7 +34,7 @@ class ReportUpdate(BaseModel):
     diagnostico: Optional[str] = None
     mecanicos: Optional[str] = None
     atividades: Optional[str] = None
-    pecas: Optional[str] = None
+    pecas: Optional[list[str]] = None
     observacoes: Optional[str] = None
 
 
@@ -62,5 +62,12 @@ class ReportResponse(ReportBase):
     updated_at : Optional[datetime]
     class Config:
         from_attributes = True
+
+    @field_validator("pecas", mode="before")
+    @classmethod
+    def split_pecas(cls, v):
+        if isinstance(v, str):
+            return [p.strip() for p in v.split(",") if p.strip()]
+        return v
 
 
