@@ -4,7 +4,7 @@ import { Box, Stack, Typography } from '@mui/material';
 const BoxDashboard = ({ icone, titulo, descricao, numero }) => {
   return (
     <Box
-      width={390}
+      minWidth={350}
       height={160}
       borderRadius={4}
       p={2}

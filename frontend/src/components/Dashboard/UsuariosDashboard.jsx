@@ -9,7 +9,7 @@ const BoxUsuario = ({ icone, nome, descricao }) => {
   return (
     <Box
       width={140}
-      minHeight={140}
+      height={'90%'}
       backgroundColor={'#ffffff'}
       borderRadius={4}
       padding={2}
@@ -87,7 +87,7 @@ const UsuariosDashboards = () => {
       display={'flex'}
       flexDirection={'column'}
       borderRadius={4}
-      padding={3}
+      padding={2}
     >
       {/* Caixa cinza por trás do botão de seta */}
       <Box

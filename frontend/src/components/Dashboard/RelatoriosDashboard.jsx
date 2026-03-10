@@ -4,15 +4,16 @@ import { Box, Stack, Typography } from '@mui/material';
 const BoxRelatorio = ({ icone, numero, nome, descricao }) => {
   return (
     <Box
-      width={210}
-      height={275}
+      minWidth={200}
+      height={'100%'}
       backgroundColor={'#ffffff'}
       borderRadius={4}
-      padding={3}
+      padding={4}
       display="flex"
       flexDirection="column"
       alignItems="center"
       justifyContent="space-between"
+      gap={4}
     >
       {/* Container do Ícone com fundo cinza */}
       <Box
@@ -35,11 +36,11 @@ const BoxRelatorio = ({ icone, numero, nome, descricao }) => {
 
       {/* Grupo de Textos Inferiores (Nome e Descrição) juntos */}
       <Stack direction="column" alignItems="center" spacing={1} width="100%">
-        <Typography fontSize={16} fontWeight="500" textAlign="center" color="#1A1A1A">
+        <Typography fontSize={13} fontWeight="500" textAlign="center" color="#1A1A1A">
           {nome}
         </Typography>
 
-        <Typography fontSize={13} variant="body2" color="#808080" textAlign="center">
+        <Typography fontSize={11}  color="#808080" textAlign="center">
           {descricao}
         </Typography>
       </Stack>
@@ -105,7 +106,7 @@ const RelatoriosDashboards = () => {
       display={'flex'}
       flexDirection={'column'}
       borderRadius={4}
-      padding={2}
+      padding={1}
     >
       <Box justifyContent={'center'} display={'flex'} flexDirection={'row'} gap={2}>
         {relatorios.map((relatorio, index) => (

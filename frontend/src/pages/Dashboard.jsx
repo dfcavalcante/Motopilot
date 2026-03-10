@@ -79,7 +79,7 @@ const Dashboard = () => {
             <Box sx={{ flex: 2, minHeight: 0 }}>
               <RelatoriosDashboards />
             </Box>
-            <Box sx={{ minHeight: 0 }}>
+            <Box sx={{ flex:1.5, minHeight: 0 }}>
               <UsuariosDashboards />
             </Box>
           </Box>

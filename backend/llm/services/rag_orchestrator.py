@@ -106,5 +106,40 @@ class RagOrchestrator:
             print(f"❌ Erro no LLM: {e}")
             return "Desculpe, ocorreu um erro ao consultar o manual."
 
+    def resumir_manutencao(self, historico_conversa: str) -> str:
+        """
+        Gera um resumo da conversa no formato JSON esperado para 
+        preenchimento automático do relatório de manutenção.
+        """
+        prompt_resumo = f"""
+        Você é um assistente técnico de oficinas de moto.
+        Abaixo está a transcrição da conversa entre um mecânico e o sistema sobre a manutenção de uma moto.
+        
+        Você PRECISA extrair as informações e me devolver ESTRITAMENTE um objeto JSON válido.
+        Sem conversinhas, sem marcações markdown como ```json, apenas inicie com {{ e termine com }}.
+        As chaves obrigatórias do JSON são:
+        - "diagnostico": Um parágrafo resumindo o problema relatado.
+        - "atividades": Um parágrafo resumindo os passos/procedimentos que o mecânico precisa realizar ou realizou.
+        - "observacoes": Pontos de atenção importantes citados na conversa (ex: torques específicos, cuidados).
+
+        Se alguma não estiver clara, preencha com "Não especificado na conversa.".
+
+        HISTÓRICO DA CONVERSA:
+        {historico_conversa}
+        """
+
+        try:
+            print("🤖 Gerando resumo de manutenção com LLM (Modo JSON)...")
+            
+            # Aqui configuramos format="json" para forçar que a resposta seja parseável
+            # Dependerá se a versão do ollama instalada (backend/API) suporte esse parâmetro corretamente com a chain
+            # Mas vamos forçar o model a responder apenas a string json limpa
+            resposta_json_str = self.llm_client.invoke(prompt_resumo)
+            return resposta_json_str
+            
+        except Exception as e:
+            print(f"❌ Erro ao gerar resumo LLM: {e}")
+            return '{{"diagnostico": "Erro ao processar.", "atividades": "Erro", "observacoes": "Erro"}}'
+
 # Instância global
 rag_orchestrator = RagOrchestrator()
