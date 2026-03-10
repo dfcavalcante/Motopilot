@@ -5,56 +5,129 @@ import { MotoContext } from './MotoContext';
 export const ChatContext = createContext();
 
 export const ChatProvider = ({ children }) => {
-  const { motos, motoSelecionada } = useContext(MotoContext);
-  const [chat, setChat] = useState([]);
+  const { motos, motoSelecionada, setMotoSelecionada } = useContext(MotoContext);
+
+  // Estados de Dados
+  const [chat, setChat] = useState([]); // Histórico bruto
   const [chatsPorMoto, setChatsPorMoto] = useState([]);
+  const [messages, setMessages] = useState(() => {
+    try {
+      const storedMessages = localStorage.getItem('historico_ativo');
+      return storedMessages ? JSON.parse(storedMessages) : [];
+    } catch (error) {
+      console.error('Erro ao carregar mensagens do localStorage', error);
+      return [];
+    }
+  });
+
+  // Estados de UI/Controle
   const [loading, setLoading] = useState(false);
+  const [isLoadingChat, setIsLoadingChat] = useState(false);
   const [erro, setErro] = useState(null);
 
   const BASE_URL = 'http://localhost:8000';
 
+  const sendChatMessage = useCallback(
+    async (pergunta, usuarioId, motoId) => {
+      const response = await fetch(`${BASE_URL}/chatbot/perguntar`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          pergunta,
+          usuario_id: usuarioId,
+          moto_id: motoId,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Erro ao enviar mensagem para o chatbot.');
+      }
+
+      return response.json();
+    },
+    [BASE_URL]
+  );
+
+  // Persistência do Chat Selecionado
   const [chatSelecionada, setChatSelecionada] = useState(() => {
     try {
       const stored = localStorage.getItem('chatSelecionada');
       return stored ? JSON.parse(stored) : null;
     } catch (error) {
-      console.error('Erro ao carregar chat selecionado:', error);
       return null;
     }
   });
 
   useEffect(() => {
-    try {
-      if (chatSelecionada) {
-        localStorage.setItem('chatSelecionada', JSON.stringify(chatSelecionada));
-      } else {
-        localStorage.removeItem('chatSelecionada');
-      }
-    } catch (error) {
-      console.error('Erro ao salvar chat selecionado:', error);
+    if (chatSelecionada) {
+      localStorage.setItem('chatSelecionada', JSON.stringify(chatSelecionada));
+    } else {
+      localStorage.removeItem('chatSelecionada');
     }
   }, [chatSelecionada]);
-  
-  //Mostrar o histórico de mensagens do chatbot por usuário
+
+  // --- NOVAS FUNÇÕES INTEGRADAS DO SEU HOOK ---
+
+  const enviarMensagem = async (texto, usuarioId) => {
+    // Verifica se o texto não está vazio e se tem uma moto selecionada
+    if (!texto?.trim() || !motoSelecionada) return;
+
+    // Se por acaso o usuarioId vier vazio (ex: usuário deslogou no meio), a gente avisa
+    if (!usuarioId) {
+      console.error('Tentativa de enviar mensagem sem usuário logado!');
+      alert('Você precisa estar logado para enviar mensagens.');
+      return;
+    }
+
+    // 1. Adiciona a mensagem do usuário na tela IMEDIATAMENTE
+    const userMsg = { text: texto, isBot: false };
+    setMessages((prev) => [...prev, userMsg]);
+    setIsLoadingChat(true);
+    setErro(null);
+
+    // 2. Tenta enviar para o backend
+    try {
+      // Aqui usamos o usuarioId real que veio lá do Chatbot.jsx
+      const data = await sendChatMessage(texto, usuarioId, motoSelecionada.id);
+
+      // 3. Adiciona a resposta do Bot na tela
+      const botMsg = { text: data.resposta, isBot: true };
+      setMessages((prev) => [...prev, botMsg]);
+    } catch (error) {
+      console.error('Erro ao enviar mensagem:', error);
+      setMessages((prev) => [...prev, { text: 'Erro ao processar resposta.', isBot: true }]);
+      setErro('Falha na comunicação com o chatbot.');
+    } finally {
+      setIsLoadingChat(false);
+    }
+  };
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('historico_ativo', JSON.stringify(messages));
+    } catch (error) {
+      console.error('Erro ao salvar mensagens no localStorage', error);
+    }
+  }, [messages]);
+
+  const trocarMoto = useCallback(() => {
+    setMotoSelecionada(null);
+    setMessages([]);
+    localStorage.removeItem('historico_ativo'); // Limpa a persistência
+  }, [setMotoSelecionada]);
+
+  // --- FUNÇÕES DE HISTÓRICO EXISTENTES (OTIMIZADAS) ---
+
   const listarChats = useCallback(
     async (usuarioId) => {
-      if (!usuarioId) {
-        setErro('O Id do usuário é obrigatório para listar o histórico, verificar Chat Context.');
-        return [];
-      }
-
+      if (!usuarioId) return [];
       try {
         const response = await fetch(`${BASE_URL}/chatbot/historico/${usuarioId}`);
-
-        if (!response.ok) {
-          throw new Error('Erro ao buscar chats');
-        }
-
+        if (!response.ok) throw new Error('Erro ao buscar chats');
         const data = await response.json();
         setChat(data);
         return data;
       } catch (error) {
-        console.error('Erro no listarChats:', error);
         setErro(error.message);
         return [];
       }
@@ -62,12 +135,9 @@ export const ChatProvider = ({ children }) => {
     [BASE_URL]
   );
 
-  // Junta motos e chats por moto_id
   const montarChatsPorMoto = useCallback((listaMotos, listaChats) => {
     const chatsAgrupados = listaChats.reduce((acc, item) => {
-      if (!acc[item.moto_id]) {
-        acc[item.moto_id] = [];
-      }
+      if (!acc[item.moto_id]) acc[item.moto_id] = [];
       acc[item.moto_id].push(item);
       return acc;
     }, {});
@@ -80,95 +150,52 @@ export const ChatProvider = ({ children }) => {
       .filter((moto) => moto.chats.length > 0);
   }, []);
 
-  // Mostrar o histórico de mensagens do chatbot por moto específica
-  const listarChatsEspecificos = useCallback(
-    async ({ motoId, usuarioId } = {}) => {
-      const motoIdFinal = motoId ?? motoSelecionada?.id;
-
-      if (!motoIdFinal) {
-        setErro('motoId é obrigatório para listar chats específicos.');
-        return { moto: null, chats: [] };
-      }
-
-      try {
-        const endpoint = usuarioId
-          ? `${BASE_URL}/chatbot/historico/${usuarioId}/moto/${motoIdFinal}`
-          : `${BASE_URL}/chatbot/historico/moto/${motoIdFinal}`;
-
-        const response = await fetch(endpoint);
-
-        if (!response.ok) {
-          throw new Error('Erro ao buscar chats específicos da moto selecionada');
-        }
-
-        const data = await response.json();
-        setChat(data);
-
-        const motoComChats = motos.find((m) => m.id === motoIdFinal) || null;
-        const merge = montarChatsPorMoto(motos, data);
-        setChatsPorMoto(merge);
-
-        return { moto: motoComChats, chats: data };
-      } catch (error) {
-        console.error('Erro no listarChatsEspecificos:', error);
-        setErro(error.message);
-        return { moto: null, chats: [] };
-      }
-    },
-    [BASE_URL, motoSelecionada, motos, montarChatsPorMoto]
-  );
-
-  // Lista histórico do usuário e já entrega motos com seus respectivos chats
   const listarMotosComChats = useCallback(
     async (usuarioId) => {
-      if (!usuarioId) {
-        setErro('O Id do usuário é obrigatório para montar motos com chats, verificar Chat Context.');
-        return [];
-      }
-
+      if (!usuarioId) return [];
+      setLoading(true);
       try {
-        const chatsUsuario = await listarChats(usuarioId);
-        const merge = montarChatsPorMoto(motos, chatsUsuario);
+        // Busca chats e motos em paralelo para não depender de estado externo
+        const [chatsUsuario, motosData] = await Promise.all([
+          listarChats(usuarioId),
+          fetch(`${BASE_URL}/motos/listar`).then((r) => (r.ok ? r.json() : [])),
+        ]);
+        const merge = montarChatsPorMoto(motosData, chatsUsuario);
         setChatsPorMoto(merge);
         return merge;
-      } catch (error) {
-        console.error('Erro no listar motos com os chats:', error);
-        setErro(error.message);
-        return [];
+      } finally {
+        setLoading(false);
       }
     },
-    [listarChats, montarChatsPorMoto, motos]
+    [listarChats, montarChatsPorMoto, BASE_URL]
+  );
+
+  // Carrega um histórico de conversa no chat ativo
+  const abrirConversa = useCallback(
+    (moto, historico) => {
+      const msgs = historico.flatMap((item) => [
+        { text: item.pergunta, isBot: false },
+        { text: item.resposta_ia, isBot: true },
+      ]);
+      setMotoSelecionada(moto);
+      setMessages(msgs);
+    },
+    [setMotoSelecionada]
   );
 
   const finalizarConversa = async ({ usuarioId, motoId } = {}) => {
     const motoIdFinal = motoId ?? motoSelecionada?.id;
-
-    if (!usuarioId || !motoIdFinal) {
-      setErro('O Id da moto e usuário são obrigatórios para finalizar a conversa.');
-      return null;
-    }
+    if (!usuarioId || !motoIdFinal) return null;
 
     setLoading(true);
-    setErro(null);
     try {
       const response = await fetch(`${BASE_URL}/chatbot/finalizar`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          usuario_id: usuarioId,
-          moto_id: motoIdFinal,
-        }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ usuario_id: usuarioId, moto_id: motoIdFinal }),
       });
-
-      if (!response.ok) {
-        throw new Error('Erro ao finalizar conversa');
-      }
-
       return await response.json();
     } catch (error) {
-      console.error('Erro no finalizarConversa:', error);
       setErro(error.message);
       return null;
     } finally {
@@ -177,26 +204,14 @@ export const ChatProvider = ({ children }) => {
   };
 
   const limparChat = async (usuarioId) => {
-    if (!usuarioId) {
-      setErro('O Id do usuário é obrigatório para limpar o chat.');
-      return false;
-    }
-
+    if (!usuarioId) return false;
     setLoading(true);
-    setErro(null);
     try {
-      const response = await fetch(`${BASE_URL}/chatbot/limpar/${usuarioId}`, {
-        method: 'DELETE',
-      });
-
-      if (!response.ok) {
-        throw new Error('Erro ao limpar chat');
-      }
-
+      await fetch(`${BASE_URL}/chatbot/limpar/${usuarioId}`, { method: 'DELETE' });
       setChat([]);
+      setMessages([]); // Também limpa as mensagens da tela
       return true;
     } catch (error) {
-      console.error('Erro no limparChat:', error);
       setErro(error.message);
       return false;
     } finally {
@@ -207,17 +222,27 @@ export const ChatProvider = ({ children }) => {
   return (
     <ChatContext.Provider
       value={{
+        // Estados
         chat,
+        messages,
         chatsPorMoto,
         chatSelecionada,
+        loading,
+        isLoadingChat,
+        erro,
+        motoSelecionada,
+        motos,
+
+        // Funções
         setChatSelecionada,
+        setMotoSelecionada,
+        enviarMensagem,
+        trocarMoto,
         listarChats,
-        listarChatsEspecificos,
         listarMotosComChats,
+        abrirConversa,
         finalizarConversa,
         limparChat,
-        loading,
-        erro,
       }}
     >
       {children}

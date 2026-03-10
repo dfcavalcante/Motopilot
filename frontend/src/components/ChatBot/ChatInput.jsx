@@ -11,7 +11,7 @@ const ChatInput = ({ input, setInput, onSend }) => {
   };
 
   return (
-    <Box sx={{ width: '100%', maxWidth: 720, mt: 2, flexShrink: 0 }}>
+    <Box sx={{ width: '100%', maxWidth: 720,  flexShrink: 0 }}>
         <TextField
             placeholder="Pergunte alguma coisa..."
             fullWidth

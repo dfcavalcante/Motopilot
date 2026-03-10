@@ -1,8 +1,10 @@
 from sqlalchemy.orm import Session
+from typing import cast
 from app.models.user_model import User
 from app.schemas.user_schema import UserBase, UserUpdate
 from sqlalchemy import select
 from app.services.notification_service import NotificationService
+from app.services.security_service import get_password_hash
 
 class UserService:
     def __init__(self, db: Session):
@@ -18,10 +20,12 @@ class UserService:
         if matricula_exists:
             raise ValueError(f"A matrícula '{user_schema.matricula}' já está em uso.")
         
+        senha_criptografada = get_password_hash(user_schema.senha)
+        
         new_user = User(
             nome=user_schema.nome,
             email=user_schema.email,
-            senha=user_schema.senha, #Tem que criptografar isso depois, mas por enquanto tá ok
+            senha=senha_criptografada,
             matricula=user_schema.matricula,
             funcao=user_schema.funcao
         )
@@ -29,7 +33,7 @@ class UserService:
         self.db.add(new_user)
         self.db.commit()
         self.db.refresh(new_user)
-        self.notificacao.notificar_usuario("criado", new_user.id, new_user.nome)
+        self.notificacao.notificar_usuario("criado", cast(int, new_user.id), cast(str, new_user.nome))
         return new_user
     
     def update_user(self, user_id: int, user_update: UserUpdate):
@@ -47,14 +51,20 @@ class UserService:
             if matricula_exists:
                 raise ValueError(f"A matrícula '{user_update.matricula}' já está em uso.")
         
-        for field, value in user_update.dict(exclude_unset=True).items():
+        payload = user_update.model_dump(exclude_unset=True)
+
+        # Sempre persiste senha como hash.
+        if "senha" in payload and payload["senha"]:
+            payload["senha"] = get_password_hash(payload["senha"])
+
+        for field, value in payload.items():
             setattr(user, field, value)
         
         self.db.commit()
         self.db.refresh(user)
-        self.notificacao.notificar_usuario("atualizado", user.id, user.nome)
+        self.notificacao.notificar_usuario("atualizado", user_id, cast(str, user.nome))
         
-        return 
+        return user
     
     def deletar_usuario(self, user_id: int):
         user = self.db.query(User).filter(User.id == user_id).first()
@@ -63,7 +73,7 @@ class UserService:
         
         self.db.delete(user)
         self.db.commit()
-        self.notificacao.notificar_usuario("deletado", user.id, user.nome)
+        self.notificacao.notificar_usuario("deletado", cast(int, user.id), cast(str, user.nome))
         return True
     
     # --- VERIFICAÇÕES ---

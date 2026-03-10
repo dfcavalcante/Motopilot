@@ -3,21 +3,33 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Box, InputAdornment, Button, TextField, Stack, Grid, InputLabel } from '@mui/material';
 import WarningIcon from '@mui/icons-material/Warning';
+import { useLogin} from '../context/LoginContext';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(false);
+
   const navigate = useNavigate();
+
+  const { login } = useLogin();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     if (!email || !password) {
       setError(true);
       return;
-    } else {
+    }
+
+    try {
+      await login(email, password);
+
       setError(false);
       navigate('/chatbot');
+    } catch (err) {
+      console.error(err);
+      setError(true);
     }
   };
 

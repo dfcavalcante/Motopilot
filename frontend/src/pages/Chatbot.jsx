@@ -1,53 +1,77 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useContext } from 'react';
 import { Box, Stack, Divider, Typography, IconButton } from '@mui/material';
-import Header from '../utils/Header.jsx';
-import SideBar from '../utils/SideBar.jsx';
-import ChatMessage from '../components/ChatBot/ChatMessage.jsx';
-import { useChat } from '../context/useChat.js';
+import { useLogin } from '../context/LoginContext.jsx';
 import ChatInput from '../components/ChatBot/ChatInput.jsx';
 import TelaInicial from '../components/ChatBot/TelaInicialChat.jsx';
+import ChatMessage from '../components/ChatBot/ChatMessage.jsx';
+import HistoricoPanel from '../components/ChatBot/HistoricoPanel.jsx';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import HistoryIcon from '@mui/icons-material/History';
 import Loading from '../components/ChatBot/Loading.jsx';
+import { ChatContext } from '../context/ChatContext.jsx';
+import BaseFrontChat from '../components/ChatBot/BaseFrontChat.jsx';
 
 const Chatbot = () => {
+  // Consumindo o Hook atualizado
   const {
     motoSelecionada,
-    setMotoSelecionada,
     messages,
-    setMessages,
     enviarMensagem,
     isLoadingChat,
-  } = useChat();
+    limparChat,
+    trocarMoto,
+    chatsPorMoto,
+    loading: loadingHistorico,
+    listarMotosComChats,
+    abrirConversa,
+  } = useContext(ChatContext);
+  const { user } = useLogin();
 
   const [input, setInput] = useState('');
-  const [nomeChat, setNomeChat] = useState('Nome Chat');
+  const [showHistorico, setShowHistorico] = useState(false);
   const messagesEndRef = useRef(null);
 
+  // Carrega o histórico ao montar a página (uma vez que o usuário estiver disponível)
   useEffect(() => {
-    if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    if (user?.id) {
+      listarMotosComChats(user.id);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.id]);
+
+  // O nome do chat pode ser dinâmico baseado na moto selecionada
+  const nomeChat = motoSelecionada ? `${motoSelecionada.modelo}` : 'Novo Chat';
+
+  // Scroll automático para a última mensagem
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, isLoadingChat]);
 
-  // Lógica para resetar a conversa
-  const handleNovoChat = () => {
-    if (typeof setMessages === 'function') {
-      setMessages([]); // Limpa o array de mensagens
+  const handleNovoChat = async () => {
+    // Pega o ID dinâmico, ou usa fallback caso deslogue
+    const usuarioId = user?.id;
+
+    if (!usuarioId) {
+      alert('Você precisa estar logado!');
+      return;
     }
-    setMotoSelecionada(null); // Limpa a moto atual
-    setNomeChat('Nome Chat'); // Reseta o nome do chat se desejar
+
+    const confirmou = window.confirm('Deseja limpar o histórico e iniciar um novo chat?');
+    if (confirmou) {
+      await limparChat(usuarioId);
+      trocarMoto();
+    }
   };
 
   const handleSendClick = () => {
     if (input.trim()) {
-      enviarMensagem(input);
+      enviarMensagem(input, user?.id);
       setInput('');
     }
   };
 
   const handleSuggestion = (sugestao) => {
-    enviarMensagem(sugestao);
-    setInput('');
+    enviarMensagem(sugestao, user?.id);
   };
 
   const sugestoes = [
@@ -58,108 +82,141 @@ const Chatbot = () => {
   ];
 
   return (
-    <Box
-      sx={{
-        display: 'flex',
-        height: '100vh',
-        bgcolor: '#989898',
-        p: '16px',
-        boxSizing: 'border-box',
-      }}
-    >
-      <SideBar />
+    <BaseFrontChat>
+      {/* Layout horizontal: painel de histórico + área do chat */}
+      <Box sx={{ display: 'flex', height: '100%', overflow: 'hidden' }}>
+        {/* Painel de Histórico (condicional) */}
+        {showHistorico && (
+          <HistoricoPanel
+            chatsPorMoto={chatsPorMoto}
+            loading={loadingHistorico}
+            onSelectMoto={(moto, chats) => {
+              abrirConversa(moto, chats);
+              setShowHistorico(false);
+            }}
+          />
+        )}
 
-      <Box
-        sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          flexGrow: 1,
-          ml: '24px',
-          height: '100%',
-        }}
-      >
-        <Stack spacing="8px" sx={{ height: '100%' }}>
-          <Box sx={{ flexShrink: 0 }}>
-            <Header onNovoChat={handleNovoChat} />
+        {/* Área principal do chat */}
+        <Box
+          sx={{
+            flexGrow: 1,
+            display: 'flex',
+            flexDirection: 'column',
+            overflow: 'hidden',
+            minWidth: 0,
+          }}
+        >
+          {/* Header Interno do Chat */}
+          <Box
+            display="flex"
+            mb={2}
+            alignItems="center"
+            width="100%"
+            px={5}
+            position="relative"
+            justifyContent="center"
+          >
+            <IconButton
+              onClick={() => window.history.back()}
+              sx={{
+                color: '#000000',
+                borderRadius: 2,
+                backgroundColor: '#B5B5B5',
+                width: 40,
+                height: 40,
+                position: 'absolute',
+                left: 0,
+                '&:hover': { backgroundColor: 'rgba(0, 0, 0, 0.2)' },
+              }}
+            >
+              <ArrowBackIcon />
+            </IconButton>
+
+            <Typography fontSize={30}>{nomeChat}</Typography>
+
+            {/* Botão de toggle do histórico */}
+            <IconButton
+              onClick={() => setShowHistorico((prev) => !prev)}
+              sx={{
+                color: showHistorico ? '#fff' : '#000000',
+                borderRadius: 2,
+                backgroundColor: showHistorico ? '#676767' : '#B5B5B5',
+                width: 40,
+                height: 40,
+                position: 'absolute',
+                right: 0,
+                '&:hover': { backgroundColor: showHistorico ? '#444' : 'rgba(0, 0, 0, 0.2)' },
+              }}
+            >
+              <HistoryIcon />
+            </IconButton>
           </Box>
 
-          <Box
-            sx={{
-              flexGrow: 1,
-              bgcolor: 'white',
-              borderRadius: '16px',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              p: 2,
-              overflowY: 'auto',
-              position: 'relative',
-            }}
-          >
+          <Divider sx={{ width: '100%', bgcolor: 'grey.700', mb: 2 }} />
+
+          {/* Renderização Condicional: Tela Inicial ou Mensagens */}
+          {!motoSelecionada || messages.length === 0 ? (
             <Box
-              display={'flex'}
-              mb={2}
-              alignItems="center"
-              width="100%"
-              px={5}
-              gap={1}
-              position="relative"
-              justifyContent="center"
+              sx={{
+                width: '100%',
+                display: 'flex',
+                flexDirection: 'column',
+                flexGrow: 1,
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}
             >
-              <IconButton
-                onClick={() => window.history.back()}
+              <TelaInicial sugestoes={sugestoes} onSuggestionClick={handleSuggestion}>
+                <Box sx={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
+                  <ChatInput
+                    input={input}
+                    setInput={setInput}
+                    onSend={handleSendClick}
+                    disabled={!motoSelecionada}
+                  />
+                </Box>
+              </TelaInicial>
+            </Box>
+          ) : (
+            <Box
+              sx={{
+                width: '100%',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                flexGrow: 1,
+                overflow: 'hidden',
+              }}
+            >
+              {/* Caixa das Mensagens */}
+              <Box
                 sx={{
-                  color: '#000000',
-                  borderRadius: 2,
-                  backgroundColor: '#B5B5B5',
-                  width: 40,
-                  height: 40,
-                  flexShrink: 0,
-                  position: 'absolute',
-                  left: 0,
-                  '&:hover': { backgroundColor: 'rgba(0, 0, 0, 0.2)' },
+                  flexGrow: 1,
+                  width: '100%',
+                  maxWidth: 720,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  mb: 2,
+                  overflowY: 'auto',
                 }}
               >
-                <ArrowBackIcon />
-              </IconButton>
-              <Typography fontSize={30}>{nomeChat}</Typography>
+                {messages.map((msg, index) => (
+                  <ChatMessage key={index} text={msg.text} isBot={msg.isBot} />
+                ))}
+                {isLoadingChat && <Loading />}
+                <div ref={messagesEndRef} />
+              </Box>
+
+              {/* Caixa do Input */}
+              <Box sx={{ width: '100%', maxWidth: 720, mb: 2 }}>
+                <ChatInput input={input} setInput={setInput} onSend={handleSendClick} />
+              </Box>
             </Box>
-
-            <Divider sx={{ width: '90%', bgcolor: 'grey.700', height: '0.4px' }} />
-
-            {/* ÁREA DE MENSAGENS */}
-            {messages.length === 0 ? (
-              <TelaInicial sugestoes={sugestoes} onSuggestionClick={handleSuggestion}>
-                <ChatInput input={input} setInput={setInput} onSend={handleSendClick} />
-              </TelaInicial>
-            ) : (
-              <>
-                <Box
-                  sx={{
-                    flexGrow: 1,
-                    width: '100%',
-                    maxWidth: 720,
-                    display: 'flex',
-                    flexDirection: 'column',
-                    mb: 2,
-                  }}
-                >
-                  {messages.map((msg, index) => (
-                    <ChatMessage key={index} text={msg.text} isBot={msg.isBot} />
-                  ))}
-                  {isLoadingChat && (
-                    <Loading/>
-                  )}
-                  <div ref={messagesEndRef} />
-                </Box>
-
-                <ChatInput input={input} setInput={setInput} onSend={handleSendClick} />
-              </>
-            )}
-          </Box>
-        </Stack>
+          )}
+        </Box>
       </Box>
-    </Box>
+    </BaseFrontChat>
   );
 };
 

@@ -149,8 +149,10 @@ export const HookUsers = () => {
   const onSubmitForm = async (dadosDaTela) => {
     setLoading(true);
     try {
-      await cadastrarUser(dadosDaTela);
-      setEtapaAtual(3);
+      const sucesso = await cadastrarUser(dadosDaTela);
+      if (sucesso) {
+        setEtapaAtual(3);
+      }
     } catch (error) {
       console.error('Erro ao salvar usuário:', error);
     } finally {
