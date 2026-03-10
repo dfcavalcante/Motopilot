@@ -57,7 +57,8 @@ class ChatService:
             return {
                 "diagnostico": "Sem conversa anterior registrada.",
                 "atividades": "-",
-                "observacoes": "-"
+                "observacoes": "-",
+                "pecas": []
             }
 
         # Inverte pois order_by é desc (do mais atual pro mais antigo), 
@@ -83,13 +84,15 @@ class ChatService:
                 "diagnostico": dados_parsed.get("diagnostico", "Não especificado."),
                 "atividades": dados_parsed.get("atividades", "Não especificado."),
                 "observacoes": dados_parsed.get("observacoes", "Não especificado."),
+                "pecas": dados_parsed.get("pecas", [])
             }
         except json.JSONDecodeError as e:
             print(f"❌ Erro de parse JSON no resumo: {e} | Retorno foi: {resposta_bruta}")
             return {
                 "diagnostico": "Erro ao extrair informações. Reveja a conversa manualmente.",
                 "atividades": "-",
-                "observacoes": f"Log bruto do LLM: {resposta_bruta[:150]}..."
+                "observacoes": f"Log bruto do LLM: {resposta_bruta[:150]}...",
+                "pecas": []
             }
 
     def listar_historico(self, usuario_id: int):

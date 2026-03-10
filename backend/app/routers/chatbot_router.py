@@ -18,7 +18,7 @@ def conversar(request: ChatRequest, db: Session = Depends(get_db)):
 @router.post("/finalizar", response_model=FinalizarChatResponse)
 def finalizar_conversa(request: FinalizarChatRequest, db: Session = Depends(get_db)):
     """
-    Encerra a conversa e gera um resumo (Diagnóstico, Atividades, Observações)
+    Encerra a conversa e gera um resumo (Diagnóstico, Atividades, Observações, Peças)
     para o relatório de manutenção usando LLM.
     """
     service = ChatService(db)

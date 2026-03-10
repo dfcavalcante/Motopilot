@@ -31,3 +31,4 @@ class FinalizarChatResponse(BaseModel):
     diagnostico: str
     atividades: str
     observacoes: str
+    pecas: list[str]

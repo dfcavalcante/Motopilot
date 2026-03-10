@@ -121,6 +121,7 @@ class RagOrchestrator:
         - "diagnostico": Um parágrafo resumindo o problema relatado.
         - "atividades": Um parágrafo resumindo os passos/procedimentos que o mecânico precisa realizar ou realizou.
         - "observacoes": Pontos de atenção importantes citados na conversa (ex: torques específicos, cuidados).
+        - "pecas": Um array de strings contendo apenas os nomes das peças trocadas. Ex: ["Filtro de Óleo", "Vela de Ignição"]. Se nenhuma peça foi citada, retorne um array vazio [].
 
         Se alguma não estiver clara, preencha com "Não especificado na conversa.".
 
@@ -139,7 +140,7 @@ class RagOrchestrator:
             
         except Exception as e:
             print(f"❌ Erro ao gerar resumo LLM: {e}")
-            return '{{"diagnostico": "Erro ao processar.", "atividades": "Erro", "observacoes": "Erro"}}'
+            return '{{"diagnostico": "Erro ao processar.", "atividades": "Erro", "observacoes": "Erro", "pecas": []}}'
 
 # Instância global
 rag_orchestrator = RagOrchestrator()
