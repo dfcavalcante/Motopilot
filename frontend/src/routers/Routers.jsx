@@ -12,12 +12,14 @@ import Relatorio from '../pages/HistoricoRelatorios';
 import { MotoProvider } from '../context/MotoContext';
 import { UsersProvider } from '../context/UserContext';
 import { NotificacaoProvider } from '../context/NotificacoesContext';
+import { ChatProvider } from '../context/ChatContext';
 
 const Routers = () => {
   return (
     <BrowserRouter>
       <MotoProvider>
         <UsersProvider>
+          <ChatProvider>
           <NotificacaoProvider>
             <Routes>
               <Route path="/" element={<Login />} />
@@ -31,6 +33,7 @@ const Routers = () => {
               <Route path="/relatorios" element={<Relatorio />} />
             </Routes>
           </NotificacaoProvider>
+          </ChatProvider>
         </UsersProvider>
       </MotoProvider>
     </BrowserRouter>
