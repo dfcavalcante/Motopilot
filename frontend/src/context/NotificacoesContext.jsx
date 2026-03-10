@@ -32,30 +32,44 @@ export const NotificacaoProvider = ({ children }) => {
     }
   }, [BASE_URL]);
 
-  const marcarComoLida = useCallback(
-    async (id) => {
-      try {
-        const response = await fetch(`${BASE_URL}/notificacoes/${id}/marcar_como_lida`, {
-          method: 'PATCH',
-        });
+  const marcarComoLida = async (id) => {
+    try {
+      const response = await fetch(`${BASE_URL}/notificacoes/${id}/marcar_como_lida`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+      });
 
-        if (!response.ok) {
-          throw new Error('Erro ao marcar notificação como lida');
-        }
+      if (!response.ok) throw new Error('Erro ao atualizar no backend');
 
-        const notificacaoAtualizada = await response.json();
-        setNotificacoes((prev) =>
-          prev.map((item) => (item.id === notificacaoAtualizada.id ? notificacaoAtualizada : item))
-        );
-      } catch (error) {
-        console.error('Erro ao marcar notificação como lida:', error);
-        setErro(error.message);
-      } finally {
-        await listarNotificacoes();
-      }
-    },
-    [BASE_URL, listarNotificacoes]
-  );
+      setNotificacoes((notificacoesAntigas) =>
+        notificacoesAntigas.map((notificacao) =>
+          notificacao.id === id ? { ...notificacao, lido: !notificacao.lido } : notificacao
+        )
+      );
+    } catch (error) {
+      console.error('Erro ao alterar o status da notificação:', error);
+    }
+  };
+
+  const marcarTodasComoLida = async () => {
+    try {
+      const response = await fetch(`${BASE_URL}/notificacoes/marcar_todas_lidas`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+      });
+
+      if (!response.ok) throw new Error('Erro ao atualizar todas no backend');
+
+      setNotificacoes((notificacoesAntigas) =>
+        notificacoesAntigas.map((notificacao) => ({
+          ...notificacao,
+          lido: true,
+        }))
+      );
+    } catch (error) {
+      console.error('Erro ao marcar todas como lidas:', error);
+    }
+  };
 
   return (
     <NotificacaoContext.Provider
@@ -65,6 +79,7 @@ export const NotificacaoProvider = ({ children }) => {
         loading,
         erro,
         marcarComoLida,
+        marcarTodasComoLida,
       }}
     >
       {children}
