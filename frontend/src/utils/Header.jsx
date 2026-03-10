@@ -2,18 +2,23 @@ import { Box, Typography, Button, IconButton } from '@mui/material';
 import React, { useContext, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { NotificacaoContext } from '../context/NotificacoesContext.jsx';
+import { useLogin } from '../context/LoginContext.jsx';
 
 // Pequena Header em cima do Chatbot, tem os ícones, nome e novo chat
 const Header = ({ onNovoChat }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const { notificacoes, listarNotificacoes } = useContext(NotificacaoContext);
+  const { user } = useLogin();
 
   useEffect(() => {
     listarNotificacoes();
   }, [listarNotificacoes]);
 
   const temNotificacaoNaoLida = (notificacoes || []).some((notificacao) => !notificacao.lido);
+
+  const nomeCompleto = (user?.nome || '').trim();
+  const nomeExibicao = nomeCompleto || user?.email || 'Usuário';
 
   const handleCadastroMoto = (e) => {
     e.preventDefault();
@@ -126,7 +131,7 @@ const Header = ({ onNovoChat }) => {
           </Box>
 
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-            <Typography>Nome Sobrenome</Typography>
+            <Typography>{nomeExibicao}</Typography>
           </Box>
         </Box>
       </Box>
