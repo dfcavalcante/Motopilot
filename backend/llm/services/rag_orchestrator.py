@@ -118,12 +118,17 @@ class RagOrchestrator:
         Você PRECISA extrair as informações e me devolver ESTRITAMENTE um objeto JSON válido.
         Sem conversinhas, sem marcações markdown como ```json, apenas inicie com {{ e termine com }}.
         As chaves obrigatórias do JSON são:
-        - "diagnostico": Um parágrafo resumindo o problema relatado.
-        - "atividades": Um parágrafo resumindo os passos/procedimentos que o mecânico precisa realizar ou realizou.
-        - "observacoes": Pontos de atenção importantes citados na conversa (ex: torques específicos, cuidados).
-        - "pecas": Um array de strings contendo apenas os nomes das peças trocadas. Ex: ["Filtro de Óleo", "Vela de Ignição"]. Se nenhuma peça foi citada, retorne um array vazio [].
+        - "diagnostico": Uma frase curta e direta sobre o problema principal relatado. Sem explicações longas.
+        - "atividades": Resumo da manutenção realizada (o que foi soldado/trocado/consertado). NENHUM passo a passo ou lista numerada.
+        - "observacoes": Uma frase com observações chave informadas na conversa ou recomendações diretas.
+        - "pecas": Um array de strings contendo estritamente os nomes das peças DEFEITUOSAS que precisaram ser trocadas ou consertadas. Não inclua peças que foram apenas citadas, testadas ou inspecionadas. Ex: ["Filtro de Óleo", "Vela de Ignição"]. Se nenhuma peça defeituosa foi substituída, retorne um array vazio [].
 
-        Se alguma não estiver clara, preencha com "Não especificado na conversa.".
+        Exemplo do nível de concisão e formato esperado das chaves "diagnostico", "atividades" e "observacoes":
+        - diagnostico: "Possível falha na caixa de direção."
+        - atividades: "Troca da caixa de direção, troca do óleo e reparo no chassi."
+        - observacoes: "Consultar a concessionária caso o problema persista."
+
+        Se alguma delas não estiver clara na conversa, simplesmente preencha o valor como "Não especificado.".
 
         HISTÓRICO DA CONVERSA:
         {historico_conversa}
