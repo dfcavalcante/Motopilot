@@ -10,15 +10,7 @@ export const ChatProvider = ({ children }) => {
   // Estados de Dados
   const [chat, setChat] = useState([]); // Histórico bruto
   const [chatsPorMoto, setChatsPorMoto] = useState([]);
-  const [messages, setMessages] = useState(() => {
-    try {
-      const storedMessages = localStorage.getItem('historico_ativo');
-      return storedMessages ? JSON.parse(storedMessages) : [];
-    } catch (error) {
-      console.error('Erro ao carregar mensagens do localStorage', error);
-      return [];
-    }
-  });
+  const [messages, setMessages] = useState([]);
 
   // Estados de Relatório Final
   const [resumoAtual, setResumoAtual] = useState(null);
@@ -103,15 +95,18 @@ export const ChatProvider = ({ children }) => {
     }
   };
 
-  useEffect(() => {
-    try {
-      localStorage.setItem('historico_ativo', JSON.stringify(messages));
-    } catch (error) {
-      console.error('Erro ao salvar mensagens no localStorage', error);
-    }
-  }, [messages]);
+  const iniciarNovoChat = useCallback(
+    (moto) => {
+      setChatSelecionada(null);
+      setMotoSelecionada(moto);
+      setMessages([]);
+      localStorage.removeItem('historico_ativo');
+    },
+    [setMotoSelecionada]
+  );
 
   const trocarMoto = useCallback(() => {
+    setChatSelecionada(null);
     setMotoSelecionada(null);
     setMessages([]);
     localStorage.removeItem('historico_ativo'); // Limpa a persistência
@@ -273,7 +268,9 @@ export const ChatProvider = ({ children }) => {
     try {
       await fetch(`${BASE_URL}/chatbot/limpar/${usuarioId}`, { method: 'DELETE' });
       setChat([]);
+      setChatSelecionada(null);
       setMessages([]); // Também limpa as mensagens da tela
+      localStorage.removeItem('historico_ativo');
       return true;
     } catch (error) {
       setErro(error.message);
@@ -301,6 +298,7 @@ export const ChatProvider = ({ children }) => {
         // Funções
         setChatSelecionada,
         setMotoSelecionada,
+        iniciarNovoChat,
         enviarMensagem,
         trocarMoto,
         listarChats,
