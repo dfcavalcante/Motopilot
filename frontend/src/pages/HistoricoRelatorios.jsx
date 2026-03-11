@@ -1,124 +1,97 @@
-import React from 'react';
-import { Box, TextField, Typography, Select } from '@mui/material';
+import React, { useContext, useEffect, useState } from 'react';
+import { Box, Grid, CircularProgress, Alert } from '@mui/material';
 import BaseFront from '../utils/BaseFront';
+import { ReportContext } from '../context/ReportContext.jsx';
+import { useLogin } from '../context/LoginContext.jsx';
+import ReportCard from '../components/Relatorio/ReportCard.jsx';
+import ReportDetailsDialog from '../components/Relatorio/ReportDetailsDialog.jsx';
 
-const Relatorio= () => {
-  const status = ['Equipamento operacional', 'Operacional com restrições', 'Inoperante'];
-  const [statusSelecionado, setStatusSelecionado] = React.useState('');
+const HistoricoRelatorios = () => {
+  const { relatorios, loading, erro, listarRelatorios, deletarRelatorio, buscarRelatorio, atualizarRelatorio } =
+    useContext(ReportContext);
+  const { user } = useLogin();
 
-  const handleStatusChange = (event) => {
-    setStatusSelecionado(event.target.value);
+  const [selectedReport, setSelectedReport] = useState(null);
+  const [openDetail, setOpenDetail] = useState(false);
+  const [loadingDetail, setLoadingDetail] = useState(false);
+
+  useEffect(() => {
+    if (user?.id) listarRelatorios({ cliente_id: user.id });
+  }, [user?.id, listarRelatorios]);
+
+  const handleOpenDetail = async (reportId) => {
+    setLoadingDetail(true);
+    const relatorio = await buscarRelatorio(reportId);
+    if (relatorio) {
+      setSelectedReport(relatorio);
+      setOpenDetail(true);
+    }
+    setLoadingDetail(false);
   };
 
+  const handleDownloadPDF = (report) => {
+    console.log('Downloading...', report);
+    alert('PDF em fase de processamento.');
+    //um dia eu impleplemento
+  };
+
+  const handleSaveReport = async (updatedData) => {
+  try {
+    // Chamada para API através do Contexto
+    await atualizarRelatorio(updatedData.id, updatedData);
+    // Opcional: Recarregar a lista ou atualizar o estado local
+    listarRelatorios({ cliente_id: user.id });
+  } catch (err) {
+    alert("Erro ao salvar alterações.");
+  }
+};
+
   return (
-    <BaseFront nome={'Relatórios'}>
-      <Box sx={{ width: '100%', overflowY: 'auto', pb: 2 }}>
+    <BaseFront nome="Histórico de Relatórios">
+      <Box sx={{ p: { xs: 2, md: 4 }, maxWidth: '1200px', margin: '0 auto' }}>
+        {erro && (
+          <Alert severity="error" variant="outlined" sx={{ mb: 4, borderRadius: '12px' }}>
+            {erro}
+          </Alert>
+        )}
 
-        <Typography fontSize={24} fontWeight="600" marginBottom={2}>
-          Capa/Cabeçalho
-        </Typography>
-        <TextField
-          label="Empresa"
-          variant="outlined"
-          fullWidth
-          helperText="Nome da empresa"
+        {loading ? (
+          <Box display="flex" justifyContent="center" py={10}>
+            <CircularProgress sx={{ color: '#212121' }} />
+          </Box>
+        ) : relatorios.length === 0 ? (
+          <Alert
+            severity="info"
+            variant="outlined"
+            sx={{ borderRadius: '12px', borderStyle: 'dashed' }}
+          >
+            Nenhum relatório encontrado. Finalize um atendimento para gerar seu primeiro relatório!
+          </Alert>
+        ) : (
+          <Grid container spacing={3}>
+            {relatorios.map((report) => (
+              <Grid item xs={12} sm={6} md={4} key={report.id}>
+                <ReportCard
+                  report={report}
+                  onOpen={handleOpenDetail}
+                  onDownload={handleDownloadPDF}
+                  onDelete={deletarRelatorio}
+                />
+              </Grid>
+            ))}
+          </Grid>
+        )}
+
+        <ReportDetailsDialog
+          open={openDetail}
+          report={selectedReport}
+          onClose={() => setOpenDetail(false)}
+          onDownload={handleDownloadPDF}
+          onSave={handleSaveReport}
         />
-
-        <TextField
-          label="Número Relatório"
-          helperText="Exemplo: N*: [001|Ano]"
-          variant="outlined"
-          fullWidth
-        />
-
-        <TextField
-          label="Técnico Responsável"
-          variant="outlined"
-          helperText="Nome do profissional"
-          fullWidth
-        />
-
-        <Typography fontSize={24} fontWeight="600" marginBottom={2} marginTop={4}>
-          Identificação do Equipamento
-        </Typography>
-        <TextField
-          label="Equipamento"
-          variant="outlined"
-          helperText="Ex: Redutor de velocidade, Motor, Bomba, etc"
-          fullWidth
-        />
-
-        <TextField
-          label="Marca/Modelo (A IA q vai fazer)"
-          variant="outlined"
-          helperText="Ex: Marca X, Modelo Y"
-          fullWidth
-        />
-
-        <Typography fontSize={24} fontWeight="600" marginBottom={2} marginTop={4}>
-          Descrição das atividades (Corpo do Relatório)
-        </Typography>
-        <TextField
-          label="Situação encontrada (Diagnóstico)"
-          variant="outlined"
-          fullWidth
-          helperText="Descrever o estado da máquina ao chegar. Ex: Rolamento traseiro com ruído elevado e temperatura de 85*C"
-        />
-
-        <TextField
-          label="Serviços realizados"
-          variant="outlined"
-          fullWidth
-          helperText="Descrever o passo a passo. Ex: Desmontagem, limpeza, substituição de rolamentos, trocaa de retentor, lubrificação e testes"
-        />
-
-        <TextField
-          label="Peças utilizadas"
-          variant="outlined"
-          fullWidth
-          helperText=""
-        />
-
-        <Typography fontSize={24} fontWeight="600" marginBottom={2} marginTop={4}>
-          Evidências (Fotos)
-        </Typography>
-        <TextField
-          label="Link para fotos"
-          variant="outlined"
-          fullWidth
-          helperText="Ex: Link do Google Drive ou Dropbox"
-        />
-
-        <Typography fontSize={24} fontWeight="600" marginBottom={2} marginTop={4}>
-          Conclusões e observações
-        </Typography>
-
-
-        <Select
-          label="Status"
-          variant="outlined"
-          fullWidth
-          helperText="Ex: Equipamento operacional/ Operacional com restrições / Inoperante"
-          value={statusSelecionado}
-          onChange={handleStatusChange}
-        >
-          {status.map((option) => (
-            <option key={option} value={option}>
-              {option}
-            </option>
-          ))}
-        </Select>
-
-        <TextField
-          label="Recomendações (Talvez tenha, e se tiver vai ser a IA q vai sugerir)"
-          variant="outlined"
-          fullWidth
-          helperText="Ex: Monitoramento mensal recomendado, Substituição de rolamentos em 6 meses, etc"
-        />
-
       </Box>
     </BaseFront>
   );
 };
 
-export default Relatorio;
+export default HistoricoRelatorios;

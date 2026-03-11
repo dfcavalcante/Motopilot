@@ -20,6 +20,9 @@ export const ChatProvider = ({ children }) => {
     }
   });
 
+  // Estados de Relatório Final
+  const [resumoAtual, setResumoAtual] = useState(null);
+
   // Estados de UI/Controle
   const [loading, setLoading] = useState(false);
   const [isLoadingChat, setIsLoadingChat] = useState(false);
@@ -66,13 +69,11 @@ export const ChatProvider = ({ children }) => {
     }
   }, [chatSelecionada]);
 
-  // --- NOVAS FUNÇÕES INTEGRADAS DO SEU HOOK ---
+  // --- Funções para o Hook ---
 
   const enviarMensagem = async (texto, usuarioId) => {
-    // Verifica se o texto não está vazio e se tem uma moto selecionada
     if (!texto?.trim() || !motoSelecionada) return;
 
-    // Se por acaso o usuarioId vier vazio (ex: usuário deslogou no meio), a gente avisa
     if (!usuarioId) {
       console.error('Tentativa de enviar mensagem sem usuário logado!');
       alert('Você precisa estar logado para enviar mensagens.');
@@ -183,25 +184,88 @@ export const ChatProvider = ({ children }) => {
     [setMotoSelecionada]
   );
 
-  const finalizarConversa = async ({ usuarioId, motoId } = {}) => {
-    const motoIdFinal = motoId ?? motoSelecionada?.id;
-    if (!usuarioId || !motoIdFinal) return null;
+  const finalizarConversa = useCallback(
+    async ({ usuarioId, motoId } = {}) => {
+      const motoIdFinal = motoId ?? motoSelecionada?.id;
+      if (!usuarioId || !motoIdFinal) return null;
 
-    setLoading(true);
-    try {
-      const response = await fetch(`${BASE_URL}/chatbot/finalizar`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ usuario_id: usuarioId, moto_id: motoIdFinal }),
-      });
-      return await response.json();
-    } catch (error) {
-      setErro(error.message);
-      return null;
-    } finally {
-      setLoading(false);
-    }
-  };
+      setLoading(true);
+      try {
+        const response = await fetch(`${BASE_URL}/chatbot/finalizar`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ usuario_id: usuarioId, moto_id: motoIdFinal }),
+        });
+
+        if (!response.ok) {
+          throw new Error('Erro ao finalizar conversa.');
+        }
+
+        const resumo = await response.json();
+        setResumoAtual(resumo);
+        return resumo;
+      } catch (error) {
+        console.error('Erro ao finalizar conversa:', error);
+        setErro(error.message);
+        return null;
+      } finally {
+        setLoading(false);
+      }
+    },
+    [BASE_URL, motoSelecionada?.id]
+  );
+
+  // Finaliza o chat e cria um relatório no backend
+  const finalizarComRelatorio = useCallback(
+    async ({ usuarioId, motoId, nomesMecanicos = 'Não especificado' } = {}) => {
+      const motoIdFinal = motoId ?? motoSelecionada?.id;
+      if (!usuarioId || !motoIdFinal) {
+        setErro('Usuário ou Moto não identificados.');
+        return null;
+      }
+
+      setLoading(true);
+      try {
+        // 1. Finaliza o chat e obtém o resumo
+        const resumo = await finalizarConversa({ usuarioId, motoId: motoIdFinal });
+
+        if (!resumo) {
+          throw new Error('Falha ao gerar resumo da conversa.');
+        }
+
+        // 2. Cria o relatório no backend
+        const payloadRelatorio = {
+          cliente_id: usuarioId,
+          moto_id: motoIdFinal,
+          diagnostico: resumo.diagnostico || '',
+          atividades: resumo.atividades || '',
+          observacoes: resumo.observacoes || '',
+          mecanicos: nomesMecanicos,
+          pecas: resumo.pecas || [],
+        };
+
+        const responseRelatorio = await fetch(`${BASE_URL}/relatorio/`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payloadRelatorio),
+        });
+
+        if (!responseRelatorio.ok) {
+          throw new Error('Erro ao salvar relatório.');
+        }
+
+        const relatorio = await responseRelatorio.json();
+        return relatorio;
+      } catch (error) {
+        console.error('Erro ao finalizar com relatório:', error);
+        setErro(error.message);
+        return null;
+      } finally {
+        setLoading(false);
+      }
+    },
+    [BASE_URL, motoSelecionada?.id, finalizarConversa]
+  );
 
   const limparChat = async (usuarioId) => {
     if (!usuarioId) return false;
@@ -232,6 +296,7 @@ export const ChatProvider = ({ children }) => {
         erro,
         motoSelecionada,
         motos,
+        resumoAtual,
 
         // Funções
         setChatSelecionada,
@@ -242,6 +307,7 @@ export const ChatProvider = ({ children }) => {
         listarMotosComChats,
         abrirConversa,
         finalizarConversa,
+        finalizarComRelatorio,
         limparChat,
       }}
     >

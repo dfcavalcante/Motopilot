@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useContext } from 'react';
-import { Box, Stack, Divider, Typography, IconButton } from '@mui/material';
+import { Box, Button, Divider, Typography, IconButton } from '@mui/material';
 import { useLogin } from '../context/LoginContext.jsx';
 import ChatInput from '../components/ChatBot/ChatInput.jsx';
 import TelaInicial from '../components/ChatBot/TelaInicialChat.jsx';
@@ -10,9 +10,9 @@ import HistoryIcon from '@mui/icons-material/History';
 import Loading from '../components/ChatBot/Loading.jsx';
 import { ChatContext } from '../context/ChatContext.jsx';
 import BaseFrontChat from '../components/ChatBot/BaseFrontChat.jsx';
+import BotaoFinalizar from '../components/ChatBot/BotaoFinalizar.jsx';
 
 const Chatbot = () => {
-  // Consumindo o Hook atualizado
   const {
     motoSelecionada,
     messages,
@@ -24,6 +24,7 @@ const Chatbot = () => {
     loading: loadingHistorico,
     listarMotosComChats,
     abrirConversa,
+    finalizarComRelatorio,
   } = useContext(ChatContext);
   const { user } = useLogin();
 
@@ -31,24 +32,19 @@ const Chatbot = () => {
   const [showHistorico, setShowHistorico] = useState(false);
   const messagesEndRef = useRef(null);
 
-  // Carrega o histórico ao montar a página (uma vez que o usuário estiver disponível)
   useEffect(() => {
     if (user?.id) {
       listarMotosComChats(user.id);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.id]);
 
-  // O nome do chat pode ser dinâmico baseado na moto selecionada
   const nomeChat = motoSelecionada ? `${motoSelecionada.modelo}` : 'Novo Chat';
 
-  // Scroll automático para a última mensagem
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, isLoadingChat]);
 
   const handleNovoChat = async () => {
-    // Pega o ID dinâmico, ou usa fallback caso deslogue
     const usuarioId = user?.id;
 
     if (!usuarioId) {
@@ -70,6 +66,22 @@ const Chatbot = () => {
     }
   };
 
+  // Função para finalizar conversa e criar relatório
+  const handleFinalizarAtendimento = async () => {
+    if (!user?.id || !motoSelecionada?.id) {
+      alert('Usuário ou Moto não identificados!');
+      return null;
+    }
+
+    const relatorio = await finalizarComRelatorio({
+      usuarioId: user.id,
+      motoId: motoSelecionada.id,
+      nomesMecanicos: user.nome || 'Não especificado',
+    });
+
+    return relatorio;
+  };
+
   const handleSuggestion = (sugestao) => {
     enviarMensagem(sugestao, user?.id);
   };
@@ -83,7 +95,6 @@ const Chatbot = () => {
 
   return (
     <BaseFrontChat>
-      {/* Layout horizontal: painel de histórico + área do chat */}
       <Box sx={{ display: 'flex', height: '100%', overflow: 'hidden' }}>
         {/* Painel de Histórico (condicional) */}
         {showHistorico && (
@@ -134,6 +145,12 @@ const Chatbot = () => {
             </IconButton>
 
             <Typography fontSize={30}>{nomeChat}</Typography>
+
+            {messages.length > 0 && (
+              <Box sx={{ position: 'absolute', right: 60 }}>
+                <BotaoFinalizar onFinalizar={handleFinalizarAtendimento} />
+              </Box>
+            )}
 
             {/* Botão de toggle do histórico */}
             <IconButton

@@ -16,6 +16,7 @@ import { UsersProvider } from '../context/UserContext';
 import { NotificacaoProvider } from '../context/NotificacoesContext';
 import { ChatProvider } from '../context/ChatContext';
 import { LoginProvider } from '../context/LoginContext';
+import { ReportProvider } from '../context/ReportContext';
 
 import RotaProtegida from './RoutersProtected';
 
@@ -27,44 +28,78 @@ const Routers = () => {
           <ChatProvider>
             <LoginProvider>
               <NotificacaoProvider>
-                <Routes>
-                  {/* ROTA PÚBLICA */}
-                  <Route path="/" element={<Login />} />
+                <ReportProvider>
+                  <Routes>
+                    {/* ROTA PÚBLICA */}
+                    <Route path="/" element={<Login />} />
 
-                  {/* ROTAS PROTEGIDAS */}
-                  <Route 
-                    path="/chatbot" 
-                    element={<RotaProtegida><Chatbot /></RotaProtegida>} 
-                  />
-                  <Route 
-                    path="/cadastroMoto" 
-                    element={<RotaProtegida><CadastroDeMoto /></RotaProtegida>} 
-                  />
-                  <Route 
-                    path="/listagemMotos" 
-                    element={<RotaProtegida><ListagemMotos /></RotaProtegida>} 
-                  />
-                  <Route 
-                    path="/cadastro" 
-                    element={<RotaProtegida><Cadastro /></RotaProtegida>} 
-                  />
-                  <Route 
-                    path="/usuarios" 
-                    element={<RotaProtegida><Usuarios /></RotaProtegida>} 
-                  />
-                  <Route 
-                    path="/notificacoes" 
-                    element={<RotaProtegida><Notificacoes /></RotaProtegida>} 
-                  />
-                  <Route 
-                    path="/dashboard" 
-                    element={<RotaProtegida><Dashboard /></RotaProtegida>} 
-                  />
-                  <Route 
-                    path="/relatorios" 
-                    element={<RotaProtegida><Relatorio /></RotaProtegida>} 
-                  />
-                </Routes>
+                    {/* ROTAS PROTEGIDAS */}
+                    <Route
+                      path="/chatbot"
+                      element={
+                        <RotaProtegida>
+                          <Chatbot />
+                        </RotaProtegida>
+                      }
+                    />
+                    <Route
+                      path="/cadastroMoto"
+                      element={
+                        <RotaProtegida>
+                          <CadastroDeMoto />
+                        </RotaProtegida>
+                      }
+                    />
+                    <Route
+                      path="/listagemMotos"
+                      element={
+                        <RotaProtegida>
+                          <ListagemMotos />
+                        </RotaProtegida>
+                      }
+                    />
+                    <Route
+                      path="/cadastro"
+                      element={
+                        <RotaProtegida>
+                          <Cadastro />
+                        </RotaProtegida>
+                      }
+                    />
+                    <Route
+                      path="/usuarios"
+                      element={
+                        <RotaProtegida>
+                          <Usuarios />
+                        </RotaProtegida>
+                      }
+                    />
+                    <Route
+                      path="/notificacoes"
+                      element={
+                        <RotaProtegida>
+                          <Notificacoes />
+                        </RotaProtegida>
+                      }
+                    />
+                    <Route
+                      path="/dashboard"
+                      element={
+                        <RotaProtegida>
+                          <Dashboard />
+                        </RotaProtegida>
+                      }
+                    />
+                    <Route
+                      path="/relatorios"
+                      element={
+                        <RotaProtegida>
+                          <Relatorio />
+                        </RotaProtegida>
+                      }
+                    />
+                  </Routes>
+                </ReportProvider>
               </NotificacaoProvider>
             </LoginProvider>
           </ChatProvider>
