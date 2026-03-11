@@ -14,6 +14,13 @@ class UserBase(BaseModel):
     funcao: str
     senha: str
 
+
+class UserPublic(BaseModel):
+    nome: str
+    email: EmailStr
+    matricula: str
+    funcao: str
+
 class UserUpdate(BaseModel):
     nome: Optional[str] = None
     email: Optional[EmailStr] = None
@@ -21,9 +28,9 @@ class UserUpdate(BaseModel):
     funcao: Optional[str] = None
     senha: Optional[str] = None
     
-class UserResponse(UserBase):
+class UserResponse(UserPublic):
     id: int
-    # Note que NÃO devolvemos a senha aqui
+    # Não expõe senha em respostas da API
     
     class Config:
         from_attributes = True # Permite ler dados do SQLAlchemy

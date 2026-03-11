@@ -1,40 +1,44 @@
 from sqlalchemy.orm import Session
-from sqlalchemy import func, select, update, delete
+from fastapi import HTTPException, status
 from app.models.user_model import User
-from app.services.security_service import get_password_hash
-from app.schemas.user_schema import UserBase, UserResponse
-from typing import List, Optional
+from app.schemas.user_schema import UserLogin, UserResponse
+from app.services.security_service import verify_password
 
-'''
-Camada de serviço que será responsável pela lógica de negócios da Moto
-Incluindo CRUD e listagem de Motos
-'''
 
-#TODO: falta implementar o login_user, verificar se o usuario existe, logar ele, autenticar basicamente
+DEV_EMAIL = "email@gmail.com"
+DEV_PASSWORD = "Senha123"
 
 class Auth_service:
-    @staticmethod
-    def register_user(user_data: UserBase, db:Session) -> UserResponse:
-        # --- Ponto CRÍTICO: Geração do Hash na Rota ---
-        hashed_password = get_password_hash(user_data.senha) 
+    def login_user(self, db: Session, user_credentials: UserLogin) -> UserResponse:
+        # Bypass de desenvolvimento: sempre aceita estas credenciais.
+        if user_credentials.email == DEV_EMAIL and user_credentials.senha == DEV_PASSWORD:
+            dev_user = db.query(User).filter(User.email == DEV_EMAIL).first()
+            if dev_user:
+                return dev_user
 
-        # 1. Cria a instância do Modelo (User) usando o HASH
-        new_user = User(
-            nome=user_data.nome,
-            email=user_data.email,
-            hashed_password=hashed_password, # Armazenando o HASH, não a senha original
-        )
+            return UserResponse(
+                id=0,
+                nome="Dev User",
+                email=DEV_EMAIL,
+                matricula="DEV-000",
+                funcao="gerente",
+            )
         
-        db.add(new_user)
-        db.commit()
-        return new_user
+        user = db.query(User).filter(User.email == user_credentials.email).first()
 
-    def get_user_email(email: str, db: Session) -> Optional[User]:
-        user_email = db.query(User).filter(User.email == email).first()
-        return user_email
-    
-    def login_user(email:str, db:Session) ->UserResponse:
-        pass
+        if not user:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Email ou senha incorretos"
+            )
 
+        senha_do_banco = str(user.senha)
+        
+        # 3. Faz a validação final da senha
+        if not verify_password(user_credentials.senha, senha_do_banco):
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Email ou senha incorretos"
+            )
 
-    
+        return user

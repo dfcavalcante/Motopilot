@@ -1,9 +1,11 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from app.services.notification_service import NotificationService
 from app.schemas.notification_schema import NotificationCreate, NotificationResponse
+from app.models.notification_model import Notification
 from app.database import get_db
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
+from sqlalchemy.orm import Session
 
 router = APIRouter(prefix="/notificacoes", tags=['Notificações'])
 
@@ -34,5 +36,7 @@ def marcar_lido_endpoint(notification_id: int, db: Session = Depends(get_db)):
 @router.patch("/marcar_todas_lidas", response_model=MarcarTodasLidasResponse)
 def marcar_todas_lidas_endpoint(db: Session = Depends(get_db)):
     notification_service = NotificationService(db)
+
     quantidade = notification_service.marcar_todas_lidas()
+    
     return {"quantidade": quantidade}

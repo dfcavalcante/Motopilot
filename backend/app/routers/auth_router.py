@@ -1,25 +1,14 @@
-# Trecho de código (na rota /register)
-
-# 1. Importa a ferramenta
-from fastapi import APIRouter, HTTPException, Depends, Response
-from app.services.security_service import get_password_hash
-from app.models.user_model import User
-from app.schemas.user_schema import UserBase, UserResponse
-from app.services.auth_service import Auth_service
+from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from app.database import get_db
+from app.schemas.user_schema import UserLogin, UserResponse 
+from app.services.auth_service import Auth_service
 
-router = APIRouter(tags=["Users"])
-
+router = APIRouter(tags=["Auth"])
 auth_service = Auth_service()
 
-# 2. Rota POST de registro
-@router.post("/register", response_model= UserResponse)
-def register_user_endpoint(user: UserBase, db: Session = Depends(get_db)):
-    novo_user = auth_service.register_user(db, user)
-    return novo_user
-
-@router.post("/login",response_model=UserResponse)
-def login_user_endpoint(user:UserBase, db: Session = Depends(get_db)):
-    login_user = auth_service.login_user(db, user)
-    return login_user
+@router.post("/login", response_model=UserResponse)
+def login_user_endpoint(user: UserLogin, db: Session = Depends(get_db)):
+    
+    logged_user = auth_service.login_user(db, user)
+    return logged_user

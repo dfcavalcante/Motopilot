@@ -1,6 +1,7 @@
 import asyncio
-from typing import Iterable
-
+from sqlalchemy import update
+from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.orm import Session
 from fastapi import WebSocket
 from sqlalchemy import select
 from sqlalchemy.orm import Session
@@ -72,29 +73,36 @@ class NotificationService:
         if not notificacao:
             return None
 
-        if not notificacao.lido:
-            notificacao.lido = True
+        if not bool(notificacao.lido):
+            setattr(notificacao, "lido", True)
             self.db.add(notificacao)
             self.db.commit()
             self.db.refresh(notificacao)
 
         return notificacao
 
-    #Caso isso seja adicionado no futuro no frontend, tem que falar com o Fernando
+    # Marca todas as notificacoes nao lidas como lidas
     def marcar_todas_lidas(self) -> int:
-        notifications = list(self.db.scalars(select(Notification).where(Notification.lido.is_(False))).all())
-        if not notifications:
+        try:
+            stmt = (
+                update(Notification)
+                .where(Notification.lido.is_(False))
+                .values(lido=True)
+            )
+            
+            result = self.db.execute(stmt)
+            self.db.commit()
+
+            # rowcount pode nao estar tipado em algumas versoes do SQLAlchemy/Pylance.
+            quantidade = getattr(result, "rowcount", 0)
+            return int(quantidade or 0)
+
+        except SQLAlchemyError as e:
+            self.db.rollback() 
+            print(f"Erro ao marcar notificações: {e}") 
             return 0
 
-        for item in notifications:
-            item.lido = True
-            self.db.add(item)
-
-        self.db.commit()
-        return len(notifications)
-
     def notificar_moto(self, action: str, moto_id: int, moto_marca: str, moto_modelo: str) -> Notification:
-        #Se a ação for "created", "updated" ou "deleted", traduzir para português para a mensagem dps
         return self.criar_notificacao(
             NotificationCreate(
                 tipo_entidade="moto",

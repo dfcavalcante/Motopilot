@@ -9,10 +9,16 @@ import ListagemMotos from '../pages/ListagemMotos';
 import Notificacoes from '../pages/Notificacoes';
 import Dashboard from '../pages/Dashboard';
 import Relatorio from '../pages/HistoricoRelatorios';
+
+// Importação dos Contextos
 import { MotoProvider } from '../context/MotoContext';
 import { UsersProvider } from '../context/UserContext';
 import { NotificacaoProvider } from '../context/NotificacoesContext';
 import { ChatProvider } from '../context/ChatContext';
+import { LoginProvider } from '../context/LoginContext';
+import { ReportProvider } from '../context/ReportContext';
+
+import RotaProtegida from './RoutersProtected';
 
 const Routers = () => {
   return (
@@ -20,19 +26,82 @@ const Routers = () => {
       <MotoProvider>
         <UsersProvider>
           <ChatProvider>
-          <NotificacaoProvider>
-            <Routes>
-              <Route path="/" element={<Login />} />
-              <Route path="/chatbot" element={<Chatbot />} />
-              <Route path="/cadastroMoto" element={<CadastroDeMoto />} />
-              <Route path="/listagemMotos" element={<ListagemMotos />} />
-              <Route path="/cadastro" element={<Cadastro />} />
-              <Route path="/usuarios" element={<Usuarios />} />
-              <Route path="/notificacoes" element={<Notificacoes />} />
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/relatorios" element={<Relatorio />} />
-            </Routes>
-          </NotificacaoProvider>
+            <LoginProvider>
+              <NotificacaoProvider>
+                <ReportProvider>
+                  <Routes>
+                    {/* ROTA PÚBLICA */}
+                    <Route path="/" element={<Login />} />
+
+                    {/* ROTAS PROTEGIDAS */}
+                    <Route
+                      path="/chatbot"
+                      element={
+                        <RotaProtegida>
+                          <Chatbot />
+                        </RotaProtegida>
+                      }
+                    />
+                    <Route
+                      path="/cadastroMoto"
+                      element={
+                        <RotaProtegida>
+                          <CadastroDeMoto />
+                        </RotaProtegida>
+                      }
+                    />
+                    <Route
+                      path="/listagemMotos"
+                      element={
+                        <RotaProtegida>
+                          <ListagemMotos />
+                        </RotaProtegida>
+                      }
+                    />
+                    <Route
+                      path="/cadastro"
+                      element={
+                        <RotaProtegida>
+                          <Cadastro />
+                        </RotaProtegida>
+                      }
+                    />
+                    <Route
+                      path="/usuarios"
+                      element={
+                        <RotaProtegida>
+                          <Usuarios />
+                        </RotaProtegida>
+                      }
+                    />
+                    <Route
+                      path="/notificacoes"
+                      element={
+                        <RotaProtegida>
+                          <Notificacoes />
+                        </RotaProtegida>
+                      }
+                    />
+                    <Route
+                      path="/dashboard"
+                      element={
+                        <RotaProtegida>
+                          <Dashboard />
+                        </RotaProtegida>
+                      }
+                    />
+                    <Route
+                      path="/relatorios"
+                      element={
+                        <RotaProtegida>
+                          <Relatorio />
+                        </RotaProtegida>
+                      }
+                    />
+                  </Routes>
+                </ReportProvider>
+              </NotificacaoProvider>
+            </LoginProvider>
           </ChatProvider>
         </UsersProvider>
       </MotoProvider>

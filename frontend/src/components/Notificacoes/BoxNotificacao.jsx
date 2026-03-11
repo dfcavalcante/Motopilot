@@ -1,17 +1,13 @@
 import React from 'react';
 import { Box, Stack, Typography, Checkbox } from '@mui/material';
-const BoxNotificacao = ({ check, titulo, descricao, data, onToggleRead }) => {
-  const [isChecked, setIsChecked] = React.useState(check);
 
-  React.useEffect(() => {
-    setIsChecked(check);
-  }, [check]);
+const BoxNotificacao = ({ check, titulo, descricao, data, onToggleRead }) => {
 
   return (
     <Box
       width={1450}
       height={100}
-      bgcolor={isChecked ? '#F3F3F3' : 'white'}
+      bgcolor={check ? '#F3F3F3' : 'white'}
       borderRadius={3}
       p={4}
       display="flex"
@@ -24,11 +20,9 @@ const BoxNotificacao = ({ check, titulo, descricao, data, onToggleRead }) => {
       marginBottom={2}
     >
       <Checkbox
-        checked={isChecked}
-        onChange={(event) => {
-          const novoValor = event.target.checked;
-          setIsChecked(novoValor);
-          if (novoValor && onToggleRead) {
+        checked={check} 
+        onChange={() => {
+          if (onToggleRead) {
             onToggleRead();
           }
         }}

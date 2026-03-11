@@ -4,11 +4,11 @@ import Header from '../../utils/Header.jsx';
 import SideBar from '../../utils/SideBar.jsx';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { useNavigate } from 'react-router-dom';
-import { MotoContext } from '../../context/MotoContext.jsx';
+import { ChatContext } from '../../context/ChatContext.jsx';
 
 const InformacoesMoto = ({ moto, onBack }) => {
   const navigate = useNavigate();
-  const { setMotoSelecionada } = React.useContext(MotoContext);
+  const { iniciarNovoChat } = React.useContext(ChatContext);
   const fallbackSrc = '/images/Motopilot.jpeg';
 
   const getImageUrl = (caminhoDoBanco) => {
@@ -122,7 +122,7 @@ const InformacoesMoto = ({ moto, onBack }) => {
             >
               <Button
                 onClick={() => {
-                  setMotoSelecionada(moto);
+                  iniciarNovoChat(moto);
                   navigate('/chatbot');
                 }}
                 variant="contained"
