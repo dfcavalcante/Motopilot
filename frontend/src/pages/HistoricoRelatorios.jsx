@@ -7,8 +7,16 @@ import ReportCard from '../components/Relatorio/ReportCard.jsx';
 import ReportDetailsDialog from '../components/Relatorio/ReportDetailsDialog.jsx';
 
 const HistoricoRelatorios = () => {
-  const { relatorios, loading, erro, listarRelatorios, deletarRelatorio, buscarRelatorio, atualizarRelatorio } =
-    useContext(ReportContext);
+  const {
+    relatorios,
+    loading,
+    erro,
+    listarRelatorios,
+    deletarRelatorio,
+    buscarRelatorio,
+    atualizarRelatorio,
+    watch
+  } = useContext(ReportContext);
   const { user } = useLogin();
 
   const [selectedReport, setSelectedReport] = useState(null);
@@ -36,15 +44,15 @@ const HistoricoRelatorios = () => {
   };
 
   const handleSaveReport = async (updatedData) => {
-  try {
-    // Chamada para API através do Contexto
-    await atualizarRelatorio(updatedData.id, updatedData);
-    // Opcional: Recarregar a lista ou atualizar o estado local
-    listarRelatorios({ cliente_id: user.id });
-  } catch (err) {
-    alert("Erro ao salvar alterações.");
-  }
-};
+    try {
+      // Chamada para API através do Contexto
+      await atualizarRelatorio(updatedData.id, updatedData);
+      // Opcional: Recarregar a lista ou atualizar o estado local
+      listarRelatorios({ cliente_id: user.id });
+    } catch (err) {
+      alert('Erro ao salvar alterações.');
+    }
+  };
 
   return (
     <BaseFront nome="Histórico de Relatórios">
@@ -88,6 +96,7 @@ const HistoricoRelatorios = () => {
           onClose={() => setOpenDetail(false)}
           onDownload={handleDownloadPDF}
           onSave={handleSaveReport}
+          watch={watch}
         />
       </Box>
     </BaseFront>

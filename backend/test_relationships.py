@@ -23,10 +23,11 @@ def testar_fluxo_inteligencia_artificial():
         # 1. CENÁRIO: O Engenheiro 'Carlos' chega para trabalhar
         # Ele é quem vai operar a IA. O gerente não entra aqui.
         print("\n1. Criando o Operador (Engenheiro)...")
+        from app.services.security_service import get_password_hash
         engenheiro = User(
             nome="Carlos Silva",
             email="carlos.tec@oficina.com",
-            senha_hash="hash_seguro_123",
+            senha=get_password_hash("Senha123"),
             cargo=UserRole.ENGINEER # Define que ele é técnico
         )
         db.add(engenheiro)

@@ -3,7 +3,7 @@ import { Dialog, DialogTitle, DialogContent, DialogActions, Box, Typography, But
 import { Close, Download, EditOutlined, SaveOutlined, AssignmentOutlined } from '@mui/icons-material';
 import ReportDocument from './ReportDocument';
 
-const ReportDetailsDialog = ({ open, report, onClose, onDownload, onSave }) => {
+const ReportDetailsDialog = ({ open, report, onClose, onDownload, onSave, watch }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({});
 

@@ -174,13 +174,14 @@ export const HookUsers = () => {
   const handleSelectOrder = (order) => {
     // Ordena os usuários processados
     const sorted = [...usersProcessados].sort((a, b) => {
+      const nomeA = a.nome || a.nomeCompleto || '';
+      const nomeB = b.nome || b.nomeCompleto || '';
+
       switch (order) {
-        case 'nome':
-          return a.nomeCompleto.localeCompare(b.nomeCompleto);
-        case 'email':
-          return a.email.localeCompare(b.email);
-        case 'funcao':
-          return a.funcao.localeCompare(b.funcao);
+        case 'AZ':
+          return nomeA.localeCompare(nomeB);
+        case 'ZA':
+          return nomeB.localeCompare(nomeA);
         default:
           return 0;
       }
@@ -192,7 +193,14 @@ export const HookUsers = () => {
   // --- Edição e Exclusão ---
   const handleEditUser = async (usuarioAtualizado) => {
     try {
-      await atualizarUser(usuarioAtualizado.id, usuarioAtualizado);
+      const payload = { ...usuarioAtualizado };
+
+      // Não envia senha vazia para evitar limpar o hash salvo no backend.
+      if (!payload.senha?.trim()) {
+        delete payload.senha;
+      }
+
+      await atualizarUser(payload.id, payload);
       setAtualizando(null);
       // Recarrega a lista
       const usuariosDoBanco = await listarUsers();

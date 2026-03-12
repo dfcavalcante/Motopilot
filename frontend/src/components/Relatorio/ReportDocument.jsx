@@ -4,6 +4,7 @@ import { Add, CheckCircleOutline } from '@mui/icons-material';
 import { ReportSection, SectionTitle } from './ReportSections';
 import { usePecas } from '../../context/PecasContext';
 import { useEffect, useMemo, useState } from 'react';
+import ReportImageUploader from './ReportImageUploader';
 
 const ReportDocument = ({ data, isEditing, onFieldChange }) => {
   const { pecas, adicionarPeca } = usePecas();
@@ -53,6 +54,8 @@ const ReportDocument = ({ data, isEditing, onFieldChange }) => {
     }
     setNovaPeca('');
   };
+
+
 
   return (
     <Box
@@ -254,12 +257,30 @@ const ReportDocument = ({ data, isEditing, onFieldChange }) => {
       <ReportSection number="5" title="Evidências (Fotos)">
         <Grid container spacing={2}>
           <Grid item xs={6}>
-            <Typography variant="caption" color="textSecondary">
-              Dps tem que colocar o campo de adicionar imagens
-            </Typography>
+            <ReportImageUploader
+              arquivo={data.foto}
+              onFileSelect={(file) => onFieldChange({ target: { name: 'foto', value: file } })}
+            />
+
+            {/*Tem que coisar o backend pra suportar múltiplas fotos*/}
+            <Button
+              variant="outlined"
+              size="small"
+              startIcon={<Add />}
+              sx={{
+                mt: 1,
+                borderRadius: '10px',
+                fontWeight: 700,
+                textTransform: 'none',
+                borderColor: '#0f172a',
+                color: '#0f172a',
+                '&:hover': { borderColor: '#111827', color: '#111827' },
+              }}
+            > Adicionar mais imagens </Button>
           </Grid>
         </Grid>
       </ReportSection>
+
       {/* 6. CONCLUSÃO */}
       <ReportSection number="6" title="Conclusão e Recomendações">
         {isEditing ? (

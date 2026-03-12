@@ -36,6 +36,7 @@ class Auth_service:
         
         # 3. Faz a validação final da senha
         if not verify_password(user_credentials.senha, senha_do_banco):
+            print(f"DEBUG: O hash que veio do banco é: {senha_do_banco}")
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Email ou senha incorretos"

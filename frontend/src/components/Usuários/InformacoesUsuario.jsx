@@ -53,7 +53,7 @@ const InformacoesUsuario = ({usuario, onEdit, onDelete, atualizando, setAtualiza
           </Typography>
 
           <Box display="flex" gap={1}>
-            <IconButton size="small" onClick={() => setAtualizando(usuario)}>
+            <IconButton size="small" onClick={() => { setAtualizando(usuario.id, atualizando);  }}>
               <img src="/images/lapis.png" alt="Editar" style={{ width: '14px', height: '14px' }} />
             </IconButton>
             <IconButton size="small" onClick={() => onDelete(usuario.id)}>

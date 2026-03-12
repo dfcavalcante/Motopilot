@@ -1,4 +1,5 @@
 from passlib.context import CryptContext
+from passlib.exc import UnknownHashError
 
 # O CryptContext define as configurações e os algoritmos que usaremos.
 # Usamos bcrypt como padrão.
@@ -13,5 +14,9 @@ def get_password_hash(password: str) -> str:
 # Função para verificar se a senha fornecida corresponde ao hash armazenado
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     """Verifica se a senha em texto puro corresponde ao hash armazenado."""
-    # O 'pwd_context.verify' compara o hash da senha fornecida com o hash armazenado
-    return pwd_context.verify(plain_password, hashed_password)
+    try:
+        return pwd_context.verify(plain_password, hashed_password)
+    except UnknownHashError:
+        # O hash armazenado não é um hash bcrypt válido (ex: senha em texto plano
+        # inserida diretamente no banco). Nega o acesso ao invés de crashar.
+        return False

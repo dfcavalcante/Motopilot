@@ -8,6 +8,7 @@ export const ReportProvider = ({ children }) => {
   const [loading, setLoading] = useState(false);
   const [erro, setErro] = useState(null);
 
+  const [watch, setWatch] = useState({}); // Estado para armazenar os valores assistidos
   const BASE_URL = 'http://localhost:8000';
 
   // Criar novo relatório
@@ -176,6 +177,7 @@ export const ReportProvider = ({ children }) => {
         atualizarRelatorio,
         deletarRelatorio,
         setRelatorioAtual,
+        watch
       }}
     >
       {children}

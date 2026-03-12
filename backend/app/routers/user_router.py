@@ -22,6 +22,11 @@ def create_user(user: UserBase, db: Session = Depends(get_db)):
     except ValueError as erro:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
+            detail=str(erro)  # Email ou matrícula duplicados
+        )
+    except Exception as erro:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail=str(erro)
         )
 

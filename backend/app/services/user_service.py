@@ -54,8 +54,12 @@ class UserService:
         payload = user_update.model_dump(exclude_unset=True)
 
         # Sempre persiste senha como hash.
-        if "senha" in payload and payload["senha"]:
-            payload["senha"] = get_password_hash(payload["senha"])
+        if "senha" in payload:
+            if payload["senha"]:
+                payload["senha"] = get_password_hash(payload["senha"])
+            else:
+                # Não permite limpar senha por envio de string vazia.
+                del payload["senha"]
 
         for field, value in payload.items():
             setattr(user, field, value)
