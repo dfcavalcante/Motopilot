@@ -106,20 +106,6 @@ def criar_moto_endpoint(
 def listar_motos_endpoint(db: Session = Depends(get_db)):
     return moto_service.listar_motos(db)
 
-# --- PEÇAS ---
-from app.services.peca_service import PecaService
-from app.schemas.peca_schema import PecaCreate, PecaResponse
-
-peca_service = PecaService()
-
-@router.get('/pecas', response_model=List[str])
-def listar_pecas_disponiveis(db: Session = Depends(get_db)):
-    return peca_service.listar_pecas(db)
-
-@router.post('/pecas', response_model=PecaResponse, status_code=status.HTTP_201_CREATED)
-def adicionar_peca_endpoint(peca_data: PecaCreate, db: Session = Depends(get_db)):
-    nova_peca = peca_service.adicionar_peca(db, peca_data)
-    return nova_peca
 
 # --- ATUALIZAR ---
 @router.patch('/{moto_id}/atualizar', response_model=MotoResponse)

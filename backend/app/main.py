@@ -21,7 +21,7 @@ from app.utils.init_db import (
 )
 
 # --- IMPORTS DAS ROTAS ---
-from app.routers import moto_router, chatbot_router, report_router, user_router, dashboard_router, notificacoes_router, auth_router
+from app.routers import moto_router, chatbot_router, report_router, user_router, dashboard_router, notificacoes_router, auth_router, pecas_router
 
 # from app.routers import auth_router
 
@@ -97,3 +97,4 @@ app.include_router(chatbot_router.router)
 app.include_router(report_router.router)
 app.include_router(dashboard_router.router)
 app.include_router(notificacoes_router.router)
+app.include_router(pecas_router.router)

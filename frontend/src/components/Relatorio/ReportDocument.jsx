@@ -1,19 +1,59 @@
 import React from 'react';
-import {
-  Box,
-  Grid,
-  Typography,
-  Divider,
-  TextField,
-  List,
-  ListItem,
-  ListItemText,
-  Chip,
-} from '@mui/material';
-import { CheckCircleOutline } from '@mui/icons-material';
+import { Box, Grid, Typography, Divider, TextField, Chip, Button } from '@mui/material';
+import { Add, CheckCircleOutline } from '@mui/icons-material';
 import { ReportSection, SectionTitle } from './ReportSections';
+import { usePecas } from '../../context/PecasContext';
+import { useEffect, useMemo, useState } from 'react';
 
 const ReportDocument = ({ data, isEditing, onFieldChange }) => {
+  const { pecas, adicionarPeca } = usePecas();
+
+  const [pecasSelecionadas, setPecasSelecionadas] = useState([]);
+  const [novaPeca, setNovaPeca] = useState('');
+
+  const pecasDisponiveis = useMemo(() => {
+    const nomesDoCatalogo = (pecas || [])
+      .map((peca) => (typeof peca === 'string' ? peca : peca?.nome))
+      .filter(Boolean);
+
+    const nomesDoRelatorio = Array.isArray(data?.pecas) ? data.pecas : [];
+
+    return [...new Set([...nomesDoCatalogo, ...nomesDoRelatorio])];
+  }, [pecas, data?.pecas]);
+
+  useEffect(() => {
+    setPecasSelecionadas(Array.isArray(data?.pecas) ? data.pecas : []);
+  }, [data?.pecas, data?.id]);
+
+  const atualizarPecasNoFormulario = (novasPecas) => {
+    setPecasSelecionadas(novasPecas);
+    onFieldChange({
+      target: {
+        name: 'pecas',
+        value: novasPecas,
+      },
+    });
+  };
+
+  const togglePeca = (peca) => {
+    const novasPecas = pecasSelecionadas.includes(peca)
+      ? pecasSelecionadas.filter((p) => p !== peca)
+      : [...pecasSelecionadas, peca];
+
+    atualizarPecasNoFormulario(novasPecas);
+  };
+
+  const handleAdicionar = async () => {
+    const nomePeca = novaPeca.trim();
+    if (!nomePeca) return;
+
+    await adicionarPeca({ nome: nomePeca });
+    if (!pecasSelecionadas.includes(nomePeca)) {
+      atualizarPecasNoFormulario([...pecasSelecionadas, nomePeca]);
+    }
+    setNovaPeca('');
+  };
+
   return (
     <Box
       sx={{ bgcolor: '#fff', p: 4, borderRadius: '4px', boxShadow: '0 2px 10px rgba(0,0,0,0.05)' }}
@@ -80,7 +120,8 @@ const ReportDocument = ({ data, isEditing, onFieldChange }) => {
         <Grid container spacing={2}>
           <Grid item xs={6}>
             <Typography variant="caption" color="textSecondary">
-              Dps se tiver colocar o objetivo do relatório, ou tira essa parte n sei, mas talvez fique mt curto
+              Dps se tiver colocar o objetivo do relatório, ou tira essa parte n sei, mas talvez
+              fique mt curto
             </Typography>
           </Grid>
         </Grid>
@@ -124,17 +165,92 @@ const ReportDocument = ({ data, isEditing, onFieldChange }) => {
         )}
 
         <SectionTitle title="4.3 PEÇAS UTILIZADAS" />
-        <List dense disablePadding>
-          {(data.pecas || []).map((peca, idx) => (
-            <ListItem key={idx} sx={{ px: 0, py: 0.5 }}>
-              <ListItemText primary={`• ${peca}`} primaryTypographyProps={{ variant: 'body2' }} />
-            </ListItem>
-          ))}
-        </List>
+
+        {isEditing ? (
+          <>
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+              {pecasDisponiveis.length > 0 ? (
+                pecasDisponiveis.map((peca) => {
+                  const selecionada = pecasSelecionadas.includes(peca);
+                  return (
+                    <Chip
+                      key={peca}
+                      label={peca}
+                      clickable
+                      onClick={() => togglePeca(peca)}
+                      variant={selecionada ? 'filled' : 'outlined'}
+                      color={selecionada ? 'primary' : 'default'}
+                      sx={{
+                        borderRadius: '8px',
+                        fontWeight: 600,
+                        '& .MuiChip-label': { px: 1.25 },
+                      }}
+                    />
+                  );
+                })
+              ) : (
+                <Typography variant="body2" color="text.secondary">
+                  Nenhuma peça cadastrada no catálogo.
+                </Typography>
+              )}
+            </Box>
+
+            <Box sx={{ mt: 1.5, display: 'flex', gap: 1, alignItems: 'center', flexWrap: 'wrap' }}>
+              <TextField
+                size="small"
+                label="Nova peça"
+                value={novaPeca}
+                onChange={(e) => setNovaPeca(e.target.value)}
+                sx={{ minWidth: { xs: '100%', sm: 280 } }}
+              />
+
+              <Button
+                variant="contained"
+                size="small"
+                startIcon={<Add />}
+                onClick={handleAdicionar}
+                disabled={!novaPeca.trim()}
+                sx={{
+                  height: 40,
+                  borderRadius: '10px',
+                  px: 2,
+                  fontWeight: 700,
+                  textTransform: 'none',
+                  bgcolor: '#0f172a',
+                  '&:hover': { bgcolor: '#111827' },
+                }}
+              >
+                Adicionar peça
+              </Button>
+            </Box>
+          </>
+        ) : (
+          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+            {pecasSelecionadas.length > 0 ? (
+              pecasSelecionadas.map((peca) => (
+                <Chip
+                  key={peca}
+                  label={peca}
+                  size="small"
+                  sx={{
+                    borderRadius: '8px',
+                    bgcolor: '#f3f4f6',
+                    color: '#111827',
+                    fontWeight: 600,
+                  }}
+                />
+              ))
+            ) : (
+              <Typography variant="body2" color="text.secondary">
+                Nenhuma peça registrada
+              </Typography>
+            )}
+          </Box>
+        )}
       </ReportSection>
 
       {/* 5. EVIDÊNCIAS (FOTOS) */}
-        
+
       <ReportSection number="5" title="Evidências (Fotos)">
         <Grid container spacing={2}>
           <Grid item xs={6}>
