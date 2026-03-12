@@ -35,8 +35,8 @@ const SideBar = ({ historico = [] }) => {
       icon: <img src="/images/shoppingCart.png" alt="Logo" width="20" />,
     },
     {
-      name: 'Nao sei',
-      link: '/naosei3',
+      name: 'Gráficos',
+      link: '/graficos',
       icon: <img src="/images/grafico.png" alt="Logo" width="20" />,
     },
     {

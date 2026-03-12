@@ -9,6 +9,7 @@ import ListagemMotos from '../pages/ListagemMotos';
 import Notificacoes from '../pages/Notificacoes';
 import Dashboard from '../pages/Dashboard';
 import Relatorio from '../pages/HistoricoRelatorios';
+import Graficos from '../pages/Graficos'
 
 // Importação dos Contextos
 import { MotoProvider } from '../context/MotoContext';
@@ -100,6 +101,16 @@ const Routers = () => {
                           </RotaProtegida>
                         }
                       />
+
+                      <Route
+                        path="/graficos"
+                        element={
+                          <RotaProtegida>
+                            <Graficos />
+                          </RotaProtegida>
+                        }
+                      />
+                      
                     </Routes>
                   </ReportProvider>
                 </NotificacaoProvider>
