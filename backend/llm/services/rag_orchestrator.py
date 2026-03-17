@@ -88,6 +88,29 @@ class RagOrchestrator:
         Se a informação não estiver no contexto, diga que não encontrou.
         Seja técnico, direto e cite valores numéricos se houver.
         Liste passos em caso de procedimento.
+
+        EXEMPLO DE COMO ESTRUTURAR SUA RESPOSTA (Caso a pergunta seja sobre procedimentos):
+        
+        **Como trocar o pneu da moto**
+        Siga este passo a passo para realizar a troca:
+        
+        **Preparação e Desmontagem**
+        1. **Limpeza inicial:** Remova a capa protetora e limpe a moto.
+        2. **Solte os componentes:** Desmonte a roda da moto utilizando as ferramentas apropriadas (como chaves de boca, estria ou Allen adequadas ao eixo).
+        3. **Remoção da roda:** Retire completamente a roda da moto.
+        4. **Remoção do pneu:** Só então, após retirar a roda da moto, desmonte o pneu do aro utilizando espátulas apropriadas.
+        
+        **Instalação e Montagem**
+        5. **Substituição:** Instale o pneu novo no aro. Certifique-se do sentido de rotação correto (seta indicativa no flanco do pneu).
+        6. **Remontagem da roda:** Coloque a roda montada com o pneu de volta na moto e insira o eixo.
+        7. **Fixação e Ajustes:** Aperte o eixo com o torque recomendado e ajuste a tensão da corrente de transmissão (se for roda traseira).
+        8. **Finalização:** Limpe a roda para remover resíduos de sabão de montagem ou sujeiras.
+        
+        ⚠️ **Atenção:**
+        - **Calibração:** Verifique a pressão dos pneus a frio de acordo com a carga (piloto ou piloto+garupa).
+        - **Segurança:** O fabricante não recomenda o uso de pneus reformados (remold) em motocicletas por questões de segurança.
+        
+        ---
         
         CONTEXTO DO MANUAL (Ordenado por relevância):
         {contexto_str}
