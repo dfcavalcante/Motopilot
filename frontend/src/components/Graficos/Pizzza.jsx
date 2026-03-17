@@ -1,31 +1,21 @@
 import React from 'react';
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
+import { ResponsiveContainer } from 'recharts';
 import { Box, Typography } from '@mui/material';
+import { PieChart, Pie, Cell, Tooltip, Legend } from 'recharts';
 
-//Componente esqueleto para mostrar dados sobre os relatórios concluídos, pendentes e totais
-const DonutChart = ({ data, title }) => {
-  const chartData = Array.isArray(data) ? data : [];
-
-  // Cores padrão caso não venham no objeto data
-  const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8'];
-
+// Componente esqueleto para mostrar dados sobre as motos concluídas, em andamento, etc
+const Pizza = ({ title, data }) => {
   return (
-    <Box
-      sx={{
-        width: '100%',
-        height: '100%',
-      }}
-    >
+    <Box width="100%" height="100%">
       <Typography variant="h6" align="center" gutterBottom>
         {title}
       </Typography>
-      {chartData.length === 0 && (
-        <p className="text-sm text-gray-500">Nenhum dado de relatorio para exibir.</p>
-      )}
+      {data.length === 0 && <Typography> Nenhuma moto para exibir.</Typography>}
+
       <ResponsiveContainer width="100%" height="100%">
         <PieChart>
           <Pie
-            data={chartData}
+            data={data}
             cx="50%" // Posição X (centro)
             cy="50%" // Posição Y (centro)
             innerRadius={60} // Buraco da rosquinha
@@ -33,8 +23,8 @@ const DonutChart = ({ data, title }) => {
             paddingAngle={5} // Espaço entre as fatias
             dataKey="value"
           >
-            {chartData.map((entry, index) => (
-              <Cell key={`cell-${index}`} fill={entry.color || COLORS[index % COLORS.length]} />
+            {data.map((entry, index) => (
+              <Cell key={`cell-${index}`} fill={entry.color} />
             ))}
           </Pie>
           <Tooltip
@@ -51,4 +41,4 @@ const DonutChart = ({ data, title }) => {
   );
 };
 
-export default DonutChart;
+export default Pizza;

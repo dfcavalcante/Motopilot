@@ -15,6 +15,7 @@ const HistoricoRelatorios = () => {
     deletarRelatorio,
     buscarRelatorio,
     atualizarRelatorio,
+    concluirRelatorio,
     watch
   } = useContext(ReportContext);
   const { user } = useLogin();
@@ -84,6 +85,7 @@ const HistoricoRelatorios = () => {
                   onOpen={handleOpenDetail}
                   onDownload={handleDownloadPDF}
                   onDelete={deletarRelatorio}
+                  onConclude={concluirRelatorio}
                 />
               </Grid>
             ))}

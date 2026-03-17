@@ -217,3 +217,9 @@ def verificar_numero_serie_endpoint(numero_serie: str, db: Session = Depends(get
     """Retorna `{{"exists": true}}` se o número de série já estiver no banco."""
     exists = moto_service.verificar_numero_serie_existente(db, numero_serie)
     return {"exists": exists}
+
+# --- GRÁFICOS ---
+@router.get("/graficos/motos")
+def graficos_motos_endpoint(db: Session = Depends(get_db)):
+    graficos_motos = moto_service.graficos_motos(db)
+    return graficos_motos

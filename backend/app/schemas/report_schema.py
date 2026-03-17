@@ -20,6 +20,9 @@ class ReportBase(BaseModel):
     pecas: Optional[list[str]] = Field(None, example=["motor", "pedal", "buzina"])
     observacoes: Optional[str] = Field(None, example="Foi observado que a moto é de um modelo especial que saiu de linha por possuir defeitos de fábrica")
 
+    #Status do relatório, se é pendente ou concluído
+    status: Optional[str] = Field("pendente", example="pendente")  # Ex: "pendente", "concluido", "arquivado"
+    
     #TODO: falta o campo de anexação de fotos que ainda não sei como adicionar que será Optional
     #TODO: falta tbm o campo da assinatura digital que será Optional
     

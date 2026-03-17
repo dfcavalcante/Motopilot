@@ -1,29 +1,16 @@
 import React, { useEffect, useMemo } from 'react';
 import { Alert, Box, CircularProgress } from '@mui/material';
 import BaseFrontDashboard from '../components/Dashboard/BaseFrontDashboard';
+
+import Pizza from '../components/Graficos/Pizzza.jsx';
 import Rosquinha from '../components/Graficos/Rosquinha.jsx';
-import { ReportContext } from './../context/ReportContext';
-import { useLogin } from '../context/LoginContext.jsx';
+import Barras from '../components/Graficos/Barras.jsx';
+
+import { GraficoContext } from '../context/GraficosContext.jsx';
 
 const Graficos = () => {
-  const { relatorios, listarRelatorios, loading, erro } = React.useContext(ReportContext);
-  const { user } = useLogin();
-
-  useEffect(() => {
-    if (user?.id) {
-      listarRelatorios({ cliente_id: user.id, per_page: 100 });
-    }
-  }, [user?.id, listarRelatorios]);
-
-  const relatoriosPorMecanico = useMemo(() => {
-    const agrupado = relatorios.reduce((acc, relatorio) => {
-      const chave = relatorio.mecanicos?.trim() || 'Nao informado';
-      acc[chave] = (acc[chave] || 0) + 1;
-      return acc;
-    }, {});
-
-    return Object.entries(agrupado).map(([name, value]) => ({ name, value }));
-  }, [relatorios]);
+  const { graficosRelatorio, graficosMoto, graficosPeca, loading, erro } =
+    React.useContext(GraficoContext);
 
   return (
     <BaseFrontDashboard>
@@ -34,7 +21,11 @@ const Graficos = () => {
           <CircularProgress />
         </Box>
       ) : (
-        <Rosquinha title="Relatorios por mecanico" data={relatoriosPorMecanico} />
+        <>
+          <Pizza title="Motos por status" data={graficosMoto} />
+          <Barras title="Peças quebradas com mais frequencia" data={graficosPeca} />
+          <Rosquinha title="Relatórios: Pendentes vs Concluídos" data={graficosRelatorio} />
+        </>
       )}
     </BaseFrontDashboard>
   );

@@ -25,6 +25,13 @@ def listar_relatorios_endpoint(filtros: ReportFilter = Depends(), db: Session = 
     listar_relatorio = report_service.listar_relatorios(db, filtros)
     return listar_relatorio
 
+@router.patch("/{report_id}/concluir", response_model=ReportResponse)
+def concluir_relatorio_endpoint(report_id: int, db:Session = Depends(get_db)):
+    concluir_relatorio = report_service.concluir_relatorio(db, report_id)
+    if not concluir_relatorio:
+        raise HTTPException(status_code=404, detail="Relatório não encontrado")
+    return concluir_relatorio
+
 @router.get("/{report_id}", response_model=ReportResponse)
 def buscar_relatorio_por_id_endpoint(report_id: int, db: Session = Depends(get_db)):
     buscar_relatorio = report_service.buscar_relatorio_por_id(db, report_id)
@@ -59,3 +66,13 @@ def exportar_relatorio_endpoint(report_id: int, db: Session = Depends(get_db)):
     if not exportar_relatorio:
         raise HTTPException(status_code=404, detail="Relatório não encontrado")
     return exportar_relatorio
+
+# --- Gráfico para status dos relatórios ---
+@router.get("/graficos/relatorios")
+def graficos_relatorio_endpoint(db: Session = Depends(get_db)):
+    return report_service.graficos_relatorio(db)
+
+# --- Gráfico para peças que mais quebraram ---
+@router.get("/graficos/pecas")
+def graficos_pecas_endpoint(db: Session = Depends(get_db)):
+    return report_service.graficos_pecas(db)

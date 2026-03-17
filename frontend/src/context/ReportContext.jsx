@@ -164,6 +164,35 @@ export const ReportProvider = ({ children }) => {
     [BASE_URL, relatorioAtual?.id]
   );
 
+  // Concluir relatório (quando o gerente falar q ta tudo certo)
+  const concluirRelatorio = useCallback(
+    async (reportId) => {
+      setLoading(true);
+      setErro(null);
+      try {
+        const response = await fetch(`${BASE_URL}/relatorio/${reportId}/concluir`, {
+          method: 'PATCH',
+        });
+        if (!response.ok) {
+          throw new Error('Erro ao concluir relatório.');
+        }
+        const relatorioConcluido = await response.json();
+        setRelatorios((prev) => prev.map((r) => (r.id === reportId ? relatorioConcluido : r)));
+        if (relatorioAtual?.id === reportId) {
+          setRelatorioAtual(relatorioConcluido);
+        }
+        return relatorioConcluido;
+      } catch (error) {
+        setErro(error.message);
+        console.error('Erro ao concluir relatório:', error);
+        return null;
+      } finally {
+        setLoading(false);
+      }
+    },
+    [BASE_URL, relatorioAtual?.id]
+  );
+
   return (
     <ReportContext.Provider
       value={{
@@ -176,6 +205,7 @@ export const ReportProvider = ({ children }) => {
         buscarRelatorio,
         atualizarRelatorio,
         deletarRelatorio,
+        concluirRelatorio,
         setRelatorioAtual,
         watch
       }}

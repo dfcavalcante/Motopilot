@@ -1,6 +1,6 @@
 import os
 from sqlalchemy.orm import Session
-from sqlalchemy import select
+from sqlalchemy import select, func
 from app.models.moto_model import Moto
 from app.models.report_model import Report
 from app.schemas.moto_schema import MotoBase, MotoUpdate, MotoResponse, ConcluirManutencaoRequest
@@ -118,3 +118,23 @@ class Moto_service:
             select(Moto).where(Moto.numero_serie == numero_serie)
         ).first()
         return moto_existente is not None
+    
+    def graficos_motos(self, db: Session):
+        """Retorna contagem de motos agrupadas por estado para gráficos no frontend."""
+        COLORS = {
+            "Disponível": "#00C49F",
+            "Em Manutenção": "#FFBB28",
+            "Concluída": "#0088FE",
+        }
+        results = db.execute(
+            select(Moto.estado, func.count(Moto.id).label("total"))
+            .group_by(Moto.estado)
+        ).all()
+        return [
+            {
+                "name": r.estado or "Sem estado",
+                "value": r.total,
+                "color": COLORS.get(r.estado, "#8884d8"),
+            }
+            for r in results
+        ]

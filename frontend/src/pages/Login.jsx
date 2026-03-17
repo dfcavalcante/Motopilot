@@ -26,7 +26,7 @@ const Login = () => {
       await login(email, password);
 
       setError(false);
-      navigate('/chatbot');
+      navigate('/dashboard');
     } catch (err) {
       console.error(err);
       setError(true);

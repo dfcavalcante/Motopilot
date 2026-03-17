@@ -1,7 +1,9 @@
+from collections import Counter
 from sqlalchemy.orm import Session
-from sqlalchemy import select
+from sqlalchemy import select, func
 from app.schemas.report_schema import ReportBase, ReportFilter, ReportResponse, ReportUpdate
 from app.models.report_model import Report
+
 
 '''
 Camada de serviço responsável pelo relatórios
@@ -53,6 +55,16 @@ class ReportService():
         return db_relatorio
 
     @staticmethod
+    def concluir_relatorio(db: Session, report_id: int):
+        db_relatorio = db.scalars(select(Report).where(Report.id == report_id)).first()
+        if not db_relatorio:
+            return None
+        db_relatorio.status = "concluido"
+        db.commit()
+        db.refresh(db_relatorio)
+        return db_relatorio
+        
+    @staticmethod
     def atualizar_relatorio(db: Session, report_id: int, relatorio_data: ReportUpdate):
         db_relatorio = db.scalars(select(Report).where(Report.id == report_id)).first()
         if not db_relatorio:
@@ -68,6 +80,40 @@ class ReportService():
         db.refresh(db_relatorio)
         return db_relatorio
 
+    @staticmethod
+    def graficos_relatorio(db: Session):
+        COLORS = {"pendente": "#FFBB28", "concluido": "#00C49F"}
+        LABELS = {"pendente": "Pendentes", "concluido": "Concluídos"}
+        results = db.execute(
+            select(Report.status, func.count(Report.id).label("total"))
+            .where(Report.status.in_(["pendente", "concluido"]))
+            .group_by(Report.status)
+        ).all()
+        return [
+            {
+                "name": LABELS.get(r.status, r.status),
+                "value": r.total,
+                "color": COLORS.get(r.status, "#0088FE"),
+            }
+            for r in results
+        ]
+
+    @staticmethod
+    def graficos_pecas(db: Session):
+        reports = db.scalars(select(Report).where(Report.pecas.isnot(None))).all()
+        counter = Counter()
+        for report in reports:
+            if report.pecas:
+                pecas = [p.strip() for p in report.pecas.split(",") if p.strip()]
+                counter.update(pecas)
+        top_pecas = counter.most_common(10)
+        COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#8884d8",
+                  "#82ca9d", "#ffc658", "#ff7300", "#a4de6c", "#d0ed57"]
+        return [
+            {"name": name, "value": count, "color": COLORS[i % len(COLORS)]}
+            for i, (name, count) in enumerate(top_pecas)
+        ]
+    
     @staticmethod
     def aprovar_relatorio(db: Session, report_id: int):
         db_relatorio = db.scalars(select(Report).where(Report.id == report_id)).first()
