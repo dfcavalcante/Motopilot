@@ -42,6 +42,14 @@ class MotoResponse(MotoBase):
     model_config = ConfigDict(from_attributes=True, populate_by_name=True)
 
 # Schema para concluir manutenção (recebe dados do relatório)
+class AtribuirMecanicoRequest(BaseModel):
+    '''
+    Dados necessários para atribuir um mecânico à moto.
+    '''
+    mecanico_id: int = Field(..., alias="mecanicoId")
+
+    model_config = ConfigDict(populate_by_name=True)
+
 class ConcluirManutencaoRequest(BaseModel):
     '''
     Dados necessários para concluir a manutenção e gerar o relatório.

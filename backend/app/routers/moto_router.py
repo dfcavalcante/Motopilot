@@ -13,7 +13,7 @@ from llm.services.vector_store import vector_store
 from llm.data.pdf_processor import processar_manual_unico
 
 # Imports internos
-from app.schemas.moto_schema import (MotoBase, MotoUpdate, MotoResponse, ConcluirManutencaoRequest)
+from app.schemas.moto_schema import (MotoBase, MotoUpdate, MotoResponse, ConcluirManutencaoRequest, AtribuirMecanicoRequest)
 from app.services.moto_service import Moto_service
 from app.database import get_db
 
@@ -111,6 +111,14 @@ def listar_motos_endpoint(db: Session = Depends(get_db)):
 @router.patch('/{moto_id}/atualizar', response_model=MotoResponse)
 def atualizar_moto_endpoint(moto_id: int, moto_data: MotoUpdate, db: Session = Depends(get_db)):
     moto_atualizada = moto_service.atualizar_moto(db, moto_id, moto_data)
+    if not moto_atualizada:
+        raise HTTPException(status_code=404, detail="Moto não encontrada")
+    return moto_atualizada
+
+@router.patch('/{moto_id}/atribuir', response_model=MotoResponse)
+def atribuir_mecanico_endpoint(moto_id: int, dados: AtribuirMecanicoRequest, db: Session = Depends(get_db)):
+    """Atribui a moto a um mecânico específico e altera o status para 'Em Manutenção'"""
+    moto_atualizada = moto_service.atribuir_mecanico(db, moto_id, dados.mecanico_id)
     if not moto_atualizada:
         raise HTTPException(status_code=404, detail="Moto não encontrada")
     return moto_atualizada

@@ -58,6 +58,21 @@ class Moto_service:
         NotificationService(db).notificar_moto("atualizada", db_moto.id, db_moto.marca, db_moto.modelo)
         return db_moto
 
+    def atribuir_mecanico(self, db: Session, id: int, mecanico_id: int) -> Optional[MotoResponse]:
+        db_moto = db.scalars(select(Moto).where(Moto.id == id)).first()
+
+        if not db_moto:
+            return None
+            
+        db_moto.mecanico_id = mecanico_id
+        db_moto.estado = "Em Manutenção" # Atualizar estado para refletir a atribuição
+
+        db.add(db_moto)
+        db.commit()
+        db.refresh(db_moto)
+        NotificationService(db).notificar_moto("atualizada", db_moto.id, db_moto.marca, db_moto.modelo)
+        return db_moto
+
     def arquivar_moto(self, db: Session, id: int) -> Optional[MotoResponse]:
         db_moto = db.scalars(select(Moto).where(Moto.id == id)).first()
         if not db_moto: return None
