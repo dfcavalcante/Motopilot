@@ -21,6 +21,7 @@ class Report(Base):
     pecas = Column(Text, nullable=True)
 
     # Auditoria
+    status = Column(Text, default="Aguardando Revisão", nullable=False) # Novo campo de status
     created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 

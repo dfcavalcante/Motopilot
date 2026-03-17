@@ -36,6 +36,7 @@ class ReportUpdate(BaseModel):
     atividades: Optional[str] = None
     pecas: Optional[list[str]] = None
     observacoes: Optional[str] = None
+    status: Optional[str] = None
 
 
     #TODO: falta o campo de anexação de fotos que ainda não sei como adicionar que será Optional
@@ -49,6 +50,7 @@ class ReportFilter(BaseModel):
     moto_id: Optional[int] = None
     cliente_id: Optional[int] = None
     mecanicos: Optional[str] = None
+    status: Optional[str] = None
 
     #Número da página que o cliente deseja, o ge garante que o número seja válido
     page: int = Field(1, ge=1)
@@ -58,6 +60,7 @@ class ReportFilter(BaseModel):
 
 class ReportResponse(ReportBase):
     id:int
+    status: str
     created_at : datetime
     updated_at : Optional[datetime]
     class Config:

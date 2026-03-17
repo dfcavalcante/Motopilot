@@ -69,6 +69,17 @@ class ReportService():
         return db_relatorio
 
     @staticmethod
+    def aprovar_relatorio(db: Session, report_id: int):
+        db_relatorio = db.scalars(select(Report).where(Report.id == report_id)).first()
+        if not db_relatorio:
+            return None
+        
+        db_relatorio.status = "Aprovado"
+        db.commit()
+        db.refresh(db_relatorio)
+        return db_relatorio
+
+    @staticmethod
     def arquivar_relatorio(db: Session, report_id: int):
         # TODO: implementar lógica de arquivamento (campo is_archived, etc.)
         pass

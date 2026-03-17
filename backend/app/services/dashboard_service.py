@@ -21,6 +21,13 @@ class DashboardService:
         """
         total_usuarios = db.query(func.count(User.id)).scalar() or 0
         total_motos = db.query(func.count(Moto.id)).scalar() or 0
+        
+        motos_em_manutencao = db.query(func.count(Moto.id)).filter(Moto.estado == "Manutenção").scalar() or 0
+        motos_disponiveis = db.query(func.count(Moto.id)).filter(Moto.estado == "Ativa").scalar() or 0
+        motos_concluidas = db.query(func.count(Moto.id)).filter(Moto.estado == "Concluída").scalar() or 0
+
+        relatorios_pendentes = db.query(func.count(Report.id)).filter(Report.status == "Aguardando Revisão").scalar() or 0
+        relatorios_concluidos = db.query(func.count(Report.id)).filter(Report.status == "Aprovado").scalar() or 0
         total_manutencoes = db.query(func.count(Report.id)).scalar() or 0
 
         # Motos com status que exigem ação e que ainda não possuem relatório de conclusão
@@ -49,6 +56,11 @@ class DashboardService:
         return DashboardGerenteResponse(
             total_usuarios=total_usuarios,
             total_motos=total_motos,
+            motos_em_manutencao=motos_em_manutencao,
+            motos_disponiveis=motos_disponiveis,
+            motos_concluidas=motos_concluidas,
+            relatorios_pendentes=relatorios_pendentes,
+            relatorios_concluidos=relatorios_concluidos,
             total_manutencoes_realizadas=total_manutencoes,
             motos_aguardando_manutencao=motos_pendentes,
             pecas=ranking_pecas
@@ -65,12 +77,23 @@ class DashboardService:
         motos_atribuidas = (
             db.query(func.count(Moto.id))
             .filter(Moto.mecanico_id == mecanico_id)
-            .filter(Moto.estado != "Concluída")
+            .filter(Moto.estado.in_(["Aguardando", "Manutenção"]))
+            .scalar() or 0
+        )
+
+        # Motos cujo relatório de conclusão associado a elas foi gerado por esse mecânico
+        # Simplificação: Mecânicos no relatório é uma string, e buscamos se o nome ou identificador dele gerou.
+        # Caso relatórios estejam ligados apenas à moto e não armazenem o ID do mecânico que criou.
+        # Vamos assumir: Moto atribuída e status Concluída conta como trabalho feito dele.
+        motos_manutencao_feita = (
+            db.query(func.count(Moto.id))
+            .filter(Moto.mecanico_id == mecanico_id)
+            .filter(Moto.estado == "Concluída")
             .scalar() or 0
         )
 
         # Relatórios gerados em motos atribuídas a este mecânico
-        manutencoes_realizadas = (
+        relatorios_feitos = (
             db.query(func.count(Report.id))
             .join(Moto, Report.moto_id == Moto.id)
             .filter(Moto.mecanico_id == mecanico_id)
@@ -79,5 +102,6 @@ class DashboardService:
 
         return DashboardMecanicoResponse(
             motos_atribuidas=motos_atribuidas,
-            manutencoes_realizadas=manutencoes_realizadas
+            motos_manutencao_feita=motos_manutencao_feita,
+            relatorios_feitos=relatorios_feitos
         )

@@ -39,6 +39,13 @@ def arquivar_relatorio_endpoint(report_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Relatório não encontrado")
     return arquivar_relatorio
 
+@router.patch("/{report_id}/aprovar", response_model=ReportResponse)
+def aprovar_relatorio_endpoint(report_id: int, db: Session = Depends(get_db)):
+    aprovar_relatorio = report_service.aprovar_relatorio(db, report_id)
+    if not aprovar_relatorio:
+        raise HTTPException(status_code=404, detail="Relatório não encontrado")
+    return aprovar_relatorio
+
 @router.patch("/{report_id}/atualizar", response_model=ReportResponse)
 def atualizar_relatorio_endpoint(report_id: int, relatorio: ReportUpdate, db: Session = Depends(get_db)):
     atualizar_relatorio = report_service.atualizar_relatorio(db, report_id, relatorio)

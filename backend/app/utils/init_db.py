@@ -61,3 +61,24 @@ def garantir_coluna_mecanico_id_motos(db: Session):
 
     db.commit()
     print("✅ Migração aplicada: coluna motos.mecanico_id criada")
+
+def garantir_coluna_status_relatorio(db: Session):
+    """Garante que a coluna `status` exista na tabela `relatorios` em bancos já criados."""
+    bind = db.get_bind()
+    inspector = inspect(bind)
+
+    if "relatorios" not in inspector.get_table_names():
+        return
+
+    colunas = {coluna["name"] for coluna in inspector.get_columns("relatorios")}
+    if "status" in colunas:
+        return
+
+    dialect = bind.dialect.name
+    if dialect == "postgresql":
+        db.execute(text("ALTER TABLE relatorios ADD COLUMN status TEXT NOT NULL DEFAULT 'Aguardando Revisão'"))
+    else:
+        db.execute(text("ALTER TABLE relatorios ADD COLUMN status TEXT NOT NULL DEFAULT 'Aguardando Revisão'"))
+
+    db.commit()
+    print("✅ Migração aplicada: coluna relatorios.status criada")
