@@ -72,28 +72,24 @@ class ChatService:
             historico_str += f"IA: {log.resposta_ia}\n\n"
             
         # 3. Chamar LLM para resumo
-        resposta_bruta = self.rag.resumir_manutencao(historico_str)
+        dados_resumo = self.rag.resumir_manutencao(historico_str)
         
-        # 4. Tentar limpar e parsear JSON
-        try:
-            # Algumas IAs ainda teimam em colocar marcações markdown
-            clean_str = resposta_bruta.replace("```json", "").replace("```", "").strip()
-            dados_parsed = json.loads(clean_str)
+        # Como o método `resumir_manutencao` agora constrói e retorna um dicionário 
+        # python final fazendo perguntas atômicas, nós só precisamos repassar.
+        
+        # Limpar o histórico de chat desta moto para que não sangre para os próximos serviços
+        self.limpar_historico_moto(moto_id)
+        
+        if isinstance(dados_resumo, dict):
+            return dados_resumo
             
-            return {
-                "diagnostico": dados_parsed.get("diagnostico", "Não especificado."),
-                "atividades": dados_parsed.get("atividades", "Não especificado."),
-                "observacoes": dados_parsed.get("observacoes", "Não especificado."),
-                "pecas": dados_parsed.get("pecas", [])
-            }
-        except json.JSONDecodeError as e:
-            print(f"❌ Erro de parse JSON no resumo: {e} | Retorno foi: {resposta_bruta}")
-            return {
-                "diagnostico": "Erro ao extrair informações. Reveja a conversa manualmente.",
-                "atividades": "-",
-                "observacoes": f"Log bruto do LLM: {resposta_bruta[:150]}...",
-                "pecas": []
-            }
+        # Fallback ultra-seguro
+        return {
+            "diagnostico": "Erro.",
+            "atividades": "Erro.",
+            "observacoes": "Erro.",
+            "pecas": []
+        }
 
     def listar_historico(self, usuario_id: int):
         """Retorna todo o histórico de conversas de um usuário."""

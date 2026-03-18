@@ -1,3 +1,4 @@
+import re
 from langchain_chroma import Chroma
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_ollama import OllamaLLM
@@ -71,6 +72,14 @@ class RagOrchestrator:
         contexto_refinado = [res['text'] for res in top_chunks]
         contexto_str = "\n\n".join(contexto_refinado)
 
+        # Filtro Rigoroso (Hardcoded) para blindar o LLM de ver informações indesejadas
+        # Se as instruções de prompt falharem, a regex garante que não constem no texto final
+        contexto_str = re.sub(r'(?i)\(?\s*página\s*\d+\s*-?\s*\d*\s*\)?', '', contexto_str)
+        contexto_str = re.sub(r'(?i)consulte\s+(uma|um|a|o)?\s*concession[aá]ria[^\.\n]*[\.\n]?', '', contexto_str)
+        contexto_str = re.sub(r'(?i)procure\s+(uma|um|a|o)?\s*concession[aá]ria[^\.\n]*[\.\n]?', '', contexto_str)
+        contexto_str = re.sub(r'(?i)dirija-se\s+a\s+(uma|um|a|o)?\s*concession[aá]ria[^\.\n]*[\.\n]?', '', contexto_str)
+        contexto_str = re.sub(r'(?i)concession[aá]ria\s+honda[^\.\n]*[\.\n]?', '', contexto_str)
+
         print("\n" + "="*40)
         print(f"💎 CONTEXTO REFINADO (Top {len(top_chunks)}):")
         # Mostra o primeiro chunk (que agora deve ser a tabela técnica!)
@@ -82,12 +91,18 @@ class RagOrchestrator:
         # 4. Prompt do Sistema (Limpo, sem filtros manuais)
         prompt_sistema = f"""
         Você é um mecânico especialista assistente chamado Motopilot.
-        Você está respondendo sobre a moto: {moto.marca} {moto.modelo} (Ano {moto.ano}).
+        Você está ajudando outro mecânico profissional sobre a moto: {moto.marca} {moto.modelo} (Ano {moto.ano}).
         
-        Use EXCLUSIVAMENTE o contexto abaixo retirado do manual oficial para responder.
-        Se a informação não estiver no contexto, diga que não encontrou.
-        Seja técnico, direto e cite valores numéricos se houver.
-        Liste passos em caso de procedimento.
+        INSTRUÇÕES DE RESPOSTA OBRIGATÓRIAS:
+        1. Use o contexto abaixo retirado do manual oficial para responder.
+        2. Seja técnico, direto e cite valores numéricos se houver.
+        3. Liste passos caso seja um procedimento e remova dicas irrelevantes.
+        4. OCORTE e EXCLUA qualquer referência a número de páginas (ex: "(página 59)", "veja a página X"). Se existir no contexto, simplesmente delete essa citação.
+        5. OCORTE e EXCLUA qualquer recomendação para ir a uma concessionária, assistência técnica ou procurar um mecânico. O usuário JÁ É o mecânico trabalhando na moto. Apenas omita essas recomendações do texto final.
+
+        EXEMPLO DO QUE ***NÃO*** FAZER:
+        - "Remova a bateria (página 59)" -> ERRADO
+        - "Consulte uma concessionária Honda" -> ERRADO
 
         EXEMPLO DE COMO ESTRUTURAR SUA RESPOSTA (Caso a pergunta seja sobre procedimentos):
         
@@ -124,51 +139,71 @@ class RagOrchestrator:
             print("🤖 Gerando resposta com LLM...")
             # Chamada direta ao Ollama
             resposta_ia = self.llm_client.invoke(prompt_sistema)
+            
+            # Pós-processamento OBRIGATÓRIO (Blindagem final)
+            
+            # 5.1 Remove recuos/indentações que causam blocos de código markdown indesejados no front-end
+            linhas = str(resposta_ia).split('\n')
+            linhas_limpas = [linha.lstrip() for linha in linhas]
+            resposta_ia = '\n'.join(linhas_limpas)
+            
+            # 5.2 Se o LLM alucinou e ainda assim gerou "(página X)" ou menções a concessionárias, nós deletamos à força.
+            resposta_ia = re.sub(r'(?i)\(?\s*página\s*\d+\s*-?\s*\d*\s*\)?', '', resposta_ia)
+            resposta_ia = re.sub(r'(?i)consulte\s+(uma|um|a|o)?\s*concession[aá]ria[^\.\n]*[\.\n]?', '', resposta_ia)
+            resposta_ia = re.sub(r'(?i)procure\s+(uma|um|a|o)?\s*concession[aá]ria[^\.\n]*[\.\n]?', '', resposta_ia)
+            resposta_ia = re.sub(r'(?i)dirija-se\s+a\s+(uma|um|a|o)?\s*concession[aá]ria[^\.\n]*[\.\n]?', '', resposta_ia)
+            resposta_ia = re.sub(r'(?i)concession[aá]ria\s+honda[^\.\n]*[\.\n]?', '', resposta_ia)
+            
             return resposta_ia
         except Exception as e:
             print(f"❌ Erro no LLM: {e}")
             return "Desculpe, ocorreu um erro ao consultar o manual."
 
-    def resumir_manutencao(self, historico_conversa: str) -> str:
+    def resumir_manutencao(self, historico_conversa: str) -> dict:
         """
-        Gera um resumo da conversa no formato JSON esperado para 
-        preenchimento automático do relatório de manutenção.
+        Extrator robusto que faz perguntas individuais ao LLM para evitar 
+        qualquer tipo de erro de formatação (JSON/XML) com modelos locais menores.
+        Retorna o dicionário pronto para o relatório.
         """
-        prompt_resumo = f"""
-        Você é um assistente técnico de oficinas de moto.
-        Abaixo está a transcrição da conversa entre um mecânico e o sistema sobre a manutenção de uma moto.
+        def perguntar_llm(pergunta: str) -> str:
+            prompt = f"Baseado estritamente no seguinte histórico de conversa:\n\n{historico_conversa}\n\nResponda diretamente e de forma extremamente curta (máximo 1 frase): {pergunta}"
+            try:
+                res = self.llm_client.invoke(prompt).strip()
+                # Limpa aspas que o LLM possa adicionar
+                return res.replace('"', '').replace("'", "")
+            except Exception:
+                return "Erro de processamento."
+
+        print("================= HISTÓRICO ENVIADO ===================")
+        print(historico_conversa)
+        print("=======================================================")
+
+        print("🤖 Gerando resumo [Diagnóstico]...")
+        diagnostico = perguntar_llm("Resuma em menos de 10 palavras qual foi a dúvida, sintoma, defeito ou problema central que iniciou esta conversa.")
         
-        Você PRECISA extrair as informações e me devolver ESTRITAMENTE um objeto JSON válido.
-        Sem conversinhas, sem marcações markdown como ```json, apenas inicie com {{ e termine com }}.
-        As chaves obrigatórias do JSON são:
-        - "diagnostico": Uma frase curta e direta sobre o problema principal relatado. Sem explicações longas.
-        - "atividades": Resumo da manutenção realizada (o que foi soldado/trocado/consertado). NENHUM passo a passo ou lista numerada.
-        - "observacoes": Uma frase com observações chave informadas na conversa ou recomendações diretas.
-        - "pecas": Um array de strings contendo estritamente os nomes das peças DEFEITUOSAS que precisaram ser trocadas ou consertadas. Não inclua peças que foram apenas citadas, testadas ou inspecionadas. Ex: ["Filtro de Óleo", "Vela de Ignição"]. Se nenhuma peça defeituosa foi substituída, retorne um array vazio [].
+        print("🤖 Gerando resumo [Atividades]...")
+        atividades = perguntar_llm("Em NENHUMA HIPÓTESE ultrapasse 15 palavras. Resuma o que foi consertado ou qual ajuda foi prestada. Evite frases robóticas. Responda apenas o essencial (Ex: 'Troca da bateria e limpeza' ou 'Instruções para bateria passadas').")
+        
+        print("🤖 Gerando resumo [Observações]...")
+        observacoes = perguntar_llm("Qual foi a conclusão final ou dica geral dada ao término do atendimento? (resuma em 1 frase). Se não houve, apenas diga 'Nenhuma observação'.")
+        
+        print("🤖 Gerando resumo [Peças]...")
+        pecas_str = perguntar_llm("Quais PEÇAS PRINCIPAIS ou componentes com defeito foram o alvo real da dúvida ou conserto? Retorne APENAS os nomes separados por vírgula. NÃO cite peças acessórias, parafusos, terminais, conectores ou fios apenas mencionados no passo a passo. Exemplo: 'Bateria, Farol'. Se nenhuma, responda 'Nenhuma'.")
+        
+        # Limpar a resposta das peças para uma lista
+        pecas_list = []
+        texto_pecas = pecas_str.lower()
+        if "nenhuma" not in texto_pecas and "não aplicável" not in texto_pecas and "não especificado" not in texto_pecas:
+            # Pega peças separadas por virgula ou ' e '
+            texto_pecas_limpo = pecas_str.replace('.', '').replace(' e ', ',')
+            pecas_list = [p.strip().title() for p in texto_pecas_limpo.split(',') if p.strip()]
 
-        Exemplo do nível de concisão e formato esperado das chaves "diagnostico", "atividades" e "observacoes":
-        - diagnostico: "Possível falha na caixa de direção."
-        - atividades: "Troca da caixa de direção, troca do óleo e reparo no chassi."
-        - observacoes: "Consultar a concessionária caso o problema persista."
-
-        Se alguma delas não estiver clara na conversa, simplesmente preencha o valor como "Não especificado.".
-
-        HISTÓRICO DA CONVERSA:
-        {historico_conversa}
-        """
-
-        try:
-            print("🤖 Gerando resumo de manutenção com LLM (Modo JSON)...")
-            
-            # Aqui configuramos format="json" para forçar que a resposta seja parseável
-            # Dependerá se a versão do ollama instalada (backend/API) suporte esse parâmetro corretamente com a chain
-            # Mas vamos forçar o model a responder apenas a string json limpa
-            resposta_json_str = self.llm_client.invoke(prompt_resumo)
-            return resposta_json_str
-            
-        except Exception as e:
-            print(f"❌ Erro ao gerar resumo LLM: {e}")
-            return '{{"diagnostico": "Erro ao processar.", "atividades": "Erro", "observacoes": "Erro", "pecas": []}}'
+        return {
+            "diagnostico": diagnostico,
+            "atividades": atividades,
+            "observacoes": observacoes,
+            "pecas": pecas_list
+        }
 
 # Instância global
 rag_orchestrator = RagOrchestrator()
