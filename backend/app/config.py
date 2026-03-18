@@ -27,15 +27,9 @@ class Settings(BaseSettings):
     @property
     def DATABASE_URL(self) -> str:
         """
-        Monta a URL de conexão do PostgreSQL.
-        Usa quote_plus para garantir que senhas com caracteres especiais (@, #) funcionem.
+        Monta a URL de conexão usando SQLite (fácil para testes locais).
         """
-        senha_segura = quote_plus(self.POSTGRES_PASSWORD)
-        
-        return (
-            f"postgresql://{self.POSTGRES_USER}:{senha_segura}"
-            f"@{self.POSTGRES_HOST}:{self.POSTGRES_PORT}/{self.POSTGRES_DB}"
-        )
+        return "sqlite:///./motopilot.db"
 
     # =================================================================
     # 3. Banco de Dados Vetorial (ChromaDB)

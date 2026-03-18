@@ -137,9 +137,10 @@ class Moto_service:
     def graficos_motos(self, db: Session):
         """Retorna contagem de motos agrupadas por estado para gráficos no frontend."""
         COLORS = {
-            "Disponível": "#00C49F",
-            "Em Manutenção": "#FFBB28",
-            "Concluída": "#0088FE",
+            "Aguardando": "#FF9999",   # Vermelho bem claro
+            "Manutenção": "#FF3333",   # Vermelho vivo clássico
+            "Concluída": "#4A0000",    # Vinho escuro quase preto
+            "Ativa": "#B30000",        # Vermelho escuro/Bordô
         }
         results = db.execute(
             select(Moto.estado, func.count(Moto.id).label("total"))

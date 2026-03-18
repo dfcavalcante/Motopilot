@@ -19,7 +19,7 @@ const Pizza = ({ title, data }) => {
             data={data}
             cx="50%" 
             cy="50%" 
-            outerRadius="80%" 
+            outerRadius="95%" 
             dataKey="value"
             stroke="none"
           >

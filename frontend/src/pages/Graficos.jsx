@@ -71,10 +71,7 @@ const Graficos = () => {
                 }}
               >
                 <Typography variant="h5" sx={{ fontWeight: 700 }}>
-                  Peças quebradas com mais frequência
-                </Typography>
-                <Typography variant="body2" sx={{ color: '#999' }}>
-                  Total acumulado
+                  Peças defeituosas mais frequentes
                 </Typography>
               </Box>
               <Divider sx={{ mb: 3 }} />
@@ -84,21 +81,27 @@ const Graficos = () => {
             </Paper>
           </Grid>
 
-          {/* Gráficos Circulares Lado a Lado */}
-          <Grid item xs={12} md={6}>
+          <Grid item xs={12} md={6} sx={{ minWidth: 0 }}>
             <Paper sx={cardStyle}>
               <Typography variant="h6" sx={{ mb: 3, fontWeight: 700 }}>
                 Motos por status
               </Typography>
               <Divider sx={{ mb: 3 }} />
-              {/* Altura fixa, largura 100%, sem flexbox aqui */}
-              <Box sx={{ height: '300px', width: '100%' }}>
+              <Box 
+                sx={{ 
+                  minHeight: '400px',
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  width: '100%' 
+                }}
+              >
                 <Pizza title="" data={graficosMoto} />
               </Box>
             </Paper>
           </Grid>
 
-          <Grid item xs={12} md={6}>
+          <Grid item xs={12} md={6} sx={{ minWidth: 0 }}>
             <Paper sx={cardStyle}>
               <Typography variant="h6" sx={{ mb: 3, fontWeight: 700 }}>
                 Relatórios: Pendentes vs Concluídos
@@ -106,7 +109,7 @@ const Graficos = () => {
               <Divider sx={{ mb: 3 }} />
               <Box
                 sx={{
-                  minHeight: '300px',
+                  minHeight: '400px',
                   display: 'flex',
                   justifyContent: 'center',
                   alignItems: 'center',
