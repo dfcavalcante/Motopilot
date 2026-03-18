@@ -2,14 +2,26 @@ from sqlalchemy import Column, Integer, String, Text, ForeignKey
 from app.database import Base
 from sqlalchemy.orm import relationship
 
+#Modelo para armazenar a moto principal
+class ModeloMoto(Base):
+    __tablename__ = "modelo_motos"
+
+    id = Column(Integer, primary_key=True, index=True)
+    #Os dois tem que ser únicos
+    marca = Column(String(50), nullable=False, unique=True)
+    modelo = Column(String(100), nullable=False, unique=True)
+
+
 class Moto(Base):
     __tablename__ = "motos"
 
     id = Column(Integer, primary_key=True, index=True)
-    marca = Column(String(50), nullable=False)
-    modelo = Column(String(100), nullable=False)
-    ano = Column(Integer, nullable=False)
     
+    # FK para o modelo da moto "pai" - referência a ModeloMoto
+    modelo_moto_id = Column(Integer, ForeignKey("modelo_motos.id"), nullable=False)
+    
+    # Dados específicos dessa instância da moto
+    ano = Column(Integer, nullable=False)
     numero_serie = Column(String(100), nullable=True, unique=True) 
     descricao = Column(Text, nullable=True)
     
@@ -21,6 +33,7 @@ class Moto(Base):
     mecanico_id = Column(Integer, ForeignKey("users.id"), nullable=True)
 
     # Relacionamentos
+    modelo_moto = relationship("ModeloMoto", backref="motos_instancias")
     chat_logs = relationship("ChatLog", back_populates="moto")
     mecanico = relationship("User", back_populates="motos_atribuidas")
     relatorios = relationship("Report", back_populates="moto")

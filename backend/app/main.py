@@ -18,7 +18,8 @@ from app.utils.init_db import (
     criar_cargos_iniciais,
     garantir_coluna_lido_notificacoes,
     garantir_coluna_mecanico_id_motos,
-    garantir_coluna_status_relatorio
+    garantir_coluna_status_relatorio,
+    migrar_motos_para_modelo_moto_id
 )
 
 # --- IMPORTS DAS ROTAS ---
@@ -61,6 +62,7 @@ def on_startup():
         garantir_coluna_lido_notificacoes(db)
         garantir_coluna_mecanico_id_motos(db)
         garantir_coluna_status_relatorio(db)
+        migrar_motos_para_modelo_moto_id(db)
         criar_cargos_iniciais(db)
     except Exception as e:
         print(f"❌ Erro ao inicializar banco: {e}")

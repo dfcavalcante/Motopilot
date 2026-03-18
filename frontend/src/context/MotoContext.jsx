@@ -148,6 +148,62 @@ export const MotoProvider = ({ children }) => {
     }
   };
 
+  const criarMotoPai = async (dados) => {
+    setLoading(true);
+    setErro(null);
+
+    try {
+      const isFormData = dados instanceof FormData;
+
+      const headers = {};
+      if (!isFormData) {
+        headers['Content-Type'] = 'application/json';
+      }
+
+      const body = isFormData ? dados : JSON.stringify(dados);
+
+      const response = await fetch(`${BASE_URL}/modeloMoto/criar`, {
+        method: 'POST',
+        headers: headers,
+        body: body,
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        const msg = errorData.detail || 'Erro ao cadastrar modelo de moto';
+        throw new Error(msg);
+      }
+
+      const novoModeloMoto = await response.json();
+      setModelosMoto((prev) => [...prev, novoModeloMoto]);
+      return true;
+    } catch (error) {
+      console.error(error);
+      setErro(error.message);
+      return false;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // ---- Gerente atribuição de moto a mecânico ----
+  const atribuirMoto = async (motoId, mecanicoId) => {
+    setLoading(true);
+    setErro(null);
+    try {
+      await fetch(`${BASE_URL}/motos/${motoId}/atribuir`, {
+        method: 'PATCH',
+        headers: headers,
+        body: JSON.stringify({ mecanico_id: mecanicoId }),
+      });
+    } catch (error) {
+      console.error(error);
+      setErro(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <MotoContext.Provider
       value={{
@@ -161,6 +217,8 @@ export const MotoProvider = ({ children }) => {
         motoSelecionada,
         setMotoSelecionada,
         verificarNumeroSerie,
+        atribuirMoto,
+        criarMotoPai
       }}
     >
       {children}

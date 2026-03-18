@@ -12,10 +12,15 @@ from llm.services.vector_store import vector_store
 # --- AQUI ESTÁ A MUDANÇA: Usamos o processador inteligente ---
 from llm.data.pdf_processor import processar_manual_unico
 
-# Imports internos
+# Imports Motos 
 from app.schemas.moto_schema import (MotoBase, MotoUpdate, MotoResponse, ConcluirManutencaoRequest, AtribuirMecanicoRequest)
 from app.services.moto_service import Moto_service
 from app.database import get_db
+
+# Imports ModeloMoto
+from app.schemas.moto_schema import ModeloMotoBase
+from app.models.moto_model import ModeloMoto
+
 
 router = APIRouter(prefix='/motos', tags=["Motos"])
 
@@ -50,6 +55,20 @@ def processar_manual_background(file_path: str, moto_id: int, modelo: str, ano: 
         print(f"❌ [IA] Erro na task de background: {e}")
 
 # --- ROTAS ---
+@router.post("/modeloMoto/criar", response_model=ModeloMotoBase, status_code=status.HTTP_201_CREATED)
+def criar_modelo_moto_endpoint(marca: str = Form(...), modelo: str = Form(...), db: Session = Depends(get_db)):
+
+    modelo_existente = moto_service.buscar_modelo_moto(db, marca, modelo)
+    if modelo_existente:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=f"Modelo '{marca} {modelo}' já está registrado no sistema."
+        )
+    
+    novo_modelo = ModeloMotoBase(marca=marca, modelo=modelo)
+    novo_modelo_moto = moto_service.criar_modelo_moto(db, novo_modelo)
+    return novo_modelo_moto
+
 
 @router.post("/", response_model=MotoResponse, status_code=status.HTTP_201_CREATED)
 def criar_moto_endpoint(
@@ -70,30 +89,44 @@ def criar_moto_endpoint(
             detail=f"Número de série '{numeroSerie}' já está registrado no sistema."
         )
 
-    # 1. Salvar arquivos
+    # 1. Buscar ou criar o ModeloMoto (moto "pai") por marca/modelo
+    modelo_moto = moto_service.buscar_modelo_moto(db, marca, modelo)
+    if not modelo_moto:
+        # Se não existe, criar um novo ModeloMoto
+        modelo_data = ModeloMotoBase(marca=marca, modelo=modelo)
+        modelo_moto = moto_service.criar_modelo_moto(db, modelo_data)
+
+    # 2. Salvar arquivos
     caminho_pdf = salvar_arquivo(documento_pdf, sub_pasta="manuais")
     caminho_imagem = salvar_arquivo(imagem_moto, sub_pasta="imagens")
 
-    # 2. Criar o Schema de Dados
-    # Nota: Mapeamos o 'numeroSerie' (do form) para 'numero_serie' (do banco/schema)
+    # 3. Criar o Schema de Dados
+    # Nota: Agora usamos o modelo_moto_id ao invés de marca/modelo
     moto_data = MotoBase(
         marca=marca,
         modelo=modelo,
         ano=ano,
-        numero_serie=numeroSerie, # <--- Atenção aqui: O Schema espera snake_case
+        numero_serie=numeroSerie,
         estado='Ativa',
         descricao=descricao,
         manual_pdf_path=caminho_pdf,
-        imagem_path=caminho_imagem
+        imagem_path=caminho_imagem,
+        modelo_moto_id=modelo_moto.id  # <--- FK para a moto "pai"
     )
     
-    # 3. Criar no Banco
-    nova_moto = moto_service.criar_moto(db, moto_data)
+    # 4. Criar no Banco
+    try:
+        nova_moto = moto_service.criar_moto(db, moto_data)
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e)
+        )
 
-    # 4. Disparar Ingestão da IA (Correção da variável)
+    # 5. Disparar Ingestão da IA
     background_tasks.add_task(
         processar_manual_background, 
-        file_path=caminho_pdf, # <--- CORREÇÃO: Usar a variável correta 'caminho_pdf'
+        file_path=caminho_pdf,
         moto_id=nova_moto.id, 
         modelo=modelo, 
         ano=str(ano)
