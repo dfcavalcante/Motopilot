@@ -43,7 +43,11 @@ class ReportService():
         offset = (filtros.page - 1) * filtros.per_page
         query = query.offset(offset).limit(filtros.per_page)
 
-        return list(db.scalars(query).all())
+        relatorios = db.scalars(query).all()
+        for r in relatorios:
+            if r.status is None:
+                r.status = "pendente"
+        return relatorios
 
     @staticmethod
     def deletar_relatorio(db: Session, report_id: int):

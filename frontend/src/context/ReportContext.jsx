@@ -55,7 +55,7 @@ export const ReportProvider = ({ children }) => {
         params.append('page', filtros.page || 1);
         params.append('per_page', filtros.per_page || 10);
 
-        const response = await fetch(`${BASE_URL}/relatorio/?${params.toString()}`);
+        const response = await fetch(`${BASE_URL}/relatorio/listar`);
 
         if (!response.ok) {
           throw new Error('Erro ao buscar relatórios.');

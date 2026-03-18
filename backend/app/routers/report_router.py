@@ -20,7 +20,7 @@ def deletar_relatorio_endpoint(report_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Relatório não encontrado")
     return deletar_relatorio
 
-@router.get("/", response_model=list[ReportResponse])
+@router.get("/listar", response_model=list[ReportResponse])
 def listar_relatorios_endpoint(filtros: ReportFilter = Depends(), db: Session = Depends(get_db)):
     listar_relatorio = report_service.listar_relatorios(db, filtros)
     return listar_relatorio

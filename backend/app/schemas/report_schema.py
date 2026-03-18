@@ -75,5 +75,10 @@ class ReportResponse(ReportBase):
         if isinstance(v, str):
             return [p.strip() for p in v.split(",") if p.strip()]
         return v
+    
+    @field_validator("status", mode="before")
+    @classmethod
+    def default_status(cls, v):
+        return v or "pendente"
 
 
