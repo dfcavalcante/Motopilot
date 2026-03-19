@@ -10,6 +10,8 @@ import Notificacoes from '../pages/Notificacoes';
 import Dashboard from '../pages/Dashboard';
 import Relatorio from '../pages/HistoricoRelatorios';
 import Graficos from '../pages/Graficos';
+import CadastroMotoAtribuir from '../pages/CadastroMotoAtribuir';
+import ListagemMotosModelo from '../pages/ListagemMotosModelo';
 
 // Importação dos Contextos
 import { MotoProvider } from '../context/MotoContext';
@@ -64,6 +66,14 @@ const Routers = () => {
                           }
                         />
                         <Route
+                          path="/modeloMoto/:modeloMotoId/motos"
+                          element={
+                            <RotaProtegida>
+                              <ListagemMotosModelo />
+                            </RotaProtegida>
+                          }
+                        />
+                        <Route
                           path="/cadastro"
                           element={
                             <RotaProtegida>
@@ -109,6 +119,14 @@ const Routers = () => {
                           element={
                             <RotaProtegida>
                               <Graficos />
+                            </RotaProtegida>
+                          }
+                        />
+                        <Route
+                          path="/cadastroMotoAtribuir"
+                          element={
+                            <RotaProtegida>
+                              <CadastroMotoAtribuir />
                             </RotaProtegida>
                           }
                         />

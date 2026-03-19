@@ -58,8 +58,8 @@ const Usuarios = () => {
           flexGrow: 100,
           width: '100%',
           borderRadius: '16px',
-          pl: 16,
-          pr: 16,
+          pl: 8,
+          pr: 8,
           mt: 2,
           overflowY: 'auto',
           ...(viewMode === 'grid'

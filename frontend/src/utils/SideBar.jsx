@@ -22,7 +22,7 @@ const SideBar = ({ historico = [] }) => {
     {
       name: 'Motos',
       link: '/listagemMotos',
-      icon: <img src="/images/cube.png" alt="Logo" width="20" />,
+      icon: <img src="/images/Folder.svg" alt="Logo" width="20" />,
     },
     {
       name: 'Gráficos',
@@ -42,9 +42,7 @@ const SideBar = ({ historico = [] }) => {
     },
   ];
 
-  {
-    /*AViso: Tirei o histórico de conversas pq o Fernando nao aprovou */
-  }
+
   {
     open && (
       <Box sx={{ mb: 2 }}>

@@ -34,6 +34,14 @@ class ModeloMotoBase(BaseModel):
     modelo: str
 
 
+class ModeloMotoResponse(BaseModel):
+    id: int
+    marca: str
+    modelo: str
+
+    model_config = ConfigDict(from_attributes=True)
+
+
 class MotoUpdate(BaseModel):
     marca: Optional[str] = None
     modelo: Optional[str] = None
@@ -59,7 +67,7 @@ class MotoResponse(BaseModel):
     estado: Optional[str] = None 
     descricao: Optional[str] = None
     mecanico_id: Optional[int] = Field(None, alias="mecanicoId")
-    modelo_moto_id: int = Field(..., alias="modeloMotoId")
+    modelo_moto_id: Optional[int] = Field(None, alias="modeloMotoId")
 
     model_config = ConfigDict(from_attributes=True, populate_by_name=True)
     

@@ -1,20 +1,30 @@
-import React, { useContext, useState, useEffect, useMemo } from 'react';
+import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { Box, Grid, Typography, Menu, MenuItem, IconButton } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import BaseFront from '../utils/BaseFront';
 import BoxMoto from '../components/CadastroMoto/BoxMoto';
 import { MotoContext } from '../context/MotoContext';
 import BarraPesquisa from '../components/CadastroMoto/BarraPesquisa';
+import InformacoesMoto from '../components/Motos/InformacoesMoto';
 
-const ListagemMotos = () => {
-  const navigate = useNavigate();
-  const { listarModelosMoto, modelosMoto, setModeloPaiSelecionado } = useContext(MotoContext);
+const ListagemMotosModelo = () => {
+  const { modeloMotoId } = useParams();
+  const {
+    listarMotos,
+    motos,
+    listarModelosMoto,
+    modelosMoto,
+    motoSelecionada,
+    setMotoSelecionada,
+    setModeloPaiSelecionado,
+  } = useContext(MotoContext);
 
   const [input, setInput] = useState('');
   const [anchorEl, setAnchorEl] = useState(null);
   const [tipoOrdenacao, setTipoOrdenacao] = useState(null);
 
   useEffect(() => {
+    listarMotos();
     listarModelosMoto();
   }, []);
 
@@ -27,25 +37,50 @@ const ListagemMotos = () => {
     handleCloseMenu();
   };
 
+  const modeloPai = useMemo(() => {
+    const idNumerico = Number(modeloMotoId);
+    return modelosMoto.find((modelo) => Number(modelo.id) === idNumerico) || null;
+  }, [modelosMoto, modeloMotoId]);
+
+  useEffect(() => {
+    if (modeloPai) {
+      setModeloPaiSelecionado(modeloPai);
+    }
+  }, [modeloPai, setModeloPaiSelecionado]);
+
   const motosProcessadas = useMemo(() => {
-    let lista = [...modelosMoto];
+    const idNumerico = Number(modeloMotoId);
+
+    let lista = motos.filter(
+      (moto) => Number(moto.modeloMotoId ?? moto.modelo_moto_id) === idNumerico
+    );
+
     if (input) {
       lista = lista.filter(
-        (modeloMoto) =>
-          modeloMoto.modelo?.toLowerCase().includes(input.toLowerCase()) ||
-          modeloMoto.marca?.toLowerCase().includes(input.toLowerCase())
+        (moto) =>
+          moto.modelo?.toLowerCase().includes(input.toLowerCase()) ||
+          moto.marca?.toLowerCase().includes(input.toLowerCase()) ||
+          String(moto.numeroSerie || moto.numero_serie || '')
+            .toLowerCase()
+            .includes(input.toLowerCase())
       );
     }
+
     if (tipoOrdenacao === 'AZ') {
-      lista.sort((a, b) => a.modelo.localeCompare(b.modelo));
+      lista.sort((a, b) => (a.modelo || '').localeCompare(b.modelo || ''));
     } else if (tipoOrdenacao === 'ZA') {
-      lista.sort((a, b) => b.modelo.localeCompare(a.modelo));
+      lista.sort((a, b) => (b.modelo || '').localeCompare(a.modelo || ''));
     }
+
     return lista;
-  }, [modelosMoto, input, tipoOrdenacao]);
+  }, [motos, input, tipoOrdenacao, modeloMotoId]);
+
+  if (motoSelecionada) {
+    return <InformacoesMoto moto={motoSelecionada} onBack={() => setMotoSelecionada(null)} />;
+  }
 
   return (
-    <BaseFront icone={null} width={null} height={null} nome={'Motos'}>
+    <BaseFront nome={modeloPai ? `${modeloPai.marca} ${modeloPai.modelo}` : 'Motos do modelo'}>
       <Box display="flex" alignItems="center" mt={1} sx={{ width: '100%', px: 2 }}>
         <Box display="flex" alignItems="center" gap={3} sx={{ flex: 1 }}>
           <Box display="flex" alignItems="center" gap={1} ml={9}>
@@ -77,7 +112,6 @@ const ListagemMotos = () => {
         <Box sx={{ flex: 1 }} />
       </Box>
 
-      {/* Grid de Motos */}
       <Box
         backgroundColor="#DBDBDB"
         sx={{
@@ -91,21 +125,14 @@ const ListagemMotos = () => {
       >
         <Grid container spacing={2} sx={{ mt: 2 }}>
           {motosProcessadas.length > 0 ? (
-            motosProcessadas.map((modeloMoto) => (
-              <Grid item key={modeloMoto.id} xs={12} sm={6} md={4}>
-                <BoxMoto
-                  moto={modeloMoto}
-                  tipo="pai"
-                  onEnter={() => {
-                    setModeloPaiSelecionado(modeloMoto);
-                    navigate(`/modeloMoto/${modeloMoto.id}/motos`);
-                  }}
-                />
+            motosProcessadas.map((moto) => (
+              <Grid item key={moto.id} xs={12} sm={6} md={4}>
+                <BoxMoto moto={moto} onEnter={() => setMotoSelecionada(moto)} />
               </Grid>
             ))
           ) : (
             <Typography sx={{ p: 2, width: '100%', textAlign: 'center' }}>
-              Nenhum modelo de moto encontrado.
+              Nenhuma moto cadastrada para este modelo.
             </Typography>
           )}
         </Grid>
@@ -114,4 +141,4 @@ const ListagemMotos = () => {
   );
 };
 
-export default ListagemMotos;
+export default ListagemMotosModelo;

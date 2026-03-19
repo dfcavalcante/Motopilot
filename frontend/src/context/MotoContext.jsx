@@ -5,6 +5,7 @@ export const MotoContext = createContext();
 
 export const MotoProvider = ({ children }) => {
   const [motos, setMotos] = useState([]);
+  const [modelosMoto, setModelosMoto] = useState([]);
   const [loading, setLoading] = useState(false);
   const [erro, setErro] = useState(null);
 
@@ -34,6 +35,29 @@ export const MotoProvider = ({ children }) => {
     }
   }, [motoSelecionada]);
 
+  const [modeloPaiSelecionado, setModeloPaiSelecionado] = useState(() => {
+    try {
+      const stored = localStorage.getItem('modeloPaiSelecionado');
+      return stored ? JSON.parse(stored) : null;
+    } catch (error) {
+      console.error('Erro ao carregar modeloPaiSelecionado:', error);
+      return null;
+    }
+  });
+
+  useEffect(() => {
+    try {
+      if (modeloPaiSelecionado) {
+        localStorage.setItem('modeloPaiSelecionado', JSON.stringify(modeloPaiSelecionado));
+      } else {
+        localStorage.removeItem('modeloPaiSelecionado');
+      }
+    } catch (error) {
+      console.error('Erro ao salvar modeloPaiSelecionado:', error);
+    }
+  }, [modeloPaiSelecionado]);
+
+  // ------- LISTAR MOTOS ----------
   const listarMotos = async () => {
     try {
       const response = await fetch(`${BASE_URL}/motos/listar`);
@@ -49,6 +73,24 @@ export const MotoProvider = ({ children }) => {
     }
   };
 
+  // ------- LISTAR MODELOS (MOTO PAI) ----------
+  const listarModelosMoto = async () => {
+    try {
+      const response = await fetch(`${BASE_URL}/motos/modeloMoto/listar`);
+
+      if (!response.ok) {
+        throw new Error('Erro ao buscar modelos de motos');
+      }
+
+      const data = await response.json();
+      setModelosMoto(Array.isArray(data) ? data : []);
+    } catch (error) {
+      console.error('Erro no listarModelosMoto:', error);
+      setErro(error.message);
+    }
+  };
+
+  // ------- ATUALIZAR MOTOS ----------
   const atualizarMoto = async (id, dadosAtualizados) => {
     setLoading(true);
     setErro(null);
@@ -76,6 +118,7 @@ export const MotoProvider = ({ children }) => {
     }
   };
 
+  // =------ EXCLUIR MOTOS ----------
   const excluirMoto = async (id) => {
     setLoading(true);
     setErro(null);
@@ -110,6 +153,7 @@ export const MotoProvider = ({ children }) => {
     }
   };
 
+  // ------- CADASTRO DAS MOTOS ----------
   const cadastrarMoto = async (dados) => {
     setLoading(true);
     setErro(null);
@@ -148,24 +192,19 @@ export const MotoProvider = ({ children }) => {
     }
   };
 
+  // ------- CADASTRO DO MODELO DE MOTO (MOTO PAI) ----------
   const criarMotoPai = async (dados) => {
     setLoading(true);
     setErro(null);
 
     try {
-      const isFormData = dados instanceof FormData;
+      const formData = new FormData();
+      formData.append('marca', dados.marca || '');
+      formData.append('modelo', dados.modelo || '');
 
-      const headers = {};
-      if (!isFormData) {
-        headers['Content-Type'] = 'application/json';
-      }
-
-      const body = isFormData ? dados : JSON.stringify(dados);
-
-      const response = await fetch(`${BASE_URL}/modeloMoto/criar`, {
+      const response = await fetch(`${BASE_URL}/motos/modeloMoto/criar`, {
         method: 'POST',
-        headers: headers,
-        body: body,
+        body: formData,
       });
 
       if (!response.ok) {
@@ -175,12 +214,15 @@ export const MotoProvider = ({ children }) => {
       }
 
       const novoModeloMoto = await response.json();
-      setModelosMoto((prev) => [...prev, novoModeloMoto]);
-      return true;
+      setModelosMoto((prev) => {
+        const existe = prev.some((modelo) => modelo.id === novoModeloMoto.id);
+        return existe ? prev : [...prev, novoModeloMoto];
+      });
+      return novoModeloMoto;
     } catch (error) {
       console.error(error);
       setErro(error.message);
-      return false;
+      return null;
     } finally {
       setLoading(false);
     }
@@ -193,8 +235,10 @@ export const MotoProvider = ({ children }) => {
     try {
       await fetch(`${BASE_URL}/motos/${motoId}/atribuir`, {
         method: 'PATCH',
-        headers: headers,
-        body: JSON.stringify({ mecanico_id: mecanicoId }),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ mecanicoId: mecanicoId }),
       });
     } catch (error) {
       console.error(error);
@@ -208,17 +252,21 @@ export const MotoProvider = ({ children }) => {
     <MotoContext.Provider
       value={{
         motos,
+        modelosMoto,
         cadastrarMoto,
         listarMotos,
+        listarModelosMoto,
         loading,
         erro,
         excluirMoto,
         atualizarMoto,
         motoSelecionada,
         setMotoSelecionada,
+        modeloPaiSelecionado,
+        setModeloPaiSelecionado,
         verificarNumeroSerie,
         atribuirMoto,
-        criarMotoPai
+        criarMotoPai,
       }}
     >
       {children}

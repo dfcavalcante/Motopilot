@@ -25,6 +25,11 @@ const Header = ({ onNovoChat }) => {
     navigate('/cadastroMoto');
   };
 
+  const handleCadastroMotoPai = (e) => {
+    e.preventDefault();
+    navigate('/cadastroMotoAtribuir');
+  };
+
   const handleCadastroUsuario = async (e) => {
     e.preventDefault();
     navigate('/cadastro');
@@ -53,7 +58,55 @@ const Header = ({ onNovoChat }) => {
         </Button>
       );
     }
-    if (location.pathname === '/listagemMotos' || location.pathname === '/cadastroMoto') {
+    if (location.pathname === '/listagemMotos') {
+      return (
+        <Button
+          variant="outlined"
+          startIcon={<img src="/images/add.png" alt="Add" width="20" />}
+          onClick={handleCadastroMotoPai}
+          sx={{
+            width: 250,
+            height: '40px',
+            whiteSpace: 'nowrap',
+            color: 'black',
+            borderColor: 'black',
+            borderRadius: '10px',
+            textTransform: 'none',
+            fontSize: '18px',
+            '&:hover': { borderColor: 'black', backgroundColor: 'transparent' },
+          }}
+        >
+          Adicionar moto
+        </Button>
+      );
+    }
+
+    if (
+      location.pathname === '/cadastroMoto' ||
+      /^\/modeloMoto\/\d+\/motos$/.test(location.pathname)
+    ) {
+      return (
+        <Button
+          variant="outlined"
+          startIcon={<img src="/images/add.png" alt="Add" width="20" />}
+          onClick={handleCadastroMoto}
+          sx={{
+            width: 250,
+            height: '40px',
+            whiteSpace: 'nowrap',
+            color: 'black',
+            borderColor: 'black',
+            borderRadius: '10px',
+            textTransform: 'none',
+            fontSize: '18px',
+            '&:hover': { borderColor: 'black', backgroundColor: 'transparent' },
+          }}
+        >
+          Adicionar moto
+        </Button>
+      );
+    }
+    if (location.pathname === '/motos-atribuir' || location.pathname === '/cadastro-atribuir') {
       return (
         <Button
           variant="outlined"

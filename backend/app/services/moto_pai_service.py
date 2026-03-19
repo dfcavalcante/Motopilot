@@ -9,7 +9,7 @@ from app.services.notification_service import NotificationService
 from app.models.moto_model import ModeloMoto
 from app.schemas.moto_schema import ModeloMotoBase
 
-class MotoPai_service:
+class Moto_pai_service:
      #Criar a moto que vai ser "referencia" as outras motos
     def criar_modelo_moto(self, db: Session, modelo_data: ModeloMotoBase) -> ModeloMotoBase:
         db_modelo = ModeloMoto(**modelo_data.model_dump())
@@ -19,9 +19,9 @@ class MotoPai_service:
         db.refresh(db_modelo)
         return db_modelo
     
-    #Listar os modelos de motos (sem filtro)
-    def listar_motos_pai_motos(self, db: Session) -> List[Moto]: 
-        stmt = select(Moto).options(joinedload(Moto.modelo_moto))
+    # Listar os modelos de motos (MotoPai)
+    def listar_motos_pai_motos(self, db: Session) -> List[ModeloMoto]:
+        stmt = select(ModeloMoto).order_by(ModeloMoto.marca, ModeloMoto.modelo)
         return list(db.scalars(stmt).all())
 
     def buscar_moto_pai_moto(self, db: Session, marca: str, modelo: str) -> Optional[ModeloMoto]:

@@ -18,14 +18,15 @@ from app.services.moto_service import Moto_service
 from app.database import get_db
 
 # Imports ModeloMoto
-from app.schemas.moto_schema import ModeloMotoBase
+from app.schemas.moto_schema import ModeloMotoBase, ModeloMotoResponse
 from app.models.moto_model import ModeloMoto
-
+from app.services.moto_pai_service import Moto_pai_service
 
 router = APIRouter(prefix='/motos', tags=["Motos"])
 
 # Instância única do serviço
 moto_service = Moto_service()
+moto_pai_service = Moto_pai_service()
 
 UPLOAD_DIR = "manuals"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
@@ -55,10 +56,10 @@ def processar_manual_background(file_path: str, moto_id: int, modelo: str, ano: 
         print(f"❌ [IA] Erro na task de background: {e}")
 
 # --- ROTAS ---
-@router.post("/modeloMoto/criar", response_model=ModeloMotoBase, status_code=status.HTTP_201_CREATED)
+@router.post("/modeloMoto/criar", response_model=ModeloMotoResponse, status_code=status.HTTP_201_CREATED)
 def criar_modelo_moto_endpoint(marca: str = Form(...), modelo: str = Form(...), db: Session = Depends(get_db)):
 
-    modelo_existente = moto_service.buscar_modelo_moto(db, marca, modelo)
+    modelo_existente = moto_pai_service.buscar_moto_pai_moto(db, marca, modelo)
     if modelo_existente:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
@@ -66,8 +67,13 @@ def criar_modelo_moto_endpoint(marca: str = Form(...), modelo: str = Form(...), 
         )
     
     novo_modelo = ModeloMotoBase(marca=marca, modelo=modelo)
-    novo_modelo_moto = moto_service.criar_modelo_moto(db, novo_modelo)
+    novo_modelo_moto = moto_pai_service.criar_modelo_moto(db, novo_modelo)
     return novo_modelo_moto
+
+
+@router.get("/modeloMoto/listar", response_model=List[ModeloMotoResponse])
+def listar_modelos_moto_endpoint(db: Session = Depends(get_db)):
+    return moto_pai_service.listar_motos_pai_motos(db)
 
 
 @router.post("/", response_model=MotoResponse, status_code=status.HTTP_201_CREATED)
@@ -90,12 +96,9 @@ def criar_moto_endpoint(
         )
 
     # 1. Buscar ou criar o ModeloMoto (moto "pai") por marca/modelo
-    modelo_moto = moto_service.buscar_modelo_moto(db, marca, modelo)
+    modelo_moto = moto_pai_service.buscar_moto_pai_moto(db, marca, modelo)
     if not modelo_moto:
-        # Se não existe, criar um novo ModeloMoto
-        modelo_data = ModeloMotoBase(marca=marca, modelo=modelo)
-        modelo_moto = moto_service.criar_modelo_moto(db, modelo_data)
-
+        print(f"🔍 Modelo '{marca} {modelo}' não encontrado. Crie o modelo")
     # 2. Salvar arquivos
     caminho_pdf = salvar_arquivo(documento_pdf, sub_pasta="manuais")
     caminho_imagem = salvar_arquivo(imagem_moto, sub_pasta="imagens")
@@ -139,7 +142,6 @@ def criar_moto_endpoint(
 def listar_motos_endpoint(db: Session = Depends(get_db)):
     return moto_service.listar_motos(db)
 
-
 # --- ATUALIZAR ---
 @router.patch('/{moto_id}/atualizar', response_model=MotoResponse)
 def atualizar_moto_endpoint(moto_id: int, moto_data: MotoUpdate, db: Session = Depends(get_db)):
@@ -151,7 +153,7 @@ def atualizar_moto_endpoint(moto_id: int, moto_data: MotoUpdate, db: Session = D
 @router.patch('/{moto_id}/atribuir', response_model=MotoResponse)
 def atribuir_mecanico_endpoint(moto_id: int, dados: AtribuirMecanicoRequest, db: Session = Depends(get_db)):
     """Atribui a moto a um mecânico específico e altera o status para 'Em Manutenção'"""
-    moto_atualizada = moto_service.atribuir_mecanico(db, moto_id, dados.mecanico_id)
+    moto_atualizada = moto_pai_service.atribuir_mecanico(db, moto_id, dados.mecanico_id)
     if not moto_atualizada:
         raise HTTPException(status_code=404, detail="Moto não encontrada")
     return moto_atualizada

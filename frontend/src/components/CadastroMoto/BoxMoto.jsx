@@ -1,7 +1,7 @@
 import { Box, Button, Typography } from '@mui/material';
 import React from 'react';
 
-const BoxMoto = ({ moto, onEnter }) => {
+const BoxMoto = ({ moto, onEnter, tipo = 'filha' }) => {
   const fallbackSrc = '/images/Motopilot.jpeg';
 
   const getImageUrl = (caminhoDoBanco) => {
@@ -17,6 +17,12 @@ const BoxMoto = ({ moto, onEnter }) => {
 
     return `http://localhost:8000/${pathFinal}`;
   };
+
+  const numeroSerie = moto.numeroSerie || moto.numero_serie;
+  const titulo = moto.modelo || 'Modelo sem nome';
+  const subtitulo =
+    tipo === 'pai' ? `Marca: ${moto.marca || '-'}` : `Nº Série: ${numeroSerie || '-'}`;
+  const estado = tipo === 'pai' ? 'Modelo' : moto.estado;
 
   return (
     <Box
@@ -67,7 +73,7 @@ const BoxMoto = ({ moto, onEnter }) => {
             fontSize: '13px',
           }}
         >
-          {moto.estado}
+          {estado}
         </Typography>
       </Box>
 
@@ -83,10 +89,10 @@ const BoxMoto = ({ moto, onEnter }) => {
       >
         <Box>
           <Typography variant="h6" fontWeight="bold" noWrap>
-            {moto.modelo}
+            {titulo}
           </Typography>
           <Typography variant="body2" color="#484848" mt={1}>
-            Nº Série: {moto.numeroSerie}
+            {subtitulo}
           </Typography>
         </Box>
 

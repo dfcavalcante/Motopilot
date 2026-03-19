@@ -7,9 +7,9 @@ const UserRow = ({ usuario, onEdit, onDelete, setAtualizando, atualizando }) => 
   return (
     <Box
       sx={{
-        display: 'flex', 
-        alignItems: 'center', 
-        width: '100%', 
+        display: 'flex',
+        alignItems: 'center',
+        width: '100%',
         py: 0.5,
         borderBottom: '1px solid #E0E0E0',
         bgcolor: 'transparent',
@@ -21,7 +21,15 @@ const UserRow = ({ usuario, onEdit, onDelete, setAtualizando, atualizando }) => 
       }}
     >
       {/* COLUNA 1: NOME (25%)*/}
-      <Box sx={{ width: '25%', display: 'flex', alignItems: 'center', gap: 2 }}>
+      <Box
+        sx={{
+          width: '25%',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: 2,
+        }}
+      >
         <Box
           sx={{
             width: 32,
@@ -36,21 +44,21 @@ const UserRow = ({ usuario, onEdit, onDelete, setAtualizando, atualizando }) => 
         >
           <img src="/images/userIcon.png" alt="User" style={{ width: '14px', height: '18px' }} />
         </Box>
-        <Typography variant="body2"  color="black" noWrap fontSize={16}>
+        <Typography variant="body2" color="black" noWrap fontSize={16}>
           {usuario.nome}
         </Typography>
       </Box>
 
       {/* COLUNA 2: EMAIL (25%)*/}
-      <Box sx={{ width: '25%' }}>
-        <Typography variant="body2" color="black" noWrap fontSize={16}>
+      <Box sx={{ width: '25%', display: 'flex', justifyContent: 'center' }}>
+        <Typography variant="body2" color="black" noWrap fontSize={16} textAlign="center">
           {usuario.email}
         </Typography>
       </Box>
 
       {/*COLUNA 3: FUNÇÃO (15%)*/}
-      <Box sx={{ width: '20%' }}>
-        <Typography  color="black" noWrap fontSize={16}>
+      <Box sx={{ width: '20%', display: 'flex', justifyContent: 'center' }}>
+        <Typography color="black" noWrap fontSize={16} textAlign="center">
           {usuario.funcao}
         </Typography>
       </Box>
@@ -61,8 +69,13 @@ const UserRow = ({ usuario, onEdit, onDelete, setAtualizando, atualizando }) => 
       </Box>
 
       {/* AÇÕES (10%) - Alinhado à direita */}
-      <Box sx={{ width: '5', display: 'flex', justifyContent: 'flex-end', gap: 1 }}>
-        <IconButton size="small" onClick={() => { setAtualizando(usuario); }}>
+      <Box sx={{ width: '8%', display: 'flex', justifyContent: 'flex-end', gap: 1 }}>
+        <IconButton
+          size="small"
+          onClick={() => {
+            setAtualizando(usuario);
+          }}
+        >
           <img src="/images/lapis.png" alt="Editar" style={{ width: '15px', height: '15px' }} />
         </IconButton>
         <IconButton size="small" onClick={() => onDelete(usuario.id)}>

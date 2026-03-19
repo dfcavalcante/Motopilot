@@ -39,10 +39,10 @@ const BotaoFinalizar = ({ onFinalizar }) => {
       onClick={handleFinalizar}
       sx={{
         borderRadius: '10px',
-        backgroundColor: '#444',
+        backgroundColor: '#676767',
         textTransform: 'none',
         '&:hover': {
-          backgroundColor: '#666',
+          backgroundColor: '#676767',
         },
         '&:disabled': {
           backgroundColor: '#999',

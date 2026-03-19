@@ -8,7 +8,6 @@ import DadosGerais from '../components/Motos/DadosGerais.jsx';
 import ManualMoto from '../components/Motos/DadosManual.jsx';
 import Concluido from '../components/Motos/Concluido.jsx';
 
-import SelecionarTipoMoto from '../components/CadastroMoto/SelecionarTipoMoto.jsx';
 const CadastroDeMoto = () => {
   const {
     etapaAtual,
@@ -44,15 +43,6 @@ const CadastroDeMoto = () => {
           sx={{ width: '100%', flex: 1, mt: 2 }}
         >
           {etapaAtual === 1 && (
-            <SelecionarTipoMoto
-              register={register}
-              setValue={setValue}
-              errors={errors}
-              onNext={handleProximo}
-              watch={watch}
-            />
-          )}
-          {etapaAtual === 2 && (
             <DadosGerais
               register={register}
               setValue={setValue}
@@ -62,7 +52,7 @@ const CadastroDeMoto = () => {
             />
           )}
 
-          {etapaAtual === 3 && (
+          {etapaAtual === 2 && (
             <ManualMoto
               setValue={setValue}
               errors={errors}
@@ -72,7 +62,7 @@ const CadastroDeMoto = () => {
             />
           )}
 
-          {etapaAtual === 4 && <Concluido />}
+          {etapaAtual === 3 && <Concluido />}
         </Box>
       </Box>
     </BaseFront>

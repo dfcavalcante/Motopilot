@@ -57,7 +57,7 @@ class Moto_service:
         db.commit()
         
         # Obter dados do modelo para notificação
-        modelo_moto = self.buscar_modelo_moto_por_id(db, db_moto.modelo_moto_id)
+        modelo_moto = self.buscar_moto_por_id(db, db_moto.moto_id)
         if modelo_moto:
             NotificationService(db).notificar_moto("deletada", id, modelo_moto.marca, modelo_moto.modelo)
         return True
@@ -77,7 +77,7 @@ class Moto_service:
         db.refresh(db_moto)
         
         # Obter dados do modelo para notificação
-        modelo_moto = self.buscar_modelo_moto_por_id(db, db_moto.modelo_moto_id)
+        modelo_moto = self.buscar_moto_por_id(db, db_moto.moto_id)
         if modelo_moto:
             NotificationService(db).notificar_moto("atualizada", db_moto.id, modelo_moto.marca, modelo_moto.modelo)
         return db_moto
@@ -95,7 +95,7 @@ class Moto_service:
         db.refresh(db_moto)
         
         # Obter dados do modelo para notificação
-        modelo_moto = self.buscar_modelo_moto_por_id(db, db_moto.modelo_moto_id)
+        modelo_moto = self.buscar_moto_por_id(db, db_moto.moto_id)
         if modelo_moto:
             NotificationService(db).notificar_moto("arquivada", db_moto.id, modelo_moto.marca, modelo_moto.modelo)
         return db_moto
@@ -113,7 +113,7 @@ class Moto_service:
         db.refresh(db_moto)
         
         # Obter dados do modelo para notificação
-        modelo_moto = self.buscar_modelo_moto_por_id(db, db_moto.modelo_moto_id)
+        modelo_moto = self.buscar_moto_por_id(db, db_moto.moto_id)
         if modelo_moto:
             NotificationService(db).notificar_moto("manual adicionado", db_moto.id, modelo_moto.marca, modelo_moto.modelo)
         return db_moto
