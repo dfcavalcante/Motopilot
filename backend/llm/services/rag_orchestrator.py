@@ -179,7 +179,7 @@ class RagOrchestrator:
         print("=======================================================")
 
         print("🤖 Gerando resumo [Diagnóstico]...")
-        diagnostico = perguntar_llm("Resuma em menos de 10 palavras qual foi a dúvida, sintoma, defeito ou problema central que iniciou esta conversa.")
+        diagnostico = perguntar_llm("Resuma em menos de 10 palavras qual foi o PROBLEMA ou DEFEITO REAL relatado na moto. Considere apenas peças que o mecânico disse estar com defeito ou precisando de troca. Se o mecânico apenas pediu informações ou medidas de algo sem dizer que estava com defeito, NÃO inclua isso no diagnóstico.")
         
         print("🤖 Gerando resumo [Atividades]...")
         atividades = perguntar_llm("Em NENHUMA HIPÓTESE ultrapasse 15 palavras. Resuma o que foi consertado ou qual ajuda foi prestada. Evite frases robóticas. Responda apenas o essencial (Ex: 'Troca da bateria e limpeza' ou 'Instruções para bateria passadas').")
@@ -188,7 +188,7 @@ class RagOrchestrator:
         observacoes = perguntar_llm("Qual foi a conclusão final ou dica geral dada ao término do atendimento? (resuma em 1 frase). Se não houve, apenas diga 'Nenhuma observação'.")
         
         print("🤖 Gerando resumo [Peças]...")
-        pecas_str = perguntar_llm("Quais PEÇAS PRINCIPAIS ou componentes com defeito foram o alvo real da dúvida ou conserto? Retorne APENAS os nomes separados por vírgula. NÃO cite peças acessórias, parafusos, terminais, conectores ou fios apenas mencionados no passo a passo. Exemplo: 'Bateria, Farol'. Se nenhuma, responda 'Nenhuma'.")
+        pecas_str = perguntar_llm("Quais peças foram relatadas como DEFEITUOSAS ou precisando de TROCA/CONSERTO? Liste APENAS peças com defeito real relatado pelo mecânico. Se o mecânico apenas perguntou medidas ou informações sobre uma peça sem relatar defeito, NÃO inclua essa peça. Retorne os nomes separados por vírgula. Se nenhuma peça estava defeituosa, responda 'Nenhuma'.")
         
         # Limpar a resposta das peças para uma lista
         pecas_list = []
@@ -197,6 +197,17 @@ class RagOrchestrator:
             # Pega peças separadas por virgula ou ' e '
             texto_pecas_limpo = pecas_str.replace('.', '').replace(' e ', ',')
             pecas_list = [p.strip().title() for p in texto_pecas_limpo.split(',') if p.strip()]
+            
+            # Remove artigos do início dos nomes (ex: "A Bateria" -> "Bateria")
+            artigos = ["A ", "O ", "As ", "Os ", "Um ", "Uma ", "Uns ", "Umas "]
+            pecas_limpas = []
+            for peca in pecas_list:
+                for artigo in artigos:
+                    if peca.startswith(artigo):
+                        peca = peca[len(artigo):]
+                        break
+                pecas_limpas.append(peca.strip())
+            pecas_list = pecas_limpas
 
         return {
             "diagnostico": diagnostico,

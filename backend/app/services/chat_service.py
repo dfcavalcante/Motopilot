@@ -81,6 +81,43 @@ class ChatService:
         self.limpar_historico_moto(moto_id)
         
         if isinstance(dados_resumo, dict):
+            # === DETECÇÃO DE PEÇAS DEFEITUOSAS POR ANÁLISE DE TEXTO ===
+            # Em vez de confiar no LLM (que alucina), analisamos as mensagens
+            # do MECÂNICO buscando nomes de peças do catálogo que apareçam
+            # perto de palavras indicativas de defeito/troca.
+            from app.models.peca_model import Peca
+            pecas_catalogo = [p.nome for p in self.db.query(Peca).all()]
+            
+            # Palavras que indicam defeito real (não apenas consulta informativa)
+            palavras_defeito = [
+                "defeito", "defeituoso", "problema", "quebrou", "estraga",
+                "não funciona", "não liga", "não pega", "parou", "falha",
+                "trocar", "troca", "trocando", "substituir", "substituição",
+                "consertar", "danificado", "estragado", "barulho", "vazando",
+                "com defeito", "precisa trocar", "preciso trocar"
+            ]
+            
+            # Junta apenas as mensagens do mecânico (não da IA)
+            mensagens_mecanico = ""
+            for log in logs_cronologicos:
+                mensagens_mecanico += f" {log.pergunta.lower()} "
+            
+            pecas_defeituosas = []
+            for peca_cat in pecas_catalogo:
+                peca_lower = peca_cat.lower()
+                # Verifica se a peça é mencionada pelo mecânico
+                if peca_lower in mensagens_mecanico:
+                    # Verifica se alguma palavra de defeito aparece na mesma mensagem
+                    for log in logs_cronologicos:
+                        msg = log.pergunta.lower()
+                        if peca_lower in msg:
+                            for palavra in palavras_defeito:
+                                if palavra in msg:
+                                    pecas_defeituosas.append(peca_cat)
+                                    break
+                            break
+            
+            dados_resumo["pecas"] = list(set(pecas_defeituosas))  # Remove duplicatas
             return dados_resumo
             
         # Fallback ultra-seguro
