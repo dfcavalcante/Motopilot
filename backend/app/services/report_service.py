@@ -1,4 +1,4 @@
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 from sqlalchemy import select
 from app.schemas.report_schema import ReportBase, ReportFilter, ReportResponse, ReportUpdate
 from app.models.report_model import Report
@@ -24,11 +24,11 @@ class ReportService():
 
     @staticmethod
     def buscar_relatorio_por_id(db: Session, report_id: int):
-        return db.scalars(select(Report).where(Report.id == report_id)).first()
+        return db.scalars(select(Report).options(joinedload(Report.moto)).where(Report.id == report_id)).first()
 
     @staticmethod
     def listar_relatorios(db: Session, filtros: ReportFilter):
-        query = select(Report)
+        query = select(Report).options(joinedload(Report.moto))
 
         if filtros.moto_id:
             query = query.where(Report.moto_id == filtros.moto_id)

@@ -58,11 +58,21 @@ class ReportFilter(BaseModel):
     #Quantos itens a API deve retornar em uma única respostas, para não sobrecarregar o BD
     per_page: int = Field(10, ge=1, le=100)
 
+class MotoResumo(BaseModel):
+    """Schema resumido da moto para exibição no relatório."""
+    id: int
+    marca: Optional[str] = None
+    modelo: Optional[str] = None
+    ano: Optional[int] = None
+    class Config:
+        from_attributes = True
+
 class ReportResponse(ReportBase):
     id:int
     status: str
     created_at : datetime
     updated_at : Optional[datetime]
+    moto: Optional[MotoResumo] = None
     class Config:
         from_attributes = True
 

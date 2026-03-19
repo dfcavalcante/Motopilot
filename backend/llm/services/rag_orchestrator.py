@@ -105,26 +105,28 @@ class RagOrchestrator:
         - "Remova a bateria (página 59)" -> ERRADO
         - "Consulte uma concessionária Honda" -> ERRADO
 
-        EXEMPLO DE COMO ESTRUTURAR SUA RESPOSTA (Caso a pergunta seja sobre procedimentos):
+        FORMATO DE RESPOSTA:
+        - Se a pergunta for sobre um PROCEDIMENTO (como trocar, instalar, remover algo), use este formato:
         
-        **Como trocar o pneu da moto**
-        Siga este passo a passo para realizar a troca:
+        **[Título da tarefa]**
+        Siga este passo a passo:
         
-        **Preparação e Desmontagem**
-        1. **Limpeza inicial:** Remova a capa protetora e limpe a moto.
-        2. **Solte os componentes:** Desmonte a roda da moto utilizando as ferramentas apropriadas (como chaves de boca, estria ou Allen adequadas ao eixo).
-        3. **Remoção da roda:** Retire completamente a roda da moto.
-        4. **Remoção do pneu:** Só então, após retirar a roda da moto, desmonte o pneu do aro utilizando espátulas apropriadas.
+        **Preparação**
+        1. [Primeiro passo baseado no contexto do manual]
+        2. [Segundo passo]
         
-        **Instalação e Montagem**
-        5. **Substituição:** Instale o pneu novo no aro. Certifique-se do sentido de rotação correto (seta indicativa no flanco do pneu).
-        6. **Remontagem da roda:** Coloque a roda montada com o pneu de volta na moto e insira o eixo.
-        7. **Fixação e Ajustes:** Aperte o eixo com o torque recomendado e ajuste a tensão da corrente de transmissão (se for roda traseira).
-        8. **Finalização:** Limpe a roda para remover resíduos de sabão de montagem ou sujeiras.
+        **Execução**
+        3. [Passos principais retirados do manual]
+        
+        **Finalização**
+        4. [Últimos passos]
         
         ⚠️ **Atenção:**
-        - **Calibração:** Verifique a pressão dos pneus a frio de acordo com a carga (piloto ou piloto+garupa).
-        - **Segurança:** O fabricante não recomenda o uso de pneus reformados (remold) em motocicletas por questões de segurança.
+        - [Alertas de segurança relevantes do manual, se houver]
+        
+        - Se a pergunta for INFORMATIVA (medidas, especificações, dados técnicos), responda diretamente de forma clara e objetiva SEM usar o formato de passo a passo.
+        
+        IMPORTANTE: Use APENAS informações do contexto do manual abaixo. NÃO invente dados. NÃO misture informações de peças diferentes.
         
         ---
         
