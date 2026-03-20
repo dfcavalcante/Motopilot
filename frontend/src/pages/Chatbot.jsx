@@ -39,6 +39,10 @@ const Chatbot = () => {
   }, [user?.id]);
 
   const nomeChat = motoSelecionada ? `${motoSelecionada.modelo}` : 'Novo Chat';
+  const estadoAtualMoto = String(motoSelecionada?.estado || '')
+    .trim()
+    .toLowerCase();
+  const motoConcluida = estadoAtualMoto === 'concluida' || estadoAtualMoto === 'concluída';
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -60,6 +64,11 @@ const Chatbot = () => {
   };
 
   const handleSendClick = () => {
+    if (motoConcluida) {
+      alert('Esta moto já foi concluída e não aceita novas mensagens no chat.');
+      return;
+    }
+
     if (input.trim()) {
       enviarMensagem(input, user?.id);
       setInput('');
@@ -146,7 +155,7 @@ const Chatbot = () => {
 
             <Typography fontSize={30}>{nomeChat}</Typography>
 
-            {messages.length > 0 && (
+            {messages.length > 0 && !motoConcluida && (
               <Box sx={{ position: 'absolute', right: 60 }}>
                 <BotaoFinalizar onFinalizar={handleFinalizarAtendimento} />
               </Box>
@@ -190,9 +199,14 @@ const Chatbot = () => {
                     input={input}
                     setInput={setInput}
                     onSend={handleSendClick}
-                    disabled={!motoSelecionada}
+                    disabled={!motoSelecionada || motoConcluida}
                   />
                 </Box>
+                {motoConcluida && (
+                  <Typography sx={{ mt: 1, color: '#4E4E4E', fontSize: 14 }}>
+                    Atendimento concluído. O chat desta moto está bloqueado.
+                  </Typography>
+                )}
               </TelaInicial>
             </Box>
           ) : (
@@ -227,8 +241,18 @@ const Chatbot = () => {
 
               {/* Caixa do Input */}
               <Box sx={{ width: '100%', maxWidth: 720, mb: 2 }}>
-                <ChatInput input={input} setInput={setInput} onSend={handleSendClick} />
+                <ChatInput
+                  input={input}
+                  setInput={setInput}
+                  onSend={handleSendClick}
+                  disabled={motoConcluida}
+                />
               </Box>
+              {motoConcluida && (
+                <Typography sx={{ mb: 2, color: '#4E4E4E', fontSize: 14 }}>
+                  Atendimento concluído. O chat desta moto está bloqueado.
+                </Typography>
+              )}
             </Box>
           )}
         </Box>

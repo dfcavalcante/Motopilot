@@ -23,6 +23,12 @@ class ReportService():
         relatorio_dict = relatorio_data.model_dump()
         if relatorio_dict.get("pecas") is not None:
             relatorio_dict["pecas"] = ", ".join(relatorio_dict["pecas"])
+
+        # Ao finalizar com relatório, a moto passa para concluída.
+        moto = db.get(Moto, relatorio_dict.get("moto_id"))
+        if moto:
+            moto.estado = "Concluída"
+
         db_relatorio = Report(**relatorio_dict)
 
         db.add(db_relatorio)

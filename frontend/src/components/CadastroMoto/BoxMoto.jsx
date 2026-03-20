@@ -1,7 +1,7 @@
 import { Box, Button, Typography } from '@mui/material';
 import React from 'react';
 
-const BoxMoto = ({ moto, onEnter, tipo = 'filha' }) => {
+const BoxMoto = ({ moto, onEnter, tipo = 'filha', mecanicoNome }) => {
   const fallbackSrc = '/images/Motopilot.jpeg';
 
   const getImageUrl = (caminhoDoBanco) => {
@@ -58,9 +58,9 @@ const BoxMoto = ({ moto, onEnter, tipo = 'filha' }) => {
           right: '12px',
           bgcolor: '#D9D9D9',
           borderRadius: '16px',
-          px: 2,
-          height: '15px',
-          width: '75px',
+          px: 1.5,
+          minHeight: '24px',
+          minWidth: '118px',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -70,7 +70,9 @@ const BoxMoto = ({ moto, onEnter, tipo = 'filha' }) => {
           variant="caption"
           sx={{
             color: 'black',
-            fontSize: '13px',
+            fontSize: '12px',
+            lineHeight: 1,
+            whiteSpace: 'nowrap',
           }}
         >
           {estado}
@@ -84,22 +86,28 @@ const BoxMoto = ({ moto, onEnter, tipo = 'filha' }) => {
           flexGrow: 1,
           display: 'flex',
           flexDirection: 'column',
-          justifyContent: 'space-between',
+          justifyContent: 'flex-start',
         }}
       >
-        <Box>
+        <Box sx={{ mb: 2 }}>
           <Typography variant="h6" fontWeight="bold" noWrap>
             {titulo}
           </Typography>
-          <Typography variant="body2" color="#484848" mt={1}>
+          <Typography variant="body2" color="#484848">
             {subtitulo}
           </Typography>
+          {tipo !== 'pai' && (
+            <Typography variant="body2" color="#484848"  noWrap sx={{ maxWidth: '100%' }}>
+              Mecânico: {mecanicoNome || 'Não atribuído'}
+            </Typography>
+          )}
         </Box>
 
         <Button
           variant="contained"
           onClick={() => onEnter(moto)}
           sx={{
+            mt: 'auto',
             bgcolor: '#D9D9D9',
             color: 'black',
             width: '80%',

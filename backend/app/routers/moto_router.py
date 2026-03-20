@@ -153,7 +153,11 @@ def atualizar_moto_endpoint(moto_id: int, moto_data: MotoUpdate, db: Session = D
 @router.patch('/{moto_id}/atribuir', response_model=MotoResponse)
 def atribuir_mecanico_endpoint(moto_id: int, dados: AtribuirMecanicoRequest, db: Session = Depends(get_db)):
     """Atribui a moto a um mecânico específico e altera o status para 'Em Manutenção'"""
-    moto_atualizada = moto_pai_service.atribuir_mecanico(db, moto_id, dados.mecanico_id)
+    try:
+        moto_atualizada = moto_pai_service.atribuir_mecanico(db, moto_id, dados.mecanico_id)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
     if not moto_atualizada:
         raise HTTPException(status_code=404, detail="Moto não encontrada")
     return moto_atualizada

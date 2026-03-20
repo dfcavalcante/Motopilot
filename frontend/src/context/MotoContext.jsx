@@ -1,4 +1,4 @@
-import { createContext, useEffect, useState } from 'react';
+import { createContext, useCallback, useEffect, useRef, useState } from 'react';
 import React from 'react';
 
 export const MotoContext = createContext();
@@ -8,6 +8,8 @@ export const MotoProvider = ({ children }) => {
   const [modelosMoto, setModelosMoto] = useState([]);
   const [loading, setLoading] = useState(false);
   const [erro, setErro] = useState(null);
+  const hasLoadedMotosRef = useRef(false);
+  const hasLoadedModelosRef = useRef(false);
 
   const BASE_URL = 'http://localhost:8000';
 
@@ -58,37 +60,57 @@ export const MotoProvider = ({ children }) => {
   }, [modeloPaiSelecionado]);
 
   // ------- LISTAR MOTOS ----------
-  const listarMotos = async () => {
-    try {
-      const response = await fetch(`${BASE_URL}/motos/listar`);
-
-      if (!response.ok) {
-        throw new Error('Erro ao buscar motos');
+  const listarMotos = useCallback(
+    async (force = false) => {
+      if (!force && hasLoadedMotosRef.current) {
+        return motos;
       }
 
-      const data = await response.json();
-      setMotos(data);
-    } catch (error) {
-      console.error('Erro no listarMotos:', error);
-    }
-  };
+      try {
+        const response = await fetch(`${BASE_URL}/motos/listar`);
+
+        if (!response.ok) {
+          throw new Error('Erro ao buscar motos');
+        }
+
+        const data = await response.json();
+        setMotos(data);
+        hasLoadedMotosRef.current = true;
+        return data;
+      } catch (error) {
+        console.error('Erro no listarMotos:', error);
+        return [];
+      }
+    },
+    [BASE_URL, motos]
+  );
 
   // ------- LISTAR MODELOS (MOTO PAI) ----------
-  const listarModelosMoto = async () => {
-    try {
-      const response = await fetch(`${BASE_URL}/motos/modeloMoto/listar`);
-
-      if (!response.ok) {
-        throw new Error('Erro ao buscar modelos de motos');
+  const listarModelosMoto = useCallback(
+    async (force = false) => {
+      if (!force && hasLoadedModelosRef.current) {
+        return modelosMoto;
       }
 
-      const data = await response.json();
-      setModelosMoto(Array.isArray(data) ? data : []);
-    } catch (error) {
-      console.error('Erro no listarModelosMoto:', error);
-      setErro(error.message);
-    }
-  };
+      try {
+        const response = await fetch(`${BASE_URL}/motos/modeloMoto/listar`);
+
+        if (!response.ok) {
+          throw new Error('Erro ao buscar modelos de motos');
+        }
+
+        const data = await response.json();
+        setModelosMoto(Array.isArray(data) ? data : []);
+        hasLoadedModelosRef.current = true;
+        return Array.isArray(data) ? data : [];
+      } catch (error) {
+        console.error('Erro no listarModelosMoto:', error);
+        setErro(error.message);
+        return [];
+      }
+    },
+    [BASE_URL, modelosMoto]
+  );
 
   // ------- ATUALIZAR MOTOS ----------
   const atualizarMoto = async (id, dadosAtualizados) => {
@@ -233,16 +255,26 @@ export const MotoProvider = ({ children }) => {
     setLoading(true);
     setErro(null);
     try {
-      await fetch(`${BASE_URL}/motos/${motoId}/atribuir`, {
+      const response = await fetch(`${BASE_URL}/motos/${motoId}/atribuir`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ mecanicoId: mecanicoId }),
       });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.detail || 'Erro ao atribuir moto');
+      }
+
+      const motoAtualizada = await response.json();
+      setMotos((prev) => prev.map((moto) => (moto.id === motoId ? motoAtualizada : moto)));
+      return true;
     } catch (error) {
       console.error(error);
       setErro(error.message);
+      return false;
     } finally {
       setLoading(false);
     }
