@@ -1,5 +1,6 @@
 import React from 'react';
 import { Box, Typography, Paper, Avatar, Tooltip, IconButton } from '@mui/material';
+import ReactMarkdown from 'react-markdown';
 
 // Componente de mensagem de chat, exibindo mensagens do bot e do usuário
 const ChatMessage = ({ text, isBot }) => {
@@ -31,8 +32,23 @@ const ChatMessage = ({ text, isBot }) => {
           border: isBot ? '1px solid #ffffff' : 'none',
         }}
       >
-        <Typography variant="body1" sx={{ wordBreak: 'break-word' }}>
-          {text}
+        <Typography 
+          variant="body1" 
+          component="div"
+          sx={{ 
+            wordBreak: 'break-word',
+            '& p': { mt: 0, mb: 1 },
+            '& p:last-child': { mb: 0 },
+            '& ul, & ol': { mt: 0, mb: 1, pl: 3 },
+            '& li': { mb: 0.5 },
+            '& strong': { fontWeight: 'bold' }
+          }}
+        >
+          {isBot ? (
+            <ReactMarkdown>{text}</ReactMarkdown>
+          ) : (
+            text
+          )}
         </Typography>
       </Box>
 

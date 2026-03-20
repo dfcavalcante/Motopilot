@@ -72,28 +72,61 @@ class ChatService:
             historico_str += f"IA: {log.resposta_ia}\n\n"
             
         # 3. Chamar LLM para resumo
-        resposta_bruta = self.rag.resumir_manutencao(historico_str)
+        dados_resumo = self.rag.resumir_manutencao(historico_str)
         
-        # 4. Tentar limpar e parsear JSON
-        try:
-            # Algumas IAs ainda teimam em colocar marcações markdown
-            clean_str = resposta_bruta.replace("```json", "").replace("```", "").strip()
-            dados_parsed = json.loads(clean_str)
+        # Como o método `resumir_manutencao` agora constrói e retorna um dicionário 
+        # python final fazendo perguntas atômicas, nós só precisamos repassar.
+        
+        # Limpar o histórico de chat desta moto para que não sangre para os próximos serviços
+        self.limpar_historico_moto(moto_id)
+        
+        if isinstance(dados_resumo, dict):
+            # === DETECÇÃO DE PEÇAS DEFEITUOSAS POR ANÁLISE DE TEXTO ===
+            # Em vez de confiar no LLM (que alucina), analisamos as mensagens
+            # do MECÂNICO buscando nomes de peças do catálogo que apareçam
+            # perto de palavras indicativas de defeito/troca.
+            from app.models.peca_model import Peca
+            pecas_catalogo = [p.nome for p in self.db.query(Peca).all()]
             
-            return {
-                "diagnostico": dados_parsed.get("diagnostico", "Não especificado."),
-                "atividades": dados_parsed.get("atividades", "Não especificado."),
-                "observacoes": dados_parsed.get("observacoes", "Não especificado."),
-                "pecas": dados_parsed.get("pecas", [])
-            }
-        except json.JSONDecodeError as e:
-            print(f"❌ Erro de parse JSON no resumo: {e} | Retorno foi: {resposta_bruta}")
-            return {
-                "diagnostico": "Erro ao extrair informações. Reveja a conversa manualmente.",
-                "atividades": "-",
-                "observacoes": f"Log bruto do LLM: {resposta_bruta[:150]}...",
-                "pecas": []
-            }
+            # Palavras que indicam defeito real (não apenas consulta informativa)
+            palavras_defeito = [
+                "defeito", "defeituoso", "problema", "quebrou", "estraga",
+                "não funciona", "não liga", "não pega", "parou", "falha",
+                "trocar", "troca", "trocando", "substituir", "substituição",
+                "consertar", "danificado", "estragado", "barulho", "vazando",
+                "com defeito", "precisa trocar", "preciso trocar"
+            ]
+            
+            # Junta apenas as mensagens do mecânico (não da IA)
+            mensagens_mecanico = ""
+            for log in logs_cronologicos:
+                mensagens_mecanico += f" {log.pergunta.lower()} "
+            
+            pecas_defeituosas = []
+            for peca_cat in pecas_catalogo:
+                peca_lower = peca_cat.lower()
+                # Verifica se a peça é mencionada pelo mecânico
+                if peca_lower in mensagens_mecanico:
+                    # Verifica se alguma palavra de defeito aparece na mesma mensagem
+                    for log in logs_cronologicos:
+                        msg = log.pergunta.lower()
+                        if peca_lower in msg:
+                            for palavra in palavras_defeito:
+                                if palavra in msg:
+                                    pecas_defeituosas.append(peca_cat)
+                                    break
+                            break
+            
+            dados_resumo["pecas"] = list(set(pecas_defeituosas))  # Remove duplicatas
+            return dados_resumo
+            
+        # Fallback ultra-seguro
+        return {
+            "diagnostico": "Erro.",
+            "atividades": "Erro.",
+            "observacoes": "Erro.",
+            "pecas": []
+        }
 
     def listar_historico(self, usuario_id: int):
         """Retorna todo o histórico de conversas de um usuário."""

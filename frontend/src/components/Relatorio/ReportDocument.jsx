@@ -167,7 +167,7 @@ const ReportDocument = ({ data, isEditing, onFieldChange }) => {
           <Typography variant="body2">{data.atividades}</Typography>
         )}
 
-        <SectionTitle title="4.3 PEÇAS UTILIZADAS" />
+        <SectionTitle title="4.3 PEÇAS DEFEITUOSAS" />
 
         {isEditing ? (
           <>
