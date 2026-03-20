@@ -38,14 +38,18 @@ const BotaoFinalizar = ({ onFinalizar }) => {
       }
       onClick={handleFinalizar}
       sx={{
-        borderRadius: '10px',
-        backgroundColor: '#676767',
+        height: 40,
+        minHeight: 40,
+        borderRadius: '8px',
+        color: '#000000',
+        backgroundColor: '#B5B5B5',
         textTransform: 'none',
         '&:hover': {
-          backgroundColor: '#676767',
+          backgroundColor: 'rgba(0, 0, 0, 0.2)',
         },
         '&:disabled': {
           backgroundColor: '#999',
+          color: '#000000',
         },
       }}
     >

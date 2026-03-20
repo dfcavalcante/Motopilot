@@ -42,7 +42,6 @@ const SideBar = ({ historico = [] }) => {
     },
   ];
 
-
   {
     open && (
       <Box sx={{ mb: 2 }}>
@@ -128,7 +127,7 @@ const SideBar = ({ historico = [] }) => {
         }}
       >
         <img
-          src={open ? 'images/leftAbrir.png' : 'images/rightFechar.png'}
+          src={open ? '/images/leftAbrir.png' : '/images/rightFechar.png'}
           alt={open ? 'Fechar' : 'Abrir'}
           style={{
             width: '8px',

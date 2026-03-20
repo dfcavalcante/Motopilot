@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { Box, Grid, Typography, Menu, MenuItem, IconButton } from '@mui/material';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import BaseFront from '../utils/BaseFront';
 import BoxMoto from '../components/CadastroMoto/BoxMoto';
 import { MotoContext } from '../context/MotoContext';
@@ -8,6 +9,7 @@ import BarraPesquisa from '../components/CadastroMoto/BarraPesquisa';
 import InformacoesMoto from '../components/Motos/InformacoesMoto';
 
 const ListagemMotosModelo = () => {
+  const navigate = useNavigate();
   const { modeloMotoId } = useParams();
   const {
     listarMotos,
@@ -80,7 +82,24 @@ const ListagemMotosModelo = () => {
   }
 
   return (
-    <BaseFront nome={modeloPai ? `${modeloPai.marca} ${modeloPai.modelo}` : 'Motos do modelo'}>
+    <BaseFront
+      nome={modeloPai ? `${modeloPai.marca} ${modeloPai.modelo}` : 'Motos do modelo'}
+      headerAction={
+        <IconButton
+          onClick={() => navigate(-1)}
+          sx={{
+            color: '#000000',
+            borderRadius: 2,
+            backgroundColor: '#B5B5B5',
+            width: 40,
+            height: 40,
+            '&:hover': { backgroundColor: 'rgba(0, 0, 0, 0.2)' },
+          }}
+        >
+          <ArrowBackIcon />
+        </IconButton>
+      }
+    >
       <Box display="flex" alignItems="center" mt={1} sx={{ width: '100%', px: 2 }}>
         <Box display="flex" alignItems="center" gap={3} sx={{ flex: 1 }}>
           <Box display="flex" alignItems="center" gap={1} ml={9}>

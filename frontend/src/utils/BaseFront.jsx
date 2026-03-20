@@ -3,7 +3,7 @@ import { Box, Stack, Typography, Divider } from '@mui/material';
 import SideBar from './SideBar';
 import Header from './Header.jsx';
 
-const BaseFront = ({ nome, icone, height, width, children }) => {
+const BaseFront = ({ nome, icone, height, width, children, headerAction }) => {
   return (
     <Box
       sx={{
@@ -35,7 +35,22 @@ const BaseFront = ({ nome, icone, height, width, children }) => {
               overflow: 'hidden',
             }}
           >
-            <Box display={'flex'} mb={2} alignItems="center" gap={2}>
+            <Box
+              sx={{
+                display: 'flex',
+                mb: 2,
+                alignItems: 'center',
+                gap: 2,
+                width: '100%',
+                justifyContent: 'center',
+                position: 'relative',
+              }}
+            >
+              {headerAction && (
+                <Box sx={{ position: 'absolute', left: 0, display: 'flex', alignItems: 'center' }}>
+                  {headerAction}
+                </Box>
+              )}
               <img src={icone} width={width} height={height} />
               <Typography fontSize={30}> {nome} </Typography>
             </Box>

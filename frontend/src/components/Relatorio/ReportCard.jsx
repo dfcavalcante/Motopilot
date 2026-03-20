@@ -124,9 +124,8 @@ const ReportCard = ({
           <Tooltip title="Excluir">
             <IconButton
               size="small"
-              color="error"
               onClick={() => onDelete(report.id)}
-              sx={{ border: '1px solid #ffebee', borderRadius: '8px' }}
+              sx={{ border: '1px solid #ffebee', color: '#616161', borderRadius: '8px' }}
             >
               <DeleteOutline sx={{ fontSize: 18, color: '#000000' }} />
             </IconButton>
