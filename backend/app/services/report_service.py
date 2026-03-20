@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session, joinedload
 from sqlalchemy import select, func
 from app.schemas.report_schema import ReportBase, ReportFilter, ReportResponse, ReportUpdate
 from app.models.report_model import Report
+from app.models.moto_model import Moto
 
 
 '''
@@ -12,6 +13,12 @@ Criar, excluir, arquivar, alterar, listar, filtrar, exportar
 
 class ReportService():
     @staticmethod
+    def _query_com_relacoes():
+        return select(Report).options(
+            joinedload(Report.moto).joinedload(Moto.modelo_moto)
+        )
+
+    @staticmethod
     def criar_relatorio(db: Session, relatorio_data: ReportBase) -> ReportResponse:
         relatorio_dict = relatorio_data.model_dump()
         if relatorio_dict.get("pecas") is not None:
@@ -20,17 +27,19 @@ class ReportService():
 
         db.add(db_relatorio)
         db.commit()
-        db.refresh(db_relatorio)
-
-        return db_relatorio
+        return db.scalars(
+            ReportService._query_com_relacoes().where(Report.id == db_relatorio.id)
+        ).first()
 
     @staticmethod
     def buscar_relatorio_por_id(db: Session, report_id: int):
-        return db.scalars(select(Report).options(joinedload(Report.moto)).where(Report.id == report_id)).first()
+        return db.scalars(
+            ReportService._query_com_relacoes().where(Report.id == report_id)
+        ).first()
 
     @staticmethod
     def listar_relatorios(db: Session, filtros: ReportFilter):
-        query = select(Report).options(joinedload(Report.moto))
+        query = ReportService._query_com_relacoes()
 
         if filtros.moto_id:
             query = query.where(Report.moto_id == filtros.moto_id)
@@ -65,8 +74,9 @@ class ReportService():
             return None
         db_relatorio.status = "concluido"
         db.commit()
-        db.refresh(db_relatorio)
-        return db_relatorio
+        return db.scalars(
+            ReportService._query_com_relacoes().where(Report.id == report_id)
+        ).first()
         
     @staticmethod
     def atualizar_relatorio(db: Session, report_id: int, relatorio_data: ReportUpdate):
@@ -81,8 +91,9 @@ class ReportService():
             setattr(db_relatorio, key, value)
 
         db.commit()
-        db.refresh(db_relatorio)
-        return db_relatorio
+        return db.scalars(
+            ReportService._query_com_relacoes().where(Report.id == report_id)
+        ).first()
 
     @staticmethod
     def graficos_relatorio(db: Session):
@@ -126,8 +137,9 @@ class ReportService():
         
         db_relatorio.status = "Aprovado"
         db.commit()
-        db.refresh(db_relatorio)
-        return db_relatorio
+        return db.scalars(
+            ReportService._query_com_relacoes().where(Report.id == report_id)
+        ).first()
 
     @staticmethod
     def arquivar_relatorio(db: Session, report_id: int):

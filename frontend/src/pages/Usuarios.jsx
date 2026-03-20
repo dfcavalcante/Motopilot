@@ -58,17 +58,24 @@ const Usuarios = () => {
           flexGrow: 100,
           width: '100%',
           borderRadius: '16px',
-          pl: 8,
-          pr: 8,
-          mt: 2,
+          boxSizing: 'border-box',
           overflowY: 'auto',
+          mt: 2, 
           ...(viewMode === 'grid'
             ? {
                 display: 'grid',
-                gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', md: 'repeat(3, 1fr)' },
+                gridTemplateColumns: { xs: '1fr', sm: 'repeat(3, 1fr)', md: 'repeat(4, 1fr)' },
+                gap: 3,
+                p: 3,
+                justifyItems: 'center',
                 alignContent: 'flex-start',
               }
-            : { display: 'flex', flexDirection: 'column' }),
+            : {
+                display: 'flex',
+                flexDirection: 'column',
+                paddingLeft: 4,
+                paddingRight: 4,
+              }),
         }}
       >
         {viewMode === 'list' && <TableHeader />}

@@ -37,3 +37,11 @@ class Moto(Base):
     chat_logs = relationship("ChatLog", back_populates="moto")
     mecanico = relationship("User", back_populates="motos_atribuidas")
     relatorios = relationship("Report", back_populates="moto")
+
+    @property
+    def marca(self):
+        return self.modelo_moto.marca if self.modelo_moto else None
+
+    @property
+    def modelo(self):
+        return self.modelo_moto.modelo if self.modelo_moto else None

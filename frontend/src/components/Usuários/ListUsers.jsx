@@ -1,15 +1,16 @@
 import React from 'react';
 import { Box, Typography, IconButton } from '@mui/material';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
 
 const UserRow = ({ usuario, onEdit, onDelete, setAtualizando, atualizando }) => {
   return (
     <Box
       sx={{
-        display: 'flex',
+        display: 'grid',
+        gridTemplateColumns: '2.2fr 2.2fr 1.5fr 1fr auto',
+        columnGap: 2,
         alignItems: 'center',
         width: '100%',
+        px: 2,
         py: 0.5,
         borderBottom: '1px solid #E0E0E0',
         bgcolor: 'transparent',
@@ -23,11 +24,10 @@ const UserRow = ({ usuario, onEdit, onDelete, setAtualizando, atualizando }) => 
       {/* COLUNA 1: NOME (25%)*/}
       <Box
         sx={{
-          width: '25%',
           display: 'flex',
           alignItems: 'center',
-          justifyContent: 'center',
           gap: 2,
+          minWidth: 0,
         }}
       >
         <Box
@@ -50,26 +50,26 @@ const UserRow = ({ usuario, onEdit, onDelete, setAtualizando, atualizando }) => 
       </Box>
 
       {/* COLUNA 2: EMAIL (25%)*/}
-      <Box sx={{ width: '25%', display: 'flex', justifyContent: 'center' }}>
-        <Typography variant="body2" color="black" noWrap fontSize={16} textAlign="center">
+      <Box sx={{ display: 'flex', minWidth: 0 }}>
+        <Typography variant="body2" color="black" noWrap fontSize={16} textAlign="left">
           {usuario.email}
         </Typography>
       </Box>
 
       {/*COLUNA 3: FUNÇÃO (15%)*/}
-      <Box sx={{ width: '20%', display: 'flex', justifyContent: 'center' }}>
-        <Typography color="black" noWrap fontSize={16} textAlign="center">
+      <Box sx={{ display: 'flex', minWidth: 0 }}>
+        <Typography color="black" noWrap fontSize={16} textAlign="left">
           {usuario.funcao}
         </Typography>
       </Box>
 
       {/*COLUNA 4: STATUS (20%) - Centralizado*/}
-      <Box sx={{ width: '20%', display: 'flex', justifyContent: 'center' }}>
+      <Box sx={{ display: 'flex', justifyContent: 'flex-start' }}>
         <Box sx={{ width: 10, height: 10, borderRadius: '50%', bgcolor: '#C5C5C5' }} />
       </Box>
 
       {/* AÇÕES (10%) - Alinhado à direita */}
-      <Box sx={{ width: '8%', display: 'flex', justifyContent: 'flex-end', gap: 1 }}>
+      <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1 }}>
         <IconButton
           size="small"
           onClick={() => {
