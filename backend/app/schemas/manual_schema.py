@@ -27,4 +27,4 @@ class ManualResponse(ManualBase):
     #status para saber se a LLM já poderá utilizar o manual
     status_processamento: str = Field("Pendente", example="Processado")
     class Config:
-        from_atrributes = True
+        from_attributes = True
