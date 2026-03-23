@@ -1,5 +1,6 @@
 import { createContext, useState, useCallback } from 'react';
 import React from 'react';
+import { getAuthHeaders } from './LoginContext';
 
 export const UsersContext = createContext();
 
@@ -36,7 +37,9 @@ export const UsersProvider = ({ children }) => {
   // --- LISTAR ---
   const listarUsers = useCallback(async () => {
     try {
-      const response = await fetch(`${BASE_URL}/users/listar`);
+      const response = await fetch(`${BASE_URL}/users/listar`, {
+        headers: { ...getAuthHeaders() },
+      });
 
       if (!response.ok) {
         throw new Error('Erro ao buscar Users');
@@ -60,6 +63,7 @@ export const UsersProvider = ({ children }) => {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
+          ...getAuthHeaders(),
         },
         body: JSON.stringify(dadosAtualizados),
       });
@@ -87,6 +91,7 @@ export const UsersProvider = ({ children }) => {
       try {
         const response = await fetch(`${BASE_URL}/users/${id}/deletar`, {
           method: 'DELETE',
+          headers: { ...getAuthHeaders() },
         });
         if (!response.ok) {
           throw new Error('Erro ao excluir User');

@@ -8,13 +8,15 @@ export const LoginProvider = ({ children }) => {
 
   useEffect(() => {
     try {
-      const storedUser = localStorage.getItem('@SeuApp:user');
-      if (storedUser) {
+      const storedUser = localStorage.getItem('@MotoPilot:user');
+      const storedToken = localStorage.getItem('@MotoPilot:token');
+      if (storedUser && storedToken) {
         setUser(JSON.parse(storedUser));
       }
     } catch (error) {
       console.error('Erro ao restaurar sessão do usuário:', error);
-      localStorage.removeItem('@SeuApp:user');
+      localStorage.removeItem('@MotoPilot:user');
+      localStorage.removeItem('@MotoPilot:token');
       setUser(null);
     } finally {
       setIsAuthInitializing(false);
@@ -35,10 +37,12 @@ export const LoginProvider = ({ children }) => {
         throw new Error('Email ou senha incorretos');
       }
 
-      const userData = await response.json();
+      const data = await response.json();
 
-      setUser(userData);
-      localStorage.setItem('@SeuApp:user', JSON.stringify(userData));
+      // Salvar token e dados do usuário separadamente
+      localStorage.setItem('@MotoPilot:token', data.access_token);
+      localStorage.setItem('@MotoPilot:user', JSON.stringify(data.user));
+      setUser(data.user);
 
       return true;
     } catch (error) {
@@ -50,7 +54,8 @@ export const LoginProvider = ({ children }) => {
   // ------- LOGOUT -----------
   const logout = () => {
     setUser(null);
-    localStorage.removeItem('@SeuApp:user');
+    localStorage.removeItem('@MotoPilot:user');
+    localStorage.removeItem('@MotoPilot:token');
   };
 
   return (
@@ -59,6 +64,16 @@ export const LoginProvider = ({ children }) => {
     </LoginContext.Provider>
   );
 };
+
+/**
+ * Retorna os headers de autenticação para chamadas à API.
+ * Pode ser importado e usado em qualquer contexto/serviço.
+ */
+export function getAuthHeaders() {
+  const token = localStorage.getItem('@MotoPilot:token');
+  if (!token) return {};
+  return { Authorization: `Bearer ${token}` };
+}
 
 export const useLogin = () => {
   return useContext(LoginContext);

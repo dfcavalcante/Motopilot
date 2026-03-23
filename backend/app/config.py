@@ -63,6 +63,13 @@ class Settings(BaseSettings):
     K_NEIGHBORS: int = 50
 
     # =================================================================
+    # 6. JWT (Autenticação)
+    # =================================================================
+    JWT_SECRET_KEY: str = "motopilot-secret-key-change-in-production"
+    JWT_ALGORITHM: str = "HS256"
+    JWT_EXPIRATION_HOURS: int = 8
+
+    # =================================================================
     # Configuração do Pydantic
     # =================================================================
     model_config = SettingsConfigDict(

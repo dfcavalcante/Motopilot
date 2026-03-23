@@ -1,4 +1,5 @@
 import { createContext, useCallback, useState } from 'react';
+import { getAuthHeaders } from './LoginContext';
 
 export const ReportContext = createContext();
 
@@ -19,7 +20,7 @@ export const ReportProvider = ({ children }) => {
       try {
         const response = await fetch(`${BASE_URL}/relatorio/`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
           body: JSON.stringify(dados),
         });
 
@@ -55,7 +56,9 @@ export const ReportProvider = ({ children }) => {
         params.append('page', filtros.page || 1);
         params.append('per_page', filtros.per_page || 10);
 
-        const response = await fetch(`${BASE_URL}/relatorio/?${params.toString()}`);
+        const response = await fetch(`${BASE_URL}/relatorio/?${params.toString()}`, {
+          headers: { ...getAuthHeaders() },
+        });
 
         if (!response.ok) {
           throw new Error('Erro ao buscar relatórios.');
@@ -81,7 +84,9 @@ export const ReportProvider = ({ children }) => {
       setLoading(true);
       setErro(null);
       try {
-        const response = await fetch(`${BASE_URL}/relatorio/${reportId}`);
+        const response = await fetch(`${BASE_URL}/relatorio/${reportId}`, {
+          headers: { ...getAuthHeaders() },
+        });
 
         if (!response.ok) {
           throw new Error('Relatório não encontrado.');
@@ -109,7 +114,7 @@ export const ReportProvider = ({ children }) => {
       try {
         const response = await fetch(`${BASE_URL}/relatorio/${reportId}/atualizar`, {
           method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
           body: JSON.stringify(dados),
         });
 
@@ -142,6 +147,7 @@ export const ReportProvider = ({ children }) => {
       try {
         const response = await fetch(`${BASE_URL}/relatorio/${reportId}`, {
           method: 'DELETE',
+          headers: { ...getAuthHeaders() },
         });
 
         if (!response.ok) {

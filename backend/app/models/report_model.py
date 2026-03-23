@@ -7,7 +7,6 @@ class Report(Base):
     __tablename__ = "relatorios"
 
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
-    pecas = Column(Text, nullable=True)
 
     # Chaves Estrangeiras
     cliente_id = Column(Integer, ForeignKey("users.id"), nullable=False)

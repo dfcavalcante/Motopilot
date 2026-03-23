@@ -2,6 +2,8 @@ from fastapi import APIRouter, Depends, HTTPException
 from app.services.report_service import ReportService
 from app.schemas.report_schema import ReportBase, ReportFilter, ReportResponse, ReportUpdate
 from app.database import get_db
+from app.services.jwt_service import get_current_user
+from app.models.user_model import User
 from sqlalchemy.orm import Session
 
 router = APIRouter(prefix="/relatorio", tags=['Relatório'])
@@ -9,12 +11,12 @@ router = APIRouter(prefix="/relatorio", tags=['Relatório'])
 report_service = ReportService()
 
 @router.post("/", response_model=ReportResponse)
-def criar_relatorio_endpoint(relatorio: ReportBase, db: Session = Depends(get_db)):
+def criar_relatorio_endpoint(relatorio: ReportBase, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     novo_relatorio = report_service.criar_relatorio(db, relatorio)
     return novo_relatorio
 
 @router.delete("/{report_id}", response_model=ReportResponse)
-def deletar_relatorio_endpoint(report_id: int, db: Session = Depends(get_db)):
+def deletar_relatorio_endpoint(report_id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     deletar_relatorio = report_service.deletar_relatorio(db, report_id)
     if not deletar_relatorio:
         raise HTTPException(status_code=404, detail="Relatório não encontrado")
@@ -40,14 +42,14 @@ def arquivar_relatorio_endpoint(report_id: int, db: Session = Depends(get_db)):
     return arquivar_relatorio
 
 @router.patch("/{report_id}/aprovar", response_model=ReportResponse)
-def aprovar_relatorio_endpoint(report_id: int, db: Session = Depends(get_db)):
+def aprovar_relatorio_endpoint(report_id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     aprovar_relatorio = report_service.aprovar_relatorio(db, report_id)
     if not aprovar_relatorio:
         raise HTTPException(status_code=404, detail="Relatório não encontrado")
     return aprovar_relatorio
 
 @router.patch("/{report_id}/atualizar", response_model=ReportResponse)
-def atualizar_relatorio_endpoint(report_id: int, relatorio: ReportUpdate, db: Session = Depends(get_db)):
+def atualizar_relatorio_endpoint(report_id: int, relatorio: ReportUpdate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     atualizar_relatorio = report_service.atualizar_relatorio(db, report_id, relatorio)
     if not atualizar_relatorio:
         raise HTTPException(status_code=404, detail="Relatório não encontrado")

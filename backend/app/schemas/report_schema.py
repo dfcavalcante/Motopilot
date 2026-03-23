@@ -10,7 +10,6 @@ class ReportBase(BaseModel):
     moto_id:  int = Field(..., example=1)
     cliente_id: int = Field(..., example=2)
     diagnostico: str = Field(..., example="O diagnóstico que foi feito é que teve um reator da moto que explodiu e o pedal que saltou pra fora bla bla")
-    pecas: Optional[list[str]] = Field(None, example=["motor", "pedal", "buzina"])
 
     #Mecânico(s) responsáveis pela manutenção
     mecanicos: str = Field(..., example="Marquinhos do Prompt")

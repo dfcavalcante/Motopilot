@@ -50,10 +50,14 @@ class UserResponse(UserPublic):
         from_attributes = True # Permite ler dados do SQLAlchemy
 
 class Token(BaseModel):
-    #Precisa do token dps do login ser bem sucedido
-    acess_token: str
+    access_token: str
+    token_type: str = "bearer"
+
+class LoginResponse(BaseModel):
+    access_token: str
+    token_type: str = "bearer"
+    user: UserResponse
 
 class UserLogin(BaseModel):
     email: EmailStr
-    senha: str
-    #acho que nao precisa verificar o cargo no login, apenas no registro já basta eu acho
+    senha: str
