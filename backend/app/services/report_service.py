@@ -45,7 +45,7 @@ class ReportService():
 
     @staticmethod
     def deletar_relatorio(db: Session, report_id: int):
-        db_relatorio = db.scalars(select(Report).where(Report.id == report_id)).first()
+        db_relatorio = db.scalars(select(Report).options(joinedload(Report.moto)).where(Report.id == report_id)).first()
         if not db_relatorio:
             return None
         db.delete(db_relatorio)

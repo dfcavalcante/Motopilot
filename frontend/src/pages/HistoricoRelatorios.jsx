@@ -5,6 +5,7 @@ import { ReportContext } from '../context/ReportContext.jsx';
 import { useLogin } from '../context/LoginContext.jsx';
 import ReportCard from '../components/Relatorio/ReportCard.jsx';
 import ReportDetailsDialog from '../components/Relatorio/ReportDetailsDialog.jsx';
+import generateReportPdf from '../utils/generateReportPdf.js';
 
 const HistoricoRelatorios = () => {
   const {
@@ -38,9 +39,7 @@ const HistoricoRelatorios = () => {
   };
 
   const handleDownloadPDF = (report) => {
-    console.log('Downloading...', report);
-    alert('PDF em fase de processamento.');
-    //um dia eu impleplemento
+    generateReportPdf(report);
   };
 
   const handleSaveReport = async (updatedData) => {
