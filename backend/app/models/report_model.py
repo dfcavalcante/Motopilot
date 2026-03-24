@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, ForeignKey, Text, DateTime
+from sqlalchemy import Column, Integer, ForeignKey, Text, DateTime, String
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from app.database import Base
@@ -33,3 +33,5 @@ class Report(Base):
     moto = relationship("Moto", back_populates="relatorios")
 
     # TODO: fotos e assinatura digital
+    imagem_path = Column(String(255), nullable=True)
+    assinatura_path = Column(String(255), nullable=True)

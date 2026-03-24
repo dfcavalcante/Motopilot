@@ -1,6 +1,7 @@
 import { useContext, useEffect, useMemo, useState } from 'react';
 import { ReportContext } from '../context/ReportContext.jsx';
 import { useLogin } from '../context/LoginContext.jsx';
+import generateReportPdf  from '../utils/generateReportPdf.jsx';
 
 export const HookHistoricoRelatorios = () => {
   const {
@@ -45,8 +46,7 @@ export const HookHistoricoRelatorios = () => {
   };
 
   const handleDownloadPDF = (report) => {
-    console.log('Downloading...', report);
-    alert('PDF em fase de processamento.');
+    generateReportPdf(report);
   };
 
   const handleSaveReport = async (updatedData) => {
