@@ -28,7 +28,7 @@ class Auth_service:
             )
 
         # Gerar JWT com o ID do usuário
-        access_token = create_access_token(data={"sub": user.id})
+        access_token = create_access_token(data={"sub": str(user.id)})
 
         return {
             "access_token": access_token,
