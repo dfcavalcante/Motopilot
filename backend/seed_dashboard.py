@@ -24,7 +24,15 @@ def run_seed():
         db.add(empresa)
         db.commit()
     
-    # 2. Cria Mecânicos e Cliente
+    from app.services.security_service import get_password_hash
+    # 2. Cria Admin, Mecânicos e Cliente
+    admin = db.query(User).filter(User.email == "email@gmail.com").first()
+    if not admin:
+        admin = User(
+            nome="Admin Motopilot", email="email@gmail.com", senha=get_password_hash("Senha123"), matricula="DEV-000", funcao="GERENTE", empresa_id=empresa.id
+        )
+        db.add(admin)
+        
     mecanico1 = db.query(User).filter(User.email == "mec1@teste.com").first()
     if not mecanico1:
         mecanico1 = User(

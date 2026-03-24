@@ -19,17 +19,17 @@ class Settings(BaseSettings):
     # =================================================================
     # Valores padrão (fallback) caso o .env falhe ou não exista
     POSTGRES_USER: str = "postgres"
-    POSTGRES_PASSWORD: str = "12345" # Lembre-se: O ideal é vir do .env
+    POSTGRES_PASSWORD: str = "admin" # Lembre-se: O ideal é vir do .env
     POSTGRES_DB: str = "motopilot_db"
-    POSTGRES_HOST: str = "localhost"
+    POSTGRES_HOST: str = "127.0.0.1"
     POSTGRES_PORT: int = 5432
 
     @property
     def DATABASE_URL(self) -> str:
         """
-        Monta a URL de conexão usando SQLite (fácil para testes locais).
+        Monta a URL de conexão usando PostgreSQL.
         """
-        return "sqlite:///./motopilot.db"
+        return f"postgresql://{self.POSTGRES_USER}:{quote_plus(self.POSTGRES_PASSWORD)}@{self.POSTGRES_HOST}:{self.POSTGRES_PORT}/{self.POSTGRES_DB}"
 
     # =================================================================
     # 3. Banco de Dados Vetorial (ChromaDB)
