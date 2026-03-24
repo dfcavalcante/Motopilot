@@ -38,7 +38,7 @@ const Login = () => {
       container
       sx={{
         minHeight: '100vh',
-        bgcolor: '#D9D9D9',
+        background: 'linear-gradient(#E71010, #990000)',
         pl: { xs: 2, md: 40 },
         pr: { xs: 2, md: 4 },
         py: 4,
@@ -58,11 +58,11 @@ const Login = () => {
         }}
       >
         <img
-          src="/images/Motopilot Logo.png"
+          src="/images/LogoNovaGrande.png"
           alt="Motopilot Logo"
           style={{
             maxWidth: '80%',
-            height: '300px',
+            height: '100px',
             width: '550px',
           }}
         />
@@ -72,7 +72,7 @@ const Login = () => {
       <Grid item xs={12} md={8} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
         <Box
           sx={{
-            backgroundColor: 'white',
+            backgroundColor: '#FFFFFF',
             borderRadius: 4,
             width: { xs: '100%', md: '700px' }, //aq q muda a altura
             minHeight: { xs: 'auto', md: 800 },
@@ -83,7 +83,7 @@ const Login = () => {
           }}
         >
           <Stack spacing={4} alignItems="center">
-            <img src="/images/Motopilot Logo-modified.png" alt="Motopilot Logo" width="90" />
+            <img src="/images/LogoNova.png" alt="Motopilot Logo" width="90" />
 
             <form onSubmit={handleSubmit} style={{ width: '100%' }}>
               <InputLabel sx={{ color: 'black', fontSize: 16, mb: 1 }}>Email</InputLabel>
@@ -152,7 +152,7 @@ const Login = () => {
 
               <Button
                 sx={{
-                  backgroundColor: '#676767',
+                  backgroundColor: '#F30000',
                   width: '100%',
                   mt: 3,
                   height: 50,
