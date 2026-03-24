@@ -223,6 +223,9 @@ export const MotoProvider = ({ children }) => {
       const formData = new FormData();
       formData.append('marca', dados.marca || '');
       formData.append('modelo', dados.modelo || '');
+      if (dados.imagem_moto instanceof File) {
+        formData.append('imagem_moto', dados.imagem_moto);
+      }
 
       const response = await fetch(`${BASE_URL}/motos/modeloMoto/criar`, {
         method: 'POST',

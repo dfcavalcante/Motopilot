@@ -4,7 +4,7 @@ import { Box, Typography, IconButton } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import InsertPhotoIcon from '@mui/icons-material/InsertPhoto';
 
-const ImageUploader = ({ onFileSelect, arquivo, error }) => {
+const ImageUploader = ({ onFileSelect, arquivo, error, readOnly = false }) => {
   const [preview, setPreview] = useState(null);
 
   useEffect(() => {
@@ -28,18 +28,24 @@ const ImageUploader = ({ onFileSelect, arquivo, error }) => {
 
   const onDrop = useCallback(
     (acceptedFiles) => {
+      if (readOnly) {
+        return;
+      }
       if (acceptedFiles?.length > 0) {
         const file = acceptedFiles[0];
         onFileSelect(file);
       }
     },
-    [onFileSelect]
+    [onFileSelect, readOnly]
   );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     accept: { 'image/*': ['.jpeg', '.jpg', '.png', '.webp'] },
     maxFiles: 1,
+    noClick: readOnly,
+    noDrag: readOnly,
+    disabled: readOnly,
   });
 
   const removeImage = (e) => {
@@ -79,22 +85,24 @@ const ImageUploader = ({ onFileSelect, arquivo, error }) => {
 
         {preview ? (
           <Box sx={{ width: '100%', height: '100%', position: 'relative' }}>
-            <IconButton
-              onClick={removeImage}
-              sx={{
-                position: 'absolute',
-                top: 8,
-                right: 8,
-                backgroundColor: 'rgba(0,0,0,0.6)',
-                color: 'white',
-                '&:hover': { backgroundColor: 'rgba(0,0,0,0.8)' },
-                zIndex: 2,
-                padding: '4px',
-              }}
-              size="small"
-            >
-              <CloseIcon fontSize="small" />
-            </IconButton>
+            {!readOnly && (
+              <IconButton
+                onClick={removeImage}
+                sx={{
+                  position: 'absolute',
+                  top: 8,
+                  right: 8,
+                  backgroundColor: 'rgba(0,0,0,0.6)',
+                  color: 'white',
+                  '&:hover': { backgroundColor: 'rgba(0,0,0,0.8)' },
+                  zIndex: 2,
+                  padding: '4px',
+                }}
+                size="small"
+              >
+                <CloseIcon fontSize="small" />
+              </IconButton>
+            )}
 
             <img
               src={preview}
@@ -135,23 +143,29 @@ const ImageUploader = ({ onFileSelect, arquivo, error }) => {
               variant="body2"
               sx={{ color: error ? '#d32f2f' : '#333', fontSize: '0.9rem' }}
             >
-              {isDragActive ? 'Solte para adicionar' : 'Arraste imagem aqui'}
+              {readOnly
+                ? 'Imagem herdada da moto pai'
+                : isDragActive
+                  ? 'Solte para adicionar'
+                  : 'Arraste imagem aqui'}
             </Typography>
 
-            <Box
-              sx={{
-                backgroundColor: '#666',
-                color: 'white',
-                padding: '8px 24px',
-                borderRadius: '50px',
-                fontSize: '0.75rem',
-                fontWeight: 500,
-                mt: 1,
-                boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
-              }}
-            >
-              Procurar neste Dispositivo
-            </Box>
+            {!readOnly && (
+              <Box
+                sx={{
+                  backgroundColor: '#666',
+                  color: 'white',
+                  padding: '8px 24px',
+                  borderRadius: '50px',
+                  fontSize: '0.75rem',
+                  fontWeight: 500,
+                  mt: 1,
+                  boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
+                }}
+              >
+                Procurar neste Dispositivo
+              </Box>
+            )}
           </Box>
         )}
       </Box>

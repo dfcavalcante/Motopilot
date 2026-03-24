@@ -33,13 +33,16 @@ class ModeloMotoBase(BaseModel):
     marca: str
     modelo: str
 
+    imagem_moto: str
+
 
 class ModeloMotoResponse(BaseModel):
     id: int
     marca: str
     modelo: str
+    imagem_moto: Optional[str] = Field(None, alias="imagemMoto")
 
-    model_config = ConfigDict(from_attributes=True)
+    model_config = ConfigDict(from_attributes=True, populate_by_name=True)
 
 
 class MotoUpdate(BaseModel):

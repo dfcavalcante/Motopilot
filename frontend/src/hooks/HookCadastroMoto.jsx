@@ -12,7 +12,7 @@ const motoSchema = z.object({
   ano: z.string().min(4, 'O ano deve ter 4 dígitos.'),
   numeroSerie: z.string().min(1, 'O número de série é obrigatório.'),
   descricao: z.string().optional(),
-  foto: z.any().refine((file) => file, 'A foto da moto é obrigatória.'),
+  foto: z.any().optional(),
   manual_pdf_path: z.any().optional(), // Validado no segundo passo
 });
 
@@ -56,14 +56,24 @@ export const HookCadastroMoto = () => {
     if (modeloPaiSelecionado) {
       setValue('marca', modeloPaiSelecionado.marca || '');
       setValue('modelo', modeloPaiSelecionado.modelo || '');
+      setValue(
+        'foto',
+        modeloPaiSelecionado.imagemMoto || modeloPaiSelecionado.imagem_moto || null,
+        { shouldValidate: true }
+      );
     }
   }, [modeloPaiSelecionado, setValue]);
 
   const handleProximo = async () => {
     // Validação da etapa 1: campos obrigatórios
-    const camposValidos = await trigger(['modelo', 'marca', 'ano', 'numeroSerie', 'foto']);
+    const camposValidos = await trigger(['modelo', 'marca', 'ano', 'numeroSerie']);
     if (!camposValidos) {
       toast.warning('Preencha os campos obrigatórios.'); // <-- Notificação visual
+      return;
+    }
+
+    if (!modeloPaiSelecionado?.id) {
+      toast.warning('Selecione um modelo de moto pai antes de continuar.');
       return;
     }
 
@@ -120,7 +130,6 @@ export const HookCadastroMoto = () => {
     formData.append('ano', data.ano);
     formData.append('numeroSerie', data.numeroSerie);
     formData.append('descricao', data.descricao || '');
-    formData.append('imagem_moto', data.foto[0] || data.foto);
     formData.append('documento_pdf', data.manual_pdf_path);
 
     try {
@@ -150,6 +159,7 @@ export const HookCadastroMoto = () => {
     handleProximo,
     handleVoltar,
     watch,
+    modeloPaiSelecionado,
   };
 };
 

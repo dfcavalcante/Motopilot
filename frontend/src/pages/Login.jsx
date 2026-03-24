@@ -39,7 +39,7 @@ const Login = () => {
       sx={{
         minHeight: '100vh',
         background: 'linear-gradient(#E71010, #990000)',
-        pl: { xs: 2, md: 40 },
+        pl: { xs: 2, md: 15 },
         pr: { xs: 2, md: 4 },
         py: 4,
       }}
@@ -47,23 +47,14 @@ const Login = () => {
       justifyContent="space-between"
     >
       {/* Lado Esquerdo: Logo Principal */}
-      <Grid
-        item
-        xs={12}
-        md={4}
-        sx={{
-          display: 'flex',
-          justifyContent: { xs: 'center', md: 'flex-start' },
-          mb: { xs: 4, md: 0 },
-        }}
-      >
+      <Grid>
         <img
           src="/images/LogoNovaGrande.png"
           alt="Motopilot Logo"
           style={{
-            maxWidth: '80%',
-            height: '100px',
-            width: '550px',
+            maxWidth: '100%',
+            height: '90px',
+            width: '700px',
           }}
         />
       </Grid>
@@ -92,11 +83,12 @@ const Login = () => {
                   '& .MuiOutlinedInput-root': {
                     borderRadius: '12px',
                     backgroundColor: '#fff',
-                    '& fieldset': { borderColor: '#e0e0e0' },
+                    '& fieldset': { borderColor: '#969696' },
                   },
                   '& input:-webkit-autofill': {
                     WebkitBoxShadow: '0 0 0 1000px white inset',
                   },
+                  
                 }}
                 fullWidth
                 placeholder="Insira seu e-mail"
@@ -120,7 +112,7 @@ const Login = () => {
                   '& .MuiOutlinedInput-root': {
                     borderRadius: '12px',
                     backgroundColor: '#fff',
-                    '& fieldset': { borderColor: '#e0e0e0' },
+                    '& fieldset': { borderColor: '#969696' },
                   },
                   '& input:-webkit-autofill': {
                     WebkitBoxShadow: '0 0 0 1000px white inset',
@@ -159,7 +151,6 @@ const Login = () => {
                   borderRadius: 3,
                   fontSize: 18,
                   textTransform: 'none',
-                  '&:hover': { backgroundColor: '#444' },
                 }}
                 type="submit"
                 variant="contained"

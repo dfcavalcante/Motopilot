@@ -1,10 +1,11 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { Box, Typography, TextField, Button } from '@mui/material';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import BaseFront from '../utils/BaseFront.jsx';
 import { MotoContext } from '../context/MotoContext.jsx';
+import ImageUploader from './../components/Motos/ImageUploader';
 
 const CadastroMotoAtribuir = () => {
   const navigate = useNavigate();
@@ -13,13 +14,22 @@ const CadastroMotoAtribuir = () => {
   const {
     register,
     handleSubmit,
+    setValue,
+    watch,
     formState: { errors },
   } = useForm({
     defaultValues: {
       marca: '',
       modelo: '',
+      imagem_moto: null,
     },
   });
+
+  useEffect(() => {
+    register('imagem_moto', { required: 'A foto da moto pai é obrigatória.' });
+  }, [register]);
+
+  const imagemSelecionada = watch('imagem_moto');
 
   const onSubmit = async (data) => {
     const novoModelo = await criarMotoPai(data);
@@ -56,6 +66,18 @@ const CadastroMotoAtribuir = () => {
           onSubmit={handleSubmit(onSubmit)}
           sx={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 2 }}
         >
+          <ImageUploader
+            arquivo={imagemSelecionada}
+            onFileSelect={(file) => setValue('imagem_moto', file, { shouldValidate: true })}
+            error={errors.imagem_moto}
+          />
+
+          {errors.imagem_moto?.message && (
+            <Typography variant="caption" color="error" sx={{ mt: -1 }}>
+              {errors.imagem_moto.message}
+            </Typography>
+          )}
+
           <TextField
             label="Marca"
             {...register('marca', { required: 'A marca é obrigatória.' })}

@@ -84,6 +84,23 @@ def garantir_coluna_status_relatorio(db: Session):
     print("✅ Migração aplicada: coluna relatorios.status criada")
 
 
+def garantir_coluna_imagem_modelo_motos(db: Session):
+    """Garante que a coluna `imagem_moto` exista na tabela `modelo_motos` em bancos já criados."""
+    bind = db.get_bind()
+    inspector = inspect(bind)
+
+    if "modelo_motos" not in inspector.get_table_names():
+        return
+
+    colunas = {coluna["name"] for coluna in inspector.get_columns("modelo_motos")}
+    if "imagem_moto" in colunas:
+        return
+
+    db.execute(text("ALTER TABLE modelo_motos ADD COLUMN imagem_moto VARCHAR(255)"))
+    db.commit()
+    print("✅ Migração aplicada: coluna modelo_motos.imagem_moto criada")
+
+
 def migrar_motos_para_modelo_moto_id(db: Session):
     """
     Migra o relacionamento de Moto de usar marca/modelo diretos para usar modelo_moto_id.

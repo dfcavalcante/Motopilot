@@ -10,6 +10,8 @@ class ModeloMoto(Base):
     #Os dois tem que ser únicos
     marca = Column(String(50), nullable=False, unique=True)
     modelo = Column(String(100), nullable=False, unique=True)
+    
+    imagem_moto= Column(String(255), nullable=True)
 
 
 class Moto(Base):

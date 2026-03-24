@@ -20,6 +20,7 @@ const CadastroDeMoto = () => {
     onSubmitForm,
     handleProximo,
     handleVoltar,
+    modeloPaiSelecionado,
   } = HookCadastroMoto();
 
   return (
@@ -49,6 +50,7 @@ const CadastroDeMoto = () => {
               errors={errors}
               onNext={handleProximo}
               watch={watch}
+              modeloPaiSelecionado={modeloPaiSelecionado}
             />
           )}
 

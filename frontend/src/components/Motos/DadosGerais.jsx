@@ -2,7 +2,7 @@ import React from 'react';
 import { Box, Typography, TextField, Grid, Button, Stack } from '@mui/material';
 import ImageUploader from '../Motos/ImageUploader.jsx';
 
-const DadosGerais = ({ register, setValue, errors, onNext, watch }) => {
+const DadosGerais = ({ register, setValue, errors, onNext, watch, modeloPaiSelecionado }) => {
   const labelStyle = {
     color: '#000000',
     fontSize: '15px',
@@ -51,7 +51,18 @@ const DadosGerais = ({ register, setValue, errors, onNext, watch }) => {
             <ImageUploader
               arquivo={watch('foto')}
               onFileSelect={(file) => setValue('foto', file, { shouldValidate: true })}
+              readOnly={Boolean(modeloPaiSelecionado?.id)}
             />
+
+            {modeloPaiSelecionado?.id && (
+              <Typography
+                variant="caption"
+                sx={{ mt: 1, textAlign: 'center', color: '#4a4a4a', fontSize: '0.82rem' }}
+              >
+                Foto herdada do modelo pai {modeloPaiSelecionado?.marca}{' '}
+                {modeloPaiSelecionado?.modelo}
+              </Typography>
+            )}
 
             {errors.foto && (
               <Typography

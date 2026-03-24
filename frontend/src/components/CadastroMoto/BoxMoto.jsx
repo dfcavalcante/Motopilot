@@ -24,6 +24,8 @@ const BoxMoto = ({ moto, onEnter, tipo = 'filha', mecanicoNome }) => {
     tipo === 'pai' ? `Marca: ${moto.marca || '-'}` : `Nº Série: ${numeroSerie || '-'}`;
   const estado = tipo === 'pai' ? 'Modelo' : moto.estado;
 
+  const imagemMoto = moto.imagemPath || moto.imagem_moto || moto.imagemMoto;
+
   return (
     <Box
       sx={{
@@ -40,7 +42,7 @@ const BoxMoto = ({ moto, onEnter, tipo = 'filha', mecanicoNome }) => {
     >
       {/* Imagem de Fundo */}
       <img
-        src={getImageUrl(moto.imagemPath)}
+        src={getImageUrl(imagemMoto)}
         alt="Logo Motopilot"
         onError={(event) => {
           if (event.currentTarget.src !== fallbackSrc) {
@@ -97,7 +99,7 @@ const BoxMoto = ({ moto, onEnter, tipo = 'filha', mecanicoNome }) => {
             {subtitulo}
           </Typography>
           {tipo !== 'pai' && (
-            <Typography variant="body2" color="#484848"  noWrap sx={{ maxWidth: '100%' }}>
+            <Typography variant="body2" color="#484848" noWrap sx={{ maxWidth: '100%' }}>
               Mecânico: {mecanicoNome || 'Não atribuído'}
             </Typography>
           )}

@@ -57,7 +57,12 @@ def processar_manual_background(file_path: str, moto_id: int, modelo: str, ano: 
 
 # --- ROTAS ---
 @router.post("/modeloMoto/criar", response_model=ModeloMotoResponse, status_code=status.HTTP_201_CREATED)
-def criar_modelo_moto_endpoint(marca: str = Form(...), modelo: str = Form(...), db: Session = Depends(get_db)):
+def criar_modelo_moto_endpoint(
+    marca: str = Form(...),
+    modelo: str = Form(...),
+    imagem_moto: UploadFile = File(...),
+    db: Session = Depends(get_db),
+):
 
     modelo_existente = moto_pai_service.buscar_moto_pai_moto(db, marca, modelo)
     if modelo_existente:
@@ -66,7 +71,8 @@ def criar_modelo_moto_endpoint(marca: str = Form(...), modelo: str = Form(...), 
             detail=f"Modelo '{marca} {modelo}' já está registrado no sistema."
         )
     
-    novo_modelo = ModeloMotoBase(marca=marca, modelo=modelo)
+    caminho_imagem = salvar_arquivo(imagem_moto, sub_pasta="imagens")
+    novo_modelo = ModeloMotoBase(marca=marca, modelo=modelo, imagem_moto=caminho_imagem)
     novo_modelo_moto = moto_pai_service.criar_modelo_moto(db, novo_modelo)
     return novo_modelo_moto
 
@@ -85,7 +91,7 @@ def criar_moto_endpoint(
     numeroSerie: str = Form(...), # Recebe do Front como numeroSerie
     descricao: str = Form(None),
     documento_pdf: UploadFile = File(...),
-    imagem_moto: UploadFile = File(...),
+    imagem_moto: UploadFile = File(None),
     db: Session = Depends(get_db)
 ):
     # 0. Validar se número de série já existe
@@ -99,9 +105,24 @@ def criar_moto_endpoint(
     modelo_moto = moto_pai_service.buscar_moto_pai_moto(db, marca, modelo)
     if not modelo_moto:
         print(f"🔍 Modelo '{marca} {modelo}' não encontrado. Crie o modelo")
+    if not modelo_moto:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Modelo '{marca} {modelo}' não encontrado. Cadastre a moto pai primeiro."
+        )
+
     # 2. Salvar arquivos
     caminho_pdf = salvar_arquivo(documento_pdf, sub_pasta="manuais")
-    caminho_imagem = salvar_arquivo(imagem_moto, sub_pasta="imagens")
+
+    # A moto filha herda exatamente a imagem da moto pai.
+    caminho_imagem = modelo_moto.imagem_moto
+
+    # Compatibilidade para modelos antigos sem imagem cadastrada.
+    if not caminho_imagem and imagem_moto:
+        caminho_imagem = salvar_arquivo(imagem_moto, sub_pasta="imagens")
+        modelo_moto.imagem_moto = caminho_imagem
+        db.add(modelo_moto)
+        db.commit()
 
     # 3. Criar o Schema de Dados
     # Nota: Agora usamos o modelo_moto_id ao invés de marca/modelo

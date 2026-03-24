@@ -18,13 +18,15 @@ class Moto_service:
         modelo_moto = db.scalars(
             select(ModeloMoto).where(ModeloMoto.id == moto_data.modelo_moto_id)
         ).first()
-        
+
         if not modelo_moto:
             raise ValueError(f"Modelo de moto com ID {moto_data.modelo_moto_id} não encontrado.")
-        
+
         # 2. Criar a moto
-        db_moto = Moto(**moto_data.model_dump()) 
-        
+        # `marca` e `modelo` pertencem ao ModeloMoto (moto pai), não à tabela `motos`.
+        moto_dict = moto_data.model_dump(exclude={"marca", "modelo"})
+        db_moto = Moto(**moto_dict)
+
         db.add(db_moto)
         db.commit()
         db.refresh(db_moto)
@@ -67,8 +69,13 @@ class Moto_service:
 
         if not db_moto:
             return None
-        
+
         moto_dict = moto_data.model_dump(exclude_unset=True)
+
+        # `marca` e `modelo` pertencem ao ModeloMoto; evita erro de property sem setter em Moto.
+        moto_dict.pop("marca", None)
+        moto_dict.pop("modelo", None)
+
         for key, value in moto_dict.items():
             setattr(db_moto, key, value)
 
