@@ -110,7 +110,7 @@ const BoxMoto = ({ moto, onEnter, tipo = 'filha', mecanicoNome }) => {
           onClick={() => onEnter(moto)}
           sx={{
             mt: 'auto',
-            bgcolor: '#D9D9D9',
+            bgcolor: '#780101',
             color: 'black',
             width: '80%',
             borderRadius: '16px',

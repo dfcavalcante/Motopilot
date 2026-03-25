@@ -22,6 +22,7 @@ import { LoginProvider } from '../context/LoginContext';
 import { ReportProvider } from '../context/ReportContext';
 import { PecaProvider } from '../context/PecasContext';
 import { GraficoProvider } from '../context/GraficosContext';
+import { DashboardProvider } from '../context/DashboardContext';
 
 import RotaProtegida from './RoutersProtected';
 
@@ -35,103 +36,105 @@ const Routers = () => {
               <PecaProvider>
                 <LoginProvider>
                   <NotificacaoProvider>
-                    <ReportProvider>
-                      <Routes>
-                        {/* ROTA PÚBLICA */}
-                        <Route path="/" element={<Login />} />
+                    <DashboardProvider>
+                      <ReportProvider>
+                        <Routes>
+                          {/* ROTA PÚBLICA */}
+                          <Route path="/" element={<Login />} />
 
-                        {/* ROTAS PROTEGIDAS */}
-                        <Route
-                          path="/chatbot"
-                          element={
-                            <RotaProtegida>
-                              <Chatbot />
-                            </RotaProtegida>
-                          }
-                        />
-                        <Route
-                          path="/cadastroMoto"
-                          element={
-                            <RotaProtegida>
-                              <CadastroDeMoto />
-                            </RotaProtegida>
-                          }
-                        />
-                        <Route
-                          path="/listagemMotos"
-                          element={
-                            <RotaProtegida>
-                              <ListagemMotos />
-                            </RotaProtegida>
-                          }
-                        />
-                        <Route
-                          path="/modeloMoto/:modeloMotoId/motos"
-                          element={
-                            <RotaProtegida>
-                              <ListagemMotosModelo />
-                            </RotaProtegida>
-                          }
-                        />
-                        <Route
-                          path="/cadastro"
-                          element={
-                            <RotaProtegida>
-                              <Cadastro />
-                            </RotaProtegida>
-                          }
-                        />
-                        <Route
-                          path="/usuarios"
-                          element={
-                            <RotaProtegida>
-                              <Usuarios />
-                            </RotaProtegida>
-                          }
-                        />
-                        <Route
-                          path="/notificacoes"
-                          element={
-                            <RotaProtegida>
-                              <Notificacoes />
-                            </RotaProtegida>
-                          }
-                        />
-                        <Route
-                          path="/dashboard"
-                          element={
-                            <RotaProtegida>
-                              <Dashboard />
-                            </RotaProtegida>
-                          }
-                        />
-                        <Route
-                          path="/relatorios"
-                          element={
-                            <RotaProtegida>
-                              <Relatorio />
-                            </RotaProtegida>
-                          }
-                        />
+                          {/* ROTAS PROTEGIDAS */}
+                          <Route
+                            path="/chatbot"
+                            element={
+                              <RotaProtegida>
+                                <Chatbot />
+                              </RotaProtegida>
+                            }
+                          />
+                          <Route
+                            path="/cadastroMoto"
+                            element={
+                              <RotaProtegida>
+                                <CadastroDeMoto />
+                              </RotaProtegida>
+                            }
+                          />
+                          <Route
+                            path="/listagemMotos"
+                            element={
+                              <RotaProtegida>
+                                <ListagemMotos />
+                              </RotaProtegida>
+                            }
+                          />
+                          <Route
+                            path="/modeloMoto/:modeloMotoId/motos"
+                            element={
+                              <RotaProtegida>
+                                <ListagemMotosModelo />
+                              </RotaProtegida>
+                            }
+                          />
+                          <Route
+                            path="/cadastro"
+                            element={
+                              <RotaProtegida>
+                                <Cadastro />
+                              </RotaProtegida>
+                            }
+                          />
+                          <Route
+                            path="/usuarios"
+                            element={
+                              <RotaProtegida>
+                                <Usuarios />
+                              </RotaProtegida>
+                            }
+                          />
+                          <Route
+                            path="/notificacoes"
+                            element={
+                              <RotaProtegida>
+                                <Notificacoes />
+                              </RotaProtegida>
+                            }
+                          />
+                          <Route
+                            path="/dashboard"
+                            element={
+                              <RotaProtegida>
+                                <Dashboard />
+                              </RotaProtegida>
+                            }
+                          />
+                          <Route
+                            path="/relatorios"
+                            element={
+                              <RotaProtegida>
+                                <Relatorio />
+                              </RotaProtegida>
+                            }
+                          />
 
-                        <Route
-                          path="/graficos"
-                          element={
-                            <RotaProtegida>
-                              <Graficos />
-                            </RotaProtegida>
-                          }
-                        />
-                        <Route
-                          path="/cadastroMotoAtribuir"
-                          element={
-                            <RotaProtegida>
-                              <CadastroMotoAtribuir />
-                            </RotaProtegida>
-                          }
-                        />
-                      </Routes>
-                    </ReportProvider>
+                          <Route
+                            path="/graficos"
+                            element={
+                              <RotaProtegida>
+                                <Graficos />
+                              </RotaProtegida>
+                            }
+                          />
+                          <Route
+                            path="/cadastroMotoAtribuir"
+                            element={
+                              <RotaProtegida>
+                                <CadastroMotoAtribuir />
+                              </RotaProtegida>
+                            }
+                          />
+                        </Routes>
+                      </ReportProvider>
+                    </DashboardProvider>
                   </NotificacaoProvider>
                 </LoginProvider>
               </PecaProvider>

@@ -61,7 +61,7 @@ class ReportService():
         relatorios = db.scalars(query).all()
         for r in relatorios:
             if r.status is None:
-                r.status = "pendente"
+                r.status = "Pendente"
         return relatorios
 
     @staticmethod
@@ -78,7 +78,7 @@ class ReportService():
         db_relatorio = db.scalars(select(Report).where(Report.id == report_id)).first()
         if not db_relatorio:
             return None
-        db_relatorio.status = "concluido"
+        db_relatorio.status = "Concluído"
         db.commit()
         return db.scalars(
             ReportService._query_com_relacoes().where(Report.id == report_id)
@@ -103,11 +103,11 @@ class ReportService():
 
     @staticmethod
     def graficos_relatorio(db: Session):
-        COLORS = {"pendente": "#FFBB28", "concluido": "#00C49F"}
-        LABELS = {"pendente": "Pendentes", "concluido": "Concluídos"}
+        COLORS = {"Pendente": "#FFBB28", "Concluído": "#00C49F"}
+        LABELS = {"Pendente": "Pendentes", "Concluído": "Concluídos"}
         results = db.execute(
             select(Report.status, func.count(Report.id).label("total"))
-            .where(Report.status.in_(["pendente", "concluido"]))
+            .where(Report.status.in_(["Pendente", "Concluído"]))
             .group_by(Report.status)
         ).all()
         return [

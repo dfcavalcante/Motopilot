@@ -39,15 +39,16 @@ const Header = ({ onNovoChat }) => {
     if (location.pathname === '/chatbot') {
       return (
         <Button
-          variant="outlined"
-          startIcon={<img src="/images/add.png" alt="Add" width="20" />}
+          startIcon={<img src="/images/add.png" alt="Add" width="20" color='white' />}
           onClick={onNovoChat}
+          
           sx={{
             width: 180,
             height: '40px',
             whiteSpace: 'nowrap',
-            color: 'black',
-            borderColor: 'black',
+            backgroundColor: "#780101",
+            borderColor: "#780101",
+            color:'white',
             borderRadius: '10px',
             textTransform: 'none',
             fontSize: '18px',
@@ -61,15 +62,15 @@ const Header = ({ onNovoChat }) => {
     if (location.pathname === '/listagemMotos') {
       return (
         <Button
-          variant="outlined"
           startIcon={<img src="/images/add.png" alt="Add" width="20" />}
           onClick={handleCadastroMotoPai}
           sx={{
             width: 250,
             height: '40px',
             whiteSpace: 'nowrap',
-            color: 'black',
-            borderColor: 'black',
+            backgroundColor: "#780101",
+            borderColor: "#780101",
+            color: 'white',
             borderRadius: '10px',
             textTransform: 'none',
             fontSize: '18px',
@@ -87,15 +88,15 @@ const Header = ({ onNovoChat }) => {
     ) {
       return (
         <Button
-          variant="outlined"
           startIcon={<img src="/images/add.png" alt="Add" width="20" />}
           onClick={handleCadastroMoto}
           sx={{
             width: 250,
             height: '40px',
             whiteSpace: 'nowrap',
-            color: 'black',
-            borderColor: 'black',
+            backgroundColor: "#780101",
+            borderColor: "#780101",
+            color: 'white',
             borderRadius: '10px',
             textTransform: 'none',
             fontSize: '18px',
@@ -109,16 +110,16 @@ const Header = ({ onNovoChat }) => {
     if (location.pathname === '/motos-atribuir' || location.pathname === '/cadastro-atribuir') {
       return (
         <Button
-          variant="outlined"
           startIcon={<img src="/images/add.png" alt="Add" width="20" />}
           onClick={handleCadastroMoto}
           sx={{
             width: 250,
             height: '40px',
             whiteSpace: 'nowrap',
-            color: 'black',
-            borderColor: 'black',
+            backgroundColor: "#780101",
+            borderColor: "#780101",
             borderRadius: '10px',
+            color: 'white',
             textTransform: 'none',
             fontSize: '18px',
             '&:hover': { borderColor: 'black', backgroundColor: 'transparent' },
@@ -131,16 +132,16 @@ const Header = ({ onNovoChat }) => {
     if (location.pathname === '/usuarios' || location.pathname === '/cadastro') {
       return (
         <Button
-          variant="outlined"
           startIcon={<img src="/images/add.png" alt="Add" width="20" />}
           onClick={handleCadastroUsuario}
           sx={{
             width: 250,
             height: '40px',
             whiteSpace: 'nowrap',
-            color: 'black',
-            borderColor: 'black',
+            backgroundColor: "#780101",
+            borderColor: "#780101",
             borderRadius: '10px',
+            color: 'white',
             textTransform: 'none',
             fontSize: '18px',
             '&:hover': { borderColor: 'black', backgroundColor: 'transparent' },

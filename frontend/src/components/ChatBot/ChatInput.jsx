@@ -26,11 +26,13 @@ const ChatInput = ({ input, setInput, onSend, disabled = false }) => {
         onChange={(e) => setInput(e.target.value)}
         onKeyDown={handleKeyDown}
         sx={{
+          
           '& .MuiOutlinedInput-root': {
             borderRadius: '16px',
             '& fieldset': { borderRadius: '16px' },
             alignItems: 'flex-end',
           },
+          background: '#fdefef 19% no-repeat padding-box',
         }}
         InputProps={{
           endAdornment: (

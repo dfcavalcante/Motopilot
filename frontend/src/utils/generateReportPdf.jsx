@@ -78,6 +78,26 @@ export default function generateReportPdf(report) {
     y += 6;
   }
 
+  function drawStatusBadge(status){
+    const statusColors = {
+      'concluído': [76, 175, 80], // Verde
+      'pendente': [255, 193, 7],   // Amarelo
+    }
+
+    const color = statusColors[status] || [158, 158, 158]; // Cinza para status desconhecido
+    
+    doc.setFillColor(...color);
+    const badgeWidth = doc.getTextWidth(status) + 6;
+    const badgeHeight = 8;
+    checkPageBreak(badgeHeight + 2);
+    doc.roundedRect(pageWidth - marginRight - badgeWidth, y, badgeWidth, badgeHeight, 1.5, 1.5, 'F');
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(7);
+    doc.setTextColor(255, 255, 255);
+    doc.text(status, pageWidth - marginRight - badgeWidth / 2, y + badgeHeight - 2, { align: 'center' });
+    y += badgeHeight + 4;
+  }
+
   // ═══════════════════════════════════════════════════
   //  CABEÇALHO
   // ═══════════════════════════════════════════════════
@@ -176,7 +196,7 @@ export default function generateReportPdf(report) {
   //  5. ANEXOS (Evidências Fotográficas)
   // ═══════════════════════════════════════════════════
   drawSectionTitle('5', 'Anexos');
-  drawValue(report.evidencias || 'Nenhuma evidência fotográfica anexada.');
+  drawValue(report.fotos|| 'Nenhuma evidência fotográfica anexada.');
 
   drawDivider();
 
@@ -184,7 +204,7 @@ export default function generateReportPdf(report) {
   // 6. CONCLUSÃO
   // ═══════════════════════════════════════════════════
   drawSectionTitle('6', 'Status Final');
-  drawValue(report.status || 'Status não informado.');
+  drawStatusBadge(report.status);
 
   drawDivider();
   

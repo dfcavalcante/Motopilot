@@ -38,10 +38,11 @@ const Login = () => {
       container
       sx={{
         minHeight: '100vh',
-        background: 'linear-gradient(#E71010, #990000)',
+        background: 'linear-gradient( #E71010,#990000)',
         pl: { xs: 2, md: 15 },
         pr: { xs: 2, md: 4 },
         py: 4,
+        color: '#faeeee',
       }}
       alignItems="center"
       justifyContent="space-between"

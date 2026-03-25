@@ -40,7 +40,7 @@ const BoxRelatorio = ({ icone, numero, nome, descricao }) => {
           {nome}
         </Typography>
 
-        <Typography fontSize={11}  color="#808080" textAlign="center">
+        <Typography fontSize={11} color="#808080" textAlign="center">
           {descricao}
         </Typography>
       </Stack>
@@ -48,10 +48,19 @@ const BoxRelatorio = ({ icone, numero, nome, descricao }) => {
   );
 };
 
-{
-  /*Componente do Dashboard para mostrar os relatórios*/
-}
-const RelatoriosDashboards = () => {
+const calcularTaxaConclusao = (concluidos, totais) => {
+  if (!totais) return '0,0%';
+  return `${((concluidos / totais) * 100).toFixed(1).replace('.', ',')}%`;
+};
+
+/*Componente do Dashboard para mostrar os relatórios*/
+const RelatoriosDashboards = ({
+  relatoriosConcluidos = 0,
+  relatoriosPendentes = 0,
+  relatoriosTotais = 0,
+}) => {
+  const taxaConclusao = calcularTaxaConclusao(relatoriosConcluidos, relatoriosTotais);
+
   const relatorios = [
     {
       icone: (
@@ -63,9 +72,9 @@ const RelatoriosDashboards = () => {
           style={{ objectFit: 'contain' }}
         />
       ),
-      numero: 348,
+      numero: relatoriosConcluidos,
       nome: 'Relatórios Concluídos',
-      descricao: 'Taxa de conclusão: 87,2%',
+      descricao: `Taxa de conclusão: ${taxaConclusao}`,
     },
     {
       icone: (
@@ -77,7 +86,7 @@ const RelatoriosDashboards = () => {
           style={{ objectFit: 'contain' }}
         />
       ),
-      numero: 52,
+      numero: relatoriosPendentes,
       nome: 'Relatórios Pendentes',
       descricao: 'Aguardando Revisão',
     },
@@ -91,9 +100,9 @@ const RelatoriosDashboards = () => {
           style={{ objectFit: 'contain' }}
         />
       ),
-      numero: 400,
+      numero: relatoriosTotais,
       nome: 'Relatórios Totais',
-      descricao: 'Taxa de conclusão: 87,2%',
+      descricao: `Taxa de conclusão: ${taxaConclusao}`,
     },
   ];
 
@@ -111,7 +120,7 @@ const RelatoriosDashboards = () => {
       <Box justifyContent={'center'} display={'flex'} flexDirection={'row'} gap={2}>
         {relatorios.map((relatorio, index) => (
           <BoxRelatorio
-            key={index} 
+            key={index}
             icone={relatorio.icone}
             numero={relatorio.numero}
             nome={relatorio.nome}

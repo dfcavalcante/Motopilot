@@ -2,11 +2,22 @@ import React from 'react';
 import { Box } from '@mui/material';
 import BaseFrontDashboard from '../components/Dashboard/BaseFrontDashboard';
 import BoxDashboard from '../components/Dashboard/BoxDashboard';
-import PecasDashboards from '../components/Dashboard/PecasDashboard';
 import RelatoriosDashboards from '../components/Dashboard/RelatoriosDashboard';
 import UsuariosDashboards from '../components/Dashboard/UsuariosDashboard';
+import HookDashboard from '../hooks/HookDashboard';
 
 const Dashboard = () => {
+  const {
+    totalMotos,
+    motosManutencao,
+    motosDisponiveis,
+    motosConcluidas,
+    relatoriosPendentes,
+    relatoriosConcluidos,
+    relatoriosTotais,
+    pecasFrequentes,
+  } = HookDashboard();
+
   return (
     <BaseFrontDashboard>
       <Box
@@ -16,15 +27,13 @@ const Dashboard = () => {
           display: 'flex',
           flexDirection: 'column',
           overflow: 'hidden',
-          p: 2, //n mexer no padding pq tem que caber as boxes do dashboard
         }}
       >
         {/* 4 BoxDashboards das motos */}
         <Box
           sx={{
             display: 'flex',
-            gap: 2,
-            justifyContent: 'space-between', 
+            justifyContent: 'space-between',
             mb: 2,
             flexShrink: 0,
             width: '100%',
@@ -34,25 +43,25 @@ const Dashboard = () => {
             icone={<img src="/images/MotoIcone.png" alt="Ícone" width={40} height={25} />}
             titulo={'Total de motos'}
             descricao={'+14% em relação Sem.Passada'}
-            numero={100}
+            numero={totalMotos}
           />
           <BoxDashboard
             icone={<img src="/images/MotoIcone.png" alt="Ícone" width={40} height={25} />}
             titulo={'Motos em Manutenção'}
             descricao={'+14% em relação Sem.Passada'}
-            numero={200}
+            numero={motosManutencao}
           />
           <BoxDashboard
             icone={<img src="/images/MotoIcone.png" alt="Ícone" width={40} height={25} />}
             titulo={'Motos Disponíveis'}
             descricao={'+14% em relação Sem.Passada'}
-            numero={300}
+            numero={motosDisponiveis}
           />
           <BoxDashboard
             icone={<img src="/images/MotoIcone.png" alt="Ícone" width={40} height={25} />}
             titulo={'Motos Concluídas'}
             descricao={'+14% em relação Sem.Passada'}
-            numero={300}
+            numero={motosConcluidas}
           />
         </Box>
 
@@ -77,24 +86,17 @@ const Dashboard = () => {
             }}
           >
             <Box sx={{ flex: 2, minHeight: 0 }}>
-              <RelatoriosDashboards />
+              <RelatoriosDashboards
+                relatoriosPendentes={relatoriosPendentes}
+                relatoriosConcluidos={relatoriosConcluidos}
+                relatoriosTotais={relatoriosTotais}
+              />
             </Box>
-            <Box sx={{ flex:1.5, minHeight: 0 }}>
+            <Box sx={{ flex: 1.5, minHeight: 0 }}>
               <UsuariosDashboards />
             </Box>
           </Box>
 
-          {/* Lado direito */}
-          <Box
-            sx={{
-              flex: 1.25, //pro lado direito ser maior que o esquerdo
-              minWidth: 0,
-              minHeight: 0,
-              height: '100%', 
-            }}
-          >
-            <PecasDashboards />
-          </Box>
         </Box>
       </Box>
     </BaseFrontDashboard>
