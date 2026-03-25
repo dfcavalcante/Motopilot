@@ -4,8 +4,8 @@ import { Box, Stack, Typography } from '@mui/material';
 const BoxDashboard = ({ icone, titulo, descricao, numero }) => {
   return (
     <Box
-      minWidth={375}
-      height={160}
+      width="100%" 
+      height="100%"
       borderRadius={4}
       p={2}
       display="flex"
@@ -41,11 +41,16 @@ const BoxDashboard = ({ icone, titulo, descricao, numero }) => {
 
         {/*Titulo e descrição um embaixo do outro*/}
         <Stack direction="column" alignItems="flex-start" justifyContent="space-between" gap={1}>
-          <Typography fontSize={20} variant="body-1" marginBottom={1}>
+          <Typography
+            fontSize={20}
+            variant="body-1"
+            marginBottom={1}
+            noWrap 
+          >
             {titulo}
           </Typography>
 
-          <Typography fontSize={14} variant="body-2" color="#00000080">
+          <Typography fontSize={14} variant="body-2" color="#00000080" noWrap>
             {descricao}
           </Typography>
         </Stack>
