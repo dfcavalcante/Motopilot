@@ -25,11 +25,6 @@ const SideBar = ({ historico = [] }) => {
       icon: <img src="/images/Folder.svg" alt="Logo" width="20" />,
     },
     {
-      name: 'Gráficos',
-      link: '/graficos',
-      icon: <img src="/images/grafico.png" alt="Logo" width="20" />,
-    },
-    {
       name: 'Relatórios',
       link: '/relatorios',
       icon: <img src="/images/report.png" alt="Logo" width="20" />,
@@ -148,7 +143,7 @@ const SideBar = ({ historico = [] }) => {
             minHeight: '40px',
           }}
         >
-          {!open && <img src="/images/Motopilot Logo-modified.png" alt="Logo" width="30" />}
+          {!open && <img src="/images/LogoNova.png" alt="Logo" width="30" />}
           {open && (
             <img
               src="/images/Motopilot Logo.png"

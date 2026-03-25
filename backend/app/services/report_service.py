@@ -127,9 +127,10 @@ class ReportService():
             if report.pecas:
                 pecas = [p.strip() for p in report.pecas.split(",") if p.strip()]
                 counter.update(pecas)
-        top_pecas = counter.most_common(10)
-        COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#8884d8",
-                  "#82ca9d", "#ffc658", "#ff7300", "#a4de6c", "#d0ed57"]
+        top_pecas = counter.most_common(12)
+        # Tons de vermelho profissional, do mais escuro ao mais claro
+        COLORS = ["#7f0000", "#990000", "#b20000", "#cc0000", "#e50000",
+                  "#ff0000", "#ff1919", "#ff3232", "#ff4c4c", "#ff6666", "#ff7f7f", "#ff9999"]
         return [
             {"name": name, "value": count, "color": COLORS[i % len(COLORS)]}
             for i, (name, count) in enumerate(top_pecas)

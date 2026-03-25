@@ -39,20 +39,19 @@ const Header = ({ onNovoChat }) => {
     if (location.pathname === '/chatbot') {
       return (
         <Button
-          startIcon={<img src="/images/add.png" alt="Add" width="20" color='white' />}
+          startIcon={<img src="/images/add.png" alt="Add" width="20" color="white" />}
           onClick={onNovoChat}
-          
           sx={{
             width: 180,
             height: '40px',
             whiteSpace: 'nowrap',
-            backgroundColor: "#780101",
-            borderColor: "#780101",
-            color:'white',
+            backgroundColor: '#780101',
+            borderColor: '#780101',
+            color: 'white',
             borderRadius: '10px',
             textTransform: 'none',
             fontSize: '18px',
-            '&:hover': { borderColor: 'black', backgroundColor: 'transparent' },
+            '&:hover': { borderColor: '#780101', backgroundColor: '#5f0000', color: 'white' },
           }}
         >
           Novo chat
@@ -68,13 +67,13 @@ const Header = ({ onNovoChat }) => {
             width: 250,
             height: '40px',
             whiteSpace: 'nowrap',
-            backgroundColor: "#780101",
-            borderColor: "#780101",
+            backgroundColor: '#780101',
+            borderColor: '#780101',
             color: 'white',
             borderRadius: '10px',
             textTransform: 'none',
             fontSize: '18px',
-            '&:hover': { borderColor: 'black', backgroundColor: 'transparent' },
+            '&:hover': { borderColor: '#780101', backgroundColor: '#5f0000', color: 'white' },
           }}
         >
           Adicionar moto
@@ -94,13 +93,13 @@ const Header = ({ onNovoChat }) => {
             width: 250,
             height: '40px',
             whiteSpace: 'nowrap',
-            backgroundColor: "#780101",
-            borderColor: "#780101",
+            backgroundColor: '#780101',
+            borderColor: '#780101',
             color: 'white',
             borderRadius: '10px',
             textTransform: 'none',
             fontSize: '18px',
-            '&:hover': { borderColor: 'black', backgroundColor: 'transparent' },
+            '&:hover': { borderColor: '#780101', backgroundColor: '#5f0000', color: 'white' },
           }}
         >
           Adicionar moto
@@ -116,13 +115,13 @@ const Header = ({ onNovoChat }) => {
             width: 250,
             height: '40px',
             whiteSpace: 'nowrap',
-            backgroundColor: "#780101",
-            borderColor: "#780101",
+            backgroundColor: '#780101',
+            borderColor: '#780101',
             borderRadius: '10px',
             color: 'white',
             textTransform: 'none',
             fontSize: '18px',
-            '&:hover': { borderColor: 'black', backgroundColor: 'transparent' },
+            '&:hover': { borderColor: '#780101', backgroundColor: '#5f0000', color: 'white' },
           }}
         >
           Adicionar moto
@@ -138,13 +137,13 @@ const Header = ({ onNovoChat }) => {
             width: 250,
             height: '40px',
             whiteSpace: 'nowrap',
-            backgroundColor: "#780101",
-            borderColor: "#780101",
+            backgroundColor: '#780101',
+            borderColor: '#780101',
             borderRadius: '10px',
             color: 'white',
             textTransform: 'none',
             fontSize: '18px',
-            '&:hover': { borderColor: 'black', backgroundColor: 'transparent' },
+            '&:hover': { borderColor: '#780101', backgroundColor: '#5f0000', color: 'white' },
           }}
         >
           Adicionar usuário

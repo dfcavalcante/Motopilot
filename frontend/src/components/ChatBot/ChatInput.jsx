@@ -32,7 +32,6 @@ const ChatInput = ({ input, setInput, onSend, disabled = false }) => {
             '& fieldset': { borderRadius: '16px' },
             alignItems: 'flex-end',
           },
-          background: '#fdefef 19% no-repeat padding-box',
         }}
         InputProps={{
           endAdornment: (
