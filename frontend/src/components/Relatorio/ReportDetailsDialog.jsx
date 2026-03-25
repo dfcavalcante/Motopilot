@@ -8,11 +8,45 @@ const ReportDetailsDialog = ({ open, report, onClose, onDownload, onSave, watch 
   const [formData, setFormData] = useState({});
 
   useEffect(() => {
-    if (report) {
+    if (report && !isEditing && open) {
+      const draftStr = localStorage.getItem(`report_draft_${report.id}`);
+      if (draftStr) {
+        try {
+          const draft = JSON.parse(draftStr);
+          if (draft.foto_base64) {
+            draft.foto = draft.foto_base64;
+          }
+          setFormData(draft);
+          setIsEditing(true); // Entra direto no modo de edição com o rascunho
+          return;
+        } catch (e) {
+          console.error("Erro ao restaurar rascunho:", e);
+        }
+      }
       setFormData({ ...report });
-      setIsEditing(false);
     }
   }, [report, open]);
+
+  useEffect(() => {
+    if (isEditing && report?.id) {
+      const saveDraft = () => {
+        const draft = { ...formData };
+        if (draft.foto instanceof File) {
+          const reader = new FileReader();
+          reader.readAsDataURL(draft.foto);
+          reader.onload = () => {
+            draft.foto_base64 = reader.result;
+            // Remove instâncias de File para não quebrar o JSON.stringify
+            delete draft.foto; 
+            localStorage.setItem(`report_draft_${report.id}`, JSON.stringify(draft));
+          };
+        } else {
+          localStorage.setItem(`report_draft_${report.id}`, JSON.stringify(draft));
+        }
+      };
+      saveDraft();
+    }
+  }, [formData, isEditing, report]);
 
   if (!report) return null;
 
@@ -23,7 +57,21 @@ const ReportDetailsDialog = ({ open, report, onClose, onDownload, onSave, watch 
 
   const handleSaveInternal = async () => {
     await onSave(formData);
+    localStorage.removeItem(`report_draft_${report.id}`);
     setIsEditing(false);
+  };
+
+  const handleEditClick = () => {
+    setIsEditing(true);
+  };
+
+  const handleDiscard = () => {
+    const confirm = window.confirm("Certeza que deseja descartar as alterações não salvas?");
+    if (confirm) {
+      localStorage.removeItem(`report_draft_${report.id}`);
+      setFormData({ ...report });
+      setIsEditing(false);
+    }
   };
 
   return (
@@ -34,14 +82,25 @@ const ReportDetailsDialog = ({ open, report, onClose, onDownload, onSave, watch 
           <Typography variant="h6" fontWeight={700}>Relatório Técnico #{report.id}</Typography>
         </Box>
         <Box sx={{ display: 'flex', gap: 1 }}>
+          {isEditing && (
+            <Button 
+              onClick={handleDiscard}
+              sx={{ color: '#d32f2f' }}
+            >
+              Descartar 
+            </Button>
+          )}
           <Button 
             startIcon={isEditing ? <SaveOutlined /> : <EditOutlined />} 
-            onClick={isEditing ? handleSaveInternal : () => setIsEditing(true)}
+            onClick={isEditing ? handleSaveInternal : handleEditClick}
             sx={{ color: isEditing ? '#2e7d32' : '#212121' }}
           >
             {isEditing ? 'Salvar' : 'Editar'}
           </Button>
-          <IconButton onClick={onClose} size="small"><Close /></IconButton>
+          <IconButton onClick={() => {
+            setIsEditing(false); // Sempre reseta o estado de edição ao fechar
+            onClose();
+          }} size="small"><Close /></IconButton>
         </Box>
       </DialogTitle>
 

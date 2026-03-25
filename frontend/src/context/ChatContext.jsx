@@ -11,7 +11,28 @@ export const ChatProvider = ({ children }) => {
   // Estados de Dados
   const [chat, setChat] = useState([]); // Histórico bruto
   const [chatsPorMoto, setChatsPorMoto] = useState([]);
-  const [messages, setMessages] = useState([]);
+  
+  // Persistência das mensagens ativas
+  const [messages, setMessages] = useState(() => {
+    try {
+      const stored = localStorage.getItem('chat_messages');
+      return stored ? JSON.parse(stored) : [];
+    } catch (error) {
+      return [];
+    }
+  });
+
+  useEffect(() => {
+    try {
+      if (messages && messages.length > 0) {
+        localStorage.setItem('chat_messages', JSON.stringify(messages));
+      } else {
+        localStorage.removeItem('chat_messages');
+      }
+    } catch (error) {
+      console.error('Erro ao salvar messages no localStorage', error);
+    }
+  }, [messages]);
 
   // Estados de Relatório Final
   const [resumoAtual, setResumoAtual] = useState(null);
@@ -101,16 +122,29 @@ export const ChatProvider = ({ children }) => {
       setChatSelecionada(null);
       setMotoSelecionada(moto);
       setMessages([]);
-      localStorage.removeItem('historico_ativo');
+      localStorage.removeItem('chat_messages');
+      localStorage.removeItem('chatSelecionada');
     },
     [setMotoSelecionada]
+  );
+
+  const continuarOuIniciarChat = useCallback(
+    (moto) => {
+      if (motoSelecionada && motoSelecionada.id === moto.id) {
+        // Se já for a moto ativa, não reseta o chat (mantém a persistência)
+        return;
+      }
+      iniciarNovoChat(moto);
+    },
+    [motoSelecionada, iniciarNovoChat]
   );
 
   const trocarMoto = useCallback(() => {
     setChatSelecionada(null);
     setMotoSelecionada(null);
     setMessages([]);
-    localStorage.removeItem('historico_ativo'); // Limpa a persistência
+    localStorage.removeItem('chat_messages'); // Limpa a persistência
+    localStorage.removeItem('chatSelecionada');
   }, [setMotoSelecionada]);
 
   // --- FUNÇÕES DE HISTÓRICO EXISTENTES (OTIMIZADAS) ---
@@ -253,6 +287,14 @@ export const ChatProvider = ({ children }) => {
         }
 
         const relatorio = await responseRelatorio.json();
+        
+        // Limpa o chat ativo localmente após gerar relatório com sucesso
+        setChatSelecionada(null);
+        setMotoSelecionada(null);
+        setMessages([]);
+        localStorage.removeItem('chat_messages');
+        localStorage.removeItem('chatSelecionada');
+
         return relatorio;
       } catch (error) {
         console.error('Erro ao finalizar com relatório:', error);
@@ -276,7 +318,8 @@ export const ChatProvider = ({ children }) => {
       setChat([]);
       setChatSelecionada(null);
       setMessages([]); // Também limpa as mensagens da tela
-      localStorage.removeItem('historico_ativo');
+      localStorage.removeItem('chat_messages');
+      localStorage.removeItem('chatSelecionada');
       return true;
     } catch (error) {
       setErro(error.message);
@@ -305,6 +348,7 @@ export const ChatProvider = ({ children }) => {
         setChatSelecionada,
         setMotoSelecionada,
         iniciarNovoChat,
+        continuarOuIniciarChat,
         enviarMensagem,
         trocarMoto,
         listarChats,

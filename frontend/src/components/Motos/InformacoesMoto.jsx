@@ -8,7 +8,7 @@ import { ChatContext } from '../../context/ChatContext.jsx';
 
 const InformacoesMoto = ({ moto, onBack }) => {
   const navigate = useNavigate();
-  const { iniciarNovoChat } = React.useContext(ChatContext);
+  const { continuarOuIniciarChat } = React.useContext(ChatContext);
   const fallbackSrc = '/images/Motopilot.jpeg';
 
   const getImageUrl = (caminhoDoBanco) => {
@@ -122,7 +122,7 @@ const InformacoesMoto = ({ moto, onBack }) => {
             >
               <Button
                 onClick={() => {
-                  iniciarNovoChat(moto);
+                  continuarOuIniciarChat(moto);
                   navigate('/chatbot');
                 }}
                 variant="contained"
