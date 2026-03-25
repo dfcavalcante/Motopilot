@@ -1,7 +1,11 @@
 import React from 'react';
 import { Box, Typography, IconButton } from '@mui/material';
+import { getUserInitials, getAvatarColor } from '../../utils/avatarUtils';
 
 const UserRow = ({ usuario, onEdit, onDelete, setAtualizando, atualizando }) => {
+  const iniciais = getUserInitials(usuario?.nome, usuario?.email);
+  const corAvatar = getAvatarColor(usuario?.nome, usuario?.email);
+
   return (
     <Box
       sx={{
@@ -35,14 +39,16 @@ const UserRow = ({ usuario, onEdit, onDelete, setAtualizando, atualizando }) => 
             width: 32,
             height: 32,
             borderRadius: '50%',
-            bgcolor: 'white',
+            bgcolor: corAvatar,
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',
             border: '1px solid #eee',
           }}
         >
-          <img src="/images/userIcon.png" alt="User" style={{ width: '14px', height: '18px' }} />
+          <Typography fontSize={12} fontWeight={700} color="white">
+            {iniciais}
+          </Typography>
         </Box>
         <Typography variant="body2" color="black" noWrap fontSize={16}>
           {usuario.nome}
