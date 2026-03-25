@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Typography, Stack, Divider, Button } from '@mui/material';
+import { Box, Typography, Stack, Divider, Button, IconButton } from '@mui/material';
 import { useLocation, useNavigate } from 'react-router-dom';
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
 
@@ -134,16 +134,21 @@ const SideBar = ({ historico = [] }) => {
 
       <Stack spacing={2} sx={{ height: '100%', overflow: 'hidden' }}>
         {/* Logo */}
-        <Box
+        <IconButton
+          onClick={() => navigate('/dashboard')}
           sx={{
             display: 'flex',
             alignItems: 'center',
             justifyContent: open ? 'flex-start' : 'center',
             gap: 18,
             minHeight: '40px',
+            '&:hover': {
+              transform: 'none',
+              backgroundColor: 'transparent',
+            },
           }}
         >
-          {!open && <img src="/images/LogoNova.png" alt="Logo" width="30" />}
+          {!open && <img src="/images/LogoNova.png" alt="Logo" width="45" />}
           {open && (
             <img
               src="/images/Motopilot Logo.png"
@@ -153,7 +158,7 @@ const SideBar = ({ historico = [] }) => {
               style={{ borderRadius: '8px' }}
             />
           )}
-        </Box>
+        </IconButton>
 
         <Divider />
 
