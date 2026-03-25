@@ -1,6 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useState } from 'react';
 import React from 'react';
 import { MotoContext } from './MotoContext';
+import { getAuthHeaders } from './LoginContext';
 
 export const ChatContext = createContext();
 
@@ -33,7 +34,7 @@ export const ChatProvider = ({ children }) => {
     async (pergunta, usuarioId, motoId) => {
       const response = await fetch(`${BASE_URL}/chatbot/perguntar`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
         body: JSON.stringify({
           pergunta,
           usuario_id: usuarioId,
@@ -135,7 +136,9 @@ export const ChatProvider = ({ children }) => {
     async (usuarioId) => {
       if (!usuarioId) return [];
       try {
-        const response = await fetch(`${BASE_URL}/chatbot/historico/${usuarioId}`);
+        const response = await fetch(`${BASE_URL}/chatbot/historico/${usuarioId}`, {
+          headers: { ...getAuthHeaders() },
+        });
         if (!response.ok) throw new Error('Erro ao buscar chats');
         const data = await response.json();
         setChat(data);
@@ -205,7 +208,7 @@ export const ChatProvider = ({ children }) => {
       try {
         const response = await fetch(`${BASE_URL}/chatbot/finalizar`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
           body: JSON.stringify({ usuario_id: usuarioId, moto_id: motoIdFinal }),
         });
 
@@ -262,7 +265,7 @@ export const ChatProvider = ({ children }) => {
 
         const responseRelatorio = await fetch(`${BASE_URL}/relatorio/`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
           body: JSON.stringify(payloadRelatorio),
         });
 
@@ -304,7 +307,10 @@ export const ChatProvider = ({ children }) => {
     if (!usuarioId) return false;
     setLoading(true);
     try {
-      await fetch(`${BASE_URL}/chatbot/limpar/${usuarioId}`, { method: 'DELETE' });
+      await fetch(`${BASE_URL}/chatbot/limpar/${usuarioId}`, {
+        method: 'DELETE',
+        headers: { ...getAuthHeaders() },
+      });
       setChat([]);
       setChatSelecionada(null);
       setMessages([]); // Também limpa as mensagens da tela

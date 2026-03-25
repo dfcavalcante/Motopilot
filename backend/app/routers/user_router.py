@@ -6,6 +6,7 @@ from app.database import get_db
 from app.models.user_model import User
 from app.schemas.user_schema import UserBase, UserResponse, UserUpdate
 from app.services.user_service import UserService
+from app.services.jwt_service import get_current_user
 
 router = APIRouter(
     prefix="/users",
@@ -32,7 +33,7 @@ def create_user(user: UserBase, db: Session = Depends(get_db)):
 
 # --- LISTAR USUÁRIOS (Para o Gerente ver a equipe) ---
 @router.get("/listar", response_model=List[UserResponse])
-def list_users(db: Session = Depends(get_db)):
+def list_users(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     return db.query(User).all()
 
 # --- BUSCAR POR ID ---
@@ -45,7 +46,7 @@ def get_user(user_id: int, db: Session = Depends(get_db)):
 
 # --- ATUALIZAR USUÁRIO ---
 @router.patch("/{user_id}/atualizar", response_model=UserResponse)
-def update_user(user_id: int, user_update: UserUpdate, db: Session = Depends(get_db)):
+def update_user(user_id: int, user_update: UserUpdate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     service = UserService(db)
     try:
         return service.update_user(user_id, user_update)
@@ -57,7 +58,7 @@ def update_user(user_id: int, user_update: UserUpdate, db: Session = Depends(get
 
 # --- DELETAR USUÁRIO ---
 @router.delete("/{user_id}/deletar", status_code=status.HTTP_204_NO_CONTENT)
-def delete_user(user_id: int, db: Session = Depends(get_db)):
+def delete_user(user_id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     service = UserService(db)
     try:
         service.deletar_usuario(user_id)

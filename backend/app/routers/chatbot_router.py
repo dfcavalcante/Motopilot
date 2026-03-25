@@ -4,6 +4,8 @@ from sqlalchemy.orm import Session
 from app.database import get_db
 from app.services.chat_service import ChatService
 from app.schemas.chatbot_schema import ChatRequest, ChatResponse, ChatHistoricoItem, FinalizarChatRequest, FinalizarChatResponse
+from app.services.jwt_service import get_current_user
+from app.models.user_model import User
 
 # --- ROTA ---
 router = APIRouter(prefix="/chatbot", tags=["Chatbot"])
@@ -11,7 +13,7 @@ router = APIRouter(prefix="/chatbot", tags=["Chatbot"])
 #O async aqui é por conta que o chat nao responde imediatamente, ent ele pode fazer outras coisas enquanto espera a resposta
 
 @router.post("/perguntar")
-def conversar(request: ChatRequest, db: Session = Depends(get_db)):
+def conversar(request: ChatRequest, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     service = ChatService(db)
     try:
         return service.gerar_resposta(request.pergunta, request.usuario_id, request.moto_id)
@@ -19,7 +21,7 @@ def conversar(request: ChatRequest, db: Session = Depends(get_db)):
         raise HTTPException(status_code=403, detail=str(e))
 
 @router.post("/finalizar", response_model=FinalizarChatResponse)
-def finalizar_conversa(request: FinalizarChatRequest, db: Session = Depends(get_db)):
+def finalizar_conversa(request: FinalizarChatRequest, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     """
     Encerra a conversa e gera um resumo (Diagnóstico, Atividades, Observações, Peças)
     para o relatório de manutenção usando LLM.
@@ -33,7 +35,7 @@ def finalizar_conversa(request: FinalizarChatRequest, db: Session = Depends(get_
 # ---- HISTÓRICO ----
 
 @router.get("/historico/{usuario_id}", response_model=List[ChatHistoricoItem])
-def buscar_historico(usuario_id: int, db: Session = Depends(get_db)):
+def buscar_historico(usuario_id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     """Retorna todo o histórico de conversas de um usuário."""
     service = ChatService(db)
     return service.listar_historico(usuario_id)
@@ -56,7 +58,7 @@ def buscar_historico_usuario_moto(usuario_id: int, moto_id: int, db: Session = D
 # ---- LIMPAR HISTÓRICO ----
 
 @router.delete("/limpar/{usuario_id}")
-def limpar_chat(usuario_id: int, db: Session = Depends(get_db)):
+def limpar_chat(usuario_id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     """Limpa todo o histórico de conversas de um usuário."""
     service = ChatService(db)
     quantidade = len(service.listar_historico(usuario_id))
@@ -65,7 +67,7 @@ def limpar_chat(usuario_id: int, db: Session = Depends(get_db)):
 
 
 @router.delete("/limpar/moto/{moto_id}")
-def limpar_historico_moto(moto_id: int, db: Session = Depends(get_db)):
+def limpar_historico_moto(moto_id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     """Deleta todo o histórico de conversas de uma moto."""
     service = ChatService(db)
     quantidade = service.limpar_historico_moto(moto_id)

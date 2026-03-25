@@ -16,6 +16,8 @@ from llm.data.pdf_processor import processar_manual_unico
 from app.schemas.moto_schema import (MotoBase, MotoUpdate, MotoResponse, ConcluirManutencaoRequest, AtribuirMecanicoRequest)
 from app.services.moto_service import Moto_service
 from app.database import get_db
+from app.services.jwt_service import get_current_user
+from app.models.user_model import User
 
 # Imports ModeloMoto
 from app.schemas.moto_schema import ModeloMotoBase, ModeloMotoResponse
@@ -91,8 +93,9 @@ def criar_moto_endpoint(
     numeroSerie: str = Form(...), # Recebe do Front como numeroSerie
     descricao: str = Form(None),
     documento_pdf: UploadFile = File(...),
-    imagem_moto: UploadFile = File(None),
-    db: Session = Depends(get_db)
+    imagem_moto: UploadFile = File(...),
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ):
     # 0. Validar se número de série já existe
     if moto_service.verificar_numero_serie_existente(db, numeroSerie):
@@ -165,7 +168,7 @@ def listar_motos_endpoint(db: Session = Depends(get_db)):
 
 # --- ATUALIZAR ---
 @router.patch('/{moto_id}/atualizar', response_model=MotoResponse)
-def atualizar_moto_endpoint(moto_id: int, moto_data: MotoUpdate, db: Session = Depends(get_db)):
+def atualizar_moto_endpoint(moto_id: int, moto_data: MotoUpdate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     moto_atualizada = moto_service.atualizar_moto(db, moto_id, moto_data)
     if not moto_atualizada:
         raise HTTPException(status_code=404, detail="Moto não encontrada")
@@ -218,7 +221,7 @@ def adicionar_manual_endpoint(
 
 # --- ARQUIVAR ---
 @router.patch('/{moto_id}/arquivar', response_model=MotoResponse)
-def arquivar_moto_endpoint(moto_id: int, db: Session = Depends(get_db)):
+def arquivar_moto_endpoint(moto_id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     moto_arquivada = moto_service.arquivar_moto(db, moto_id)
     if not moto_arquivada:
         raise HTTPException(status_code=404, detail="Moto não encontrada")
@@ -226,7 +229,7 @@ def arquivar_moto_endpoint(moto_id: int, db: Session = Depends(get_db)):
 
 # --- DELETAR --- 
 @router.delete('/{moto_id}/deletar', status_code=status.HTTP_204_NO_CONTENT)
-def deletar_moto_endpoint(moto_id: int, db: Session = Depends(get_db)):
+def deletar_moto_endpoint(moto_id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     sucesso = moto_service.deletar_moto(db, moto_id)
     if not sucesso:
         raise HTTPException(status_code=404, detail="Moto não encontrada")
@@ -236,7 +239,8 @@ def deletar_moto_endpoint(moto_id: int, db: Session = Depends(get_db)):
 def concluir_manutencao_endpoint(
     moto_id: int,
     dados: ConcluirManutencaoRequest,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ):
     """
     Conclui a manutenção de uma moto e gera o relatório automaticamente.

@@ -1,5 +1,6 @@
 import { createContext, useCallback, useEffect, useRef, useState } from 'react';
 import React from 'react';
+import { getAuthHeaders } from './LoginContext';
 
 export const MotoContext = createContext();
 
@@ -121,6 +122,7 @@ export const MotoProvider = ({ children }) => {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
+          ...getAuthHeaders(),
         },
         body: JSON.stringify(dadosAtualizados),
       });
@@ -147,6 +149,7 @@ export const MotoProvider = ({ children }) => {
     try {
       const response = await fetch(`${BASE_URL}/motos/${id}/deletar`, {
         method: 'DELETE',
+        headers: { ...getAuthHeaders() },
       });
       if (!response.ok) {
         throw new Error('Erro ao excluir moto');
@@ -192,7 +195,7 @@ export const MotoProvider = ({ children }) => {
 
       const response = await fetch(`${BASE_URL}/motos/`, {
         method: 'POST',
-        headers: headers,
+        headers: { ...headers, ...getAuthHeaders() },
         body: body,
       });
 
