@@ -9,7 +9,6 @@ const BaseFront = ({ nome, icone, height, width, children, headerAction }) => {
       sx={{
         display: 'flex',
         height: '100vh',
-        bgcolor: '#989898',
         p: '16px',
         boxSizing: 'border-box',
       }}
@@ -33,6 +32,7 @@ const BaseFront = ({ nome, icone, height, width, children, headerAction }) => {
               alignItems: 'center',
               p: 4,
               overflow: 'hidden',
+              boxShadow: 6,
             }}
           >
             <Box
@@ -62,6 +62,7 @@ const BaseFront = ({ nome, icone, height, width, children, headerAction }) => {
                 display: 'flex',
                 flexDirection: 'column',
                 overflow: 'hidden',
+                
               }}
             >
               {children}

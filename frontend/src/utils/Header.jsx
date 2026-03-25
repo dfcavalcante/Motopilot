@@ -4,12 +4,19 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { NotificacaoContext } from '../context/NotificacoesContext.jsx';
 import { useLogin } from '../context/LoginContext.jsx';
 
+import { getUserInitials, getAvatarColor } from '../utils/avatarUtils';
+
 // Pequena Header em cima do Chatbot, tem os ícones, nome e novo chat
 const Header = ({ onNovoChat }) => {
+  
+
   const navigate = useNavigate();
   const location = useLocation();
   const { notificacoes, listarNotificacoes } = useContext(NotificacaoContext);
   const { user } = useLogin();
+
+  const iniciais = getUserInitials(user?.nome, user?.email);
+  const corAvatar = getAvatarColor(user?.nome, user?.email);
 
   useEffect(() => {
     listarNotificacoes();
@@ -67,16 +74,16 @@ const Header = ({ onNovoChat }) => {
             width: 250,
             height: '40px',
             whiteSpace: 'nowrap',
-            backgroundColor: '#780101',
-            borderColor: '#780101',
+            backgroundColor: '#F30000',
+            borderColor: '#F30000',
             color: 'white',
             borderRadius: '10px',
             textTransform: 'none',
             fontSize: '18px',
-            '&:hover': { borderColor: '#780101', backgroundColor: '#5f0000', color: 'white' },
+            '&:hover': { borderColor: '#F30000', backgroundColor: '#F30000', color: 'white' },
           }}
         >
-          Adicionar moto
+          Adicionar modelo
         </Button>
       );
     }
@@ -93,16 +100,16 @@ const Header = ({ onNovoChat }) => {
             width: 250,
             height: '40px',
             whiteSpace: 'nowrap',
-            backgroundColor: '#780101',
-            borderColor: '#780101',
+            backgroundColor: '#F30000',
+            borderColor: '#F30000',
             color: 'white',
             borderRadius: '10px',
             textTransform: 'none',
             fontSize: '18px',
-            '&:hover': { borderColor: '#780101', backgroundColor: '#5f0000', color: 'white' },
+            '&:hover': { borderColor: '#F30000', backgroundColor: '#F30000', color: 'white' },
           }}
         >
-          Adicionar moto
+          Cadastrar moto
         </Button>
       );
     }
@@ -166,6 +173,7 @@ const Header = ({ onNovoChat }) => {
         backgroundColor: 'white',
         borderBottom: '1px solid #E0E0E0',
         boxSizing: 'border-box',
+        boxShadow: 6,
         mb: 1,
       }}
     >
@@ -178,9 +186,10 @@ const Header = ({ onNovoChat }) => {
               display: 'inline-flex',
               p: 1.5,
               borderRadius: '8px',
+              backgroundColor: corAvatar,
             }}
           >
-            <img src="/images/person.png" alt="User" width="12" />
+            {iniciais}
           </Box>
 
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>

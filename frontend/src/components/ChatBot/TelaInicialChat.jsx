@@ -18,10 +18,8 @@ const TelaInicialChat = ({ sugestoes, onSuggestionClick, children }) => {
         maxWidth: 720,
       }}
     >
-      <Box
-        sx={{ border: '1px solid black', display: 'inline-flex', p: 1, borderRadius: '8px', mb: 2 }}
-      >
-        <img src="/images/smile_face.png" alt="Logo" width="15" />
+      <Box sx={{marginBottom: 2}}>
+        <img src="/images/smile_face.png" alt="Logo" width="50" />
       </Box>
 
       <Typography variant="body1" gutterBottom color="grey.800">

@@ -19,7 +19,7 @@ const EtapasMoto = ({ etapa }) => {
   const renderIcone = (numeroEtapa) => {
     // Se a etapa já foi concluída (é menor que a atual), mostra o check verde
     if (etapa > numeroEtapa) {
-      return <CheckCircleIcon sx={{ fontSize: 18, color: "#a0a0a0", mr: 1 }} />;
+      return <CheckCircleIcon sx={{ fontSize: 18, color: "#216A13", mr: 1 }} />;
     }
 
     // Se for a etapa ATUAL, mostra uma bolinha azul (ou cor de destaque)

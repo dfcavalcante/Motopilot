@@ -9,7 +9,8 @@ const TableHeader = () => (
       columnGap: 2,
       alignItems: 'center',
       width: '100%',
-      px: 2,
+      maxWidth: '1200px',
+      px: { xs: 1.5, sm: 2 },
       mt: 3,
       mb: 2,
       borderBottom: '1px dashed #969696',
@@ -21,19 +22,19 @@ const TableHeader = () => (
       <Typography color="black">Funcionário</Typography>
     </Box>
 
-    <Box sx={{ display: 'flex', minWidth: 0 }}>
-      <Typography color="black" textAlign="left">
+    <Box sx={{ display: 'flex', justifyContent: 'center', minWidth: 0 }}>
+      <Typography color="black" textAlign="center">
         Email
       </Typography>
     </Box>
 
-    <Box sx={{ display: 'flex', minWidth: 0 }}>
-      <Typography color="black" textAlign="left">
+    <Box sx={{ display: 'flex', justifyContent: 'center', minWidth: 0 }}>
+      <Typography color="black" textAlign="center">
         Função
       </Typography>
     </Box>
 
-    <Box sx={{ display: 'flex', justifyContent: 'flex-start' }}>
+    <Box sx={{ display: 'flex', justifyContent: 'center' }}>
       <Typography color="black">Status</Typography>
     </Box>
 

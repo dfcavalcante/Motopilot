@@ -1,5 +1,5 @@
 import React, { useContext, useEffect } from 'react';
-import { Box, Typography, TextField, Button } from '@mui/material';
+import { Box, Typography, TextField, Button, Grid, Stack } from '@mui/material';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
@@ -16,6 +16,7 @@ const CadastroMotoAtribuir = () => {
     handleSubmit,
     setValue,
     watch,
+    onSubmit: onNext,
     formState: { errors },
   } = useForm({
     defaultValues: {
@@ -24,6 +25,27 @@ const CadastroMotoAtribuir = () => {
       imagem_moto: null,
     },
   });
+
+  const labelStyle = {
+    color: '#000000',
+    fontSize: '15px',
+    fontWeight: '500',
+    marginLeft: '2px',
+  };
+
+  const inputSx = {
+    '& .MuiOutlinedInput-root': {
+      backgroundColor: 'rgba(0, 0, 0, 0.03)',
+      borderRadius: '12px',
+      '& fieldset': { borderColor: '#A0A0A0' },
+      '&:hover fieldset': { borderColor: '#666' },
+      '&.Mui-focused fieldset': { borderColor: '#666', borderWidth: '1px' },
+    },
+    '& input': {
+      padding: '10px 14px',
+      fontSize: '0.9rem',
+    },
+  };
 
   useEffect(() => {
     register('imagem_moto', { required: 'A foto da moto pai é obrigatória.' });
@@ -43,74 +65,114 @@ const CadastroMotoAtribuir = () => {
   };
 
   return (
-    <BaseFront nome="Cadastro de MotoPai">
+    <BaseFront nome="Cadastro de Modelo">
       <Box
         sx={{
-          flexGrow: 1,
-          bgcolor: '#E0E0E0',
-          borderRadius: '20px',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          p: 4,
-          maxWidth: '700px',
+          backgroundColor: '#E0E0E0',
+          pl: 16,
+          pr: 16,
+          pt: 4,
+          pb: 4,
+          borderRadius: '16px',
           width: '100%',
-          mx: 'auto',
+          maxWidth: '1300px',
+          margin: '0 auto',
+          fontFamily: 'Roboto, sans-serif',
+          overflow: 'visible',
         }}
       >
-        <Typography sx={{ fontSize: 26, fontWeight: 500, mb: 3 }}>Novo Modelo de Moto</Typography>
+        <Typography variant="h5" align="center" sx={{ mb: 4, color: '#000000', fontWeight: 400 }}>
+          Dados Gerais
+        </Typography>
 
-        <Box
-          component="form"
-          onSubmit={handleSubmit(onSubmit)}
-          sx={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 2 }}
-        >
-          <ImageUploader
-            arquivo={imagemSelecionada}
-            onFileSelect={(file) => setValue('imagem_moto', file, { shouldValidate: true })}
-            error={errors.imagem_moto}
-          />
+        <Grid container spacing={4}>
+          {/* LADO ESQUERDO: FOTO */}
+          <Grid>
+            <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+              <ImageUploader
+                arquivo={watch('foto')}
+                onFileSelect={(file) => setValue('foto', file, { shouldValidate: true })}
+              />
 
-          {errors.imagem_moto?.message && (
-            <Typography variant="caption" color="error" sx={{ mt: -1 }}>
-              {errors.imagem_moto.message}
-            </Typography>
-          )}
+              {errors.foto && (
+                <Typography
+                  variant="caption"
+                  color="error"
+                  sx={{ mt: 1, textAlign: 'center', fontSize: '0.9rem' }}
+                >
+                  {errors.foto.message}
+                </Typography>
+              )}
+            </Box>
+          </Grid>
 
-          <TextField
-            label="Marca"
-            {...register('marca', { required: 'A marca é obrigatória.' })}
-            error={!!errors.marca}
-            helperText={errors.marca?.message}
-            fullWidth
-            sx={{ backgroundColor: 'white', borderRadius: '10px' }}
-          />
+          {/* LADO DIREITO: INPUTS */}
+          <Stack spacing={1} sx={{ height: '100%', width: '25%', ml: 5 }}>
+            <Typography sx={labelStyle}>Modelo</Typography>
+            <TextField
+              {...register('modelo')}
+              fullWidth
+              placeholder="Inserir nome"
+              variant="outlined"
+              sx={inputSx}
+              error={!!errors.modelo}
+              helperText={errors.modelo?.message}
+            />
+          </Stack>
 
-          <TextField
-            label="Modelo"
-            {...register('modelo', { required: 'O modelo é obrigatório.' })}
-            error={!!errors.modelo}
-            helperText={errors.modelo?.message}
-            fullWidth
-            sx={{ backgroundColor: 'white', borderRadius: '10px' }}
-          />
+          <Stack spacing={1} sx={{ height: '100%', width: '25%', ml: 5 }}>
+            <Typography sx={labelStyle}>Marca</Typography>
+            <TextField
+              {...register('marca')}
+              fullWidth
+              placeholder="Inserir Marca"
+              variant="outlined"
+              sx={inputSx}
+              error={!!errors.marca}
+              helperText={errors.marca?.message}
+            />
 
+            <Typography sx={labelStyle}>Ano</Typography>
+            <TextField
+              {...register('ano')}
+              fullWidth
+              placeholder="DD/MM/AA"
+              variant="outlined"
+              sx={inputSx}
+              error={!!errors.ano}
+              helperText={errors.ano?.message}
+            />
+          </Stack>
+        </Grid>
+
+        {/* RODAPÉ: BOTÕES */}
+        <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 4, gap: 2 }}>
           <Button
-            type="submit"
-            variant="contained"
-            disabled={loading}
+            onClick={() =>navigate('/listagemMotos')}
+            variant="outlined"
             sx={{
-              mt: 1,
-              backgroundColor: '#666',
-              color: 'white',
-              borderRadius: '10px',
+              color: '#333',
+              borderColor: '#999',
+              borderRadius: '8px',
               textTransform: 'none',
-              py: 1.2,
-              '&:hover': { backgroundColor: '#4f4f4f' },
+              px: 4,
             }}
           >
-            {loading ? 'Salvando...' : 'Criar MotoPai'}
+            Cancelar
+          </Button>
+          <Button
+            onClick={onNext} // Valida os dados da etapa 1 e avança se tudo estiver ok
+            variant="contained"
+            sx={{
+              backgroundColor: '#666',
+              color: 'white',
+              borderRadius: '8px',
+              textTransform: 'none',
+              px: 4,
+              '&:hover': { backgroundColor: '#444' },
+            }}
+          >
+            Próximo
           </Button>
         </Box>
       </Box>
