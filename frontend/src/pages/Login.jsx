@@ -3,7 +3,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Box, InputAdornment, Button, TextField, Stack, Grid, InputLabel } from '@mui/material';
 import WarningIcon from '@mui/icons-material/Warning';
-import { useLogin} from '../context/LoginContext';
+import { useLogin } from '../context/LoginContext';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -50,7 +50,7 @@ const Login = () => {
       {/* Lado Esquerdo: Logo Principal */}
       <Grid>
         <img
-          src="/images/LogoNovaGrande.png"
+          src="/images/LogoLogin.png"
           alt="Motopilot Logo"
           style={{
             maxWidth: '100%',
@@ -84,12 +84,20 @@ const Login = () => {
                   '& .MuiOutlinedInput-root': {
                     borderRadius: '12px',
                     backgroundColor: '#fff',
-                    '& fieldset': { borderColor: '#969696' },
+                    '& fieldset': {
+                      borderColor: '#969696',
+                    },
+                    '&:hover fieldset': {
+                      borderColor: '#969696',
+                    },
+                    '&.Mui-focused fieldset': {
+                      borderColor: '#969696 !important', // O !important força a remoção do azul
+                      borderWidth: '1px !important', 
+                    },
                   },
                   '& input:-webkit-autofill': {
                     WebkitBoxShadow: '0 0 0 1000px white inset',
                   },
-                  
                 }}
                 fullWidth
                 placeholder="Insira seu e-mail"
@@ -113,13 +121,22 @@ const Login = () => {
                   '& .MuiOutlinedInput-root': {
                     borderRadius: '12px',
                     backgroundColor: '#fff',
-                    '& fieldset': { borderColor: '#969696' },
+                    '& fieldset': {
+                      borderColor: '#969696',
+                    },
+                    '&:hover fieldset': {
+                      borderColor: '#969696',
+                    },
+                    '&.Mui-focused fieldset': {
+                      borderColor: '#969696 !important', // O !important força a remoção do azul
+                      borderWidth: '1px !important',
+                    },
                   },
                   '& input:-webkit-autofill': {
                     WebkitBoxShadow: '0 0 0 1000px white inset',
                   },
                   '& input': {
-                    letterSpacing: '6px', // aq é para aumentar espaço entre caracteres da senha
+                    letterSpacing: '6px',
                   },
                   '& input::placeholder': {
                     letterSpacing: 'normal',

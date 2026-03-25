@@ -1,14 +1,17 @@
 import React from 'react';
-import { Box, Divider, Typography, IconButton, Button } from '@mui/material';
+import { Box, Typography, IconButton, Button } from '@mui/material';
 import DoneAllIcon from '@mui/icons-material/DoneAll';
 import { useContext, useEffect } from 'react';
 import BaseFront from '../utils/BaseFront';
 import BoxNotificacao from '../components/Notificacoes/BoxNotificacao.jsx';
 import { NotificacaoContext } from '../context/NotificacoesContext.jsx';
+import { useNavigate } from 'react-router-dom';
 
 const Notificacoes = () => {
   const { notificacoes, listarNotificacoes, marcarComoLida, marcarTodasComoLida } =
     useContext(NotificacaoContext);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     listarNotificacoes();
@@ -25,21 +28,37 @@ const Notificacoes = () => {
   return (
     <BaseFront nome={'Notificações'}>
       <Box sx={{ display: 'flex', justifyContent: 'flex-end', width: '100%', mb: 3, pr: 4 }}>
-        <Button 
+        <IconButton
+          onClick={() => navigate('/dashboard')}
+          sx={{
+            position: 'absolute',
+            left: 150,
+            top: 150,
+            padding: 1.5,
+            backgroundColor: '#FFE4E4',
+            '&:hover': {
+              backgroundColor: '#fcd2d2',
+            },
+          }}
+        >
+          <img src="/images/X.png" alt="Excluir" width={12} height={12} />
+        </IconButton>
+
+        <Button
           variant="outlined"
           color="primary"
           onClick={() => marcarTodasComoLida()}
           startIcon={<DoneAllIcon />}
           sx={{
-            borderRadius: '8px',      
-            textTransform: 'none',     
-            fontWeight: 600,           
-            borderColor: '#ccc',      
-            color: '#333',            
+            borderRadius: '8px',
+            textTransform: 'none',
+            fontWeight: 600,
+            borderColor: '#ccc',
+            color: '#333',
             '&:hover': {
-              backgroundColor: '#f5f5f5', 
-              borderColor: '#999'
-            }
+              backgroundColor: '#f5f5f5',
+              borderColor: '#999',
+            },
           }}
         >
           Marcar todas como lidas
