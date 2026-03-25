@@ -3,6 +3,7 @@ from app.services.report_service import ReportService
 from app.schemas.report_schema import ReportBase, ReportFilter, ReportResponse, ReportUpdate
 from app.database import get_db
 from app.services.jwt_service import get_current_user
+from app.services.role_dependency import require_gerente
 from app.models.user_model import User
 from sqlalchemy.orm import Session
 
@@ -23,26 +24,26 @@ def deletar_relatorio_endpoint(report_id: int, db: Session = Depends(get_db), cu
     return deletar_relatorio
 
 @router.get("/", response_model=list[ReportResponse])
-def listar_relatorios_endpoint(filtros: ReportFilter = Depends(), db: Session = Depends(get_db)):
+def listar_relatorios_endpoint(filtros: ReportFilter = Depends(), db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     listar_relatorio = report_service.listar_relatorios(db, filtros)
     return listar_relatorio
 
 @router.get("/{report_id}", response_model=ReportResponse)
-def buscar_relatorio_por_id_endpoint(report_id: int, db: Session = Depends(get_db)):
+def buscar_relatorio_por_id_endpoint(report_id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     buscar_relatorio = report_service.buscar_relatorio_por_id(db, report_id)
     if not buscar_relatorio:
         raise HTTPException(status_code=404, detail="Relatório não encontrado")
     return buscar_relatorio
 
 @router.patch("/{report_id}/arquivar", response_model=ReportResponse)
-def arquivar_relatorio_endpoint(report_id: int, db: Session = Depends(get_db)):
+def arquivar_relatorio_endpoint(report_id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     arquivar_relatorio = report_service.arquivar_relatorio(db, report_id)
     if not arquivar_relatorio:
         raise HTTPException(status_code=404, detail="Relatório não encontrado")
     return arquivar_relatorio
 
 @router.patch("/{report_id}/aprovar", response_model=ReportResponse)
-def aprovar_relatorio_endpoint(report_id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+def aprovar_relatorio_endpoint(report_id: int, db: Session = Depends(get_db), current_user: User = Depends(require_gerente)):
     aprovar_relatorio = report_service.aprovar_relatorio(db, report_id)
     if not aprovar_relatorio:
         raise HTTPException(status_code=404, detail="Relatório não encontrado")
@@ -56,7 +57,7 @@ def atualizar_relatorio_endpoint(report_id: int, relatorio: ReportUpdate, db: Se
     return atualizar_relatorio
 
 @router.post("/{report_id}/exportar", response_model=ReportResponse)
-def exportar_relatorio_endpoint(report_id: int, db: Session = Depends(get_db)):
+def exportar_relatorio_endpoint(report_id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     exportar_relatorio = report_service.exportar_relatorios(db, report_id)
     if not exportar_relatorio:
         raise HTTPException(status_code=404, detail="Relatório não encontrado")

@@ -7,6 +7,7 @@ from app.models.user_model import User
 from app.schemas.user_schema import UserBase, UserResponse, UserUpdate
 from app.services.user_service import UserService
 from app.services.jwt_service import get_current_user
+from app.services.role_dependency import require_gerente
 
 router = APIRouter(
     prefix="/users",
@@ -15,7 +16,7 @@ router = APIRouter(
 
 #Criação de usuário dos técnicos e adminitradores 
 @router.post("/", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
-def create_user(user: UserBase, db: Session = Depends(get_db)):
+def create_user(user: UserBase, db: Session = Depends(get_db), current_user: User = Depends(require_gerente)):
     service = UserService(db)
 
     try:
@@ -38,7 +39,7 @@ def list_users(db: Session = Depends(get_db), current_user: User = Depends(get_c
 
 # --- BUSCAR POR ID ---
 @router.get("/{user_id}/buscar", response_model=UserResponse)
-def get_user(user_id: int, db: Session = Depends(get_db)):
+def get_user(user_id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     user = db.query(User).filter(User.id == user_id).first()
     if not user:
         raise HTTPException(status_code=404, detail="Usuário não encontrado")
@@ -70,13 +71,13 @@ def delete_user(user_id: int, db: Session = Depends(get_db), current_user: User 
 
 # --- VERIFICAÇÕES --- 
 @router.get('/check/{matricula}')
-def verificar_matricula_endpoint(matricula: str, db: Session = Depends(get_db)):
+def verificar_matricula_endpoint(matricula: str, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     """Retorna {"exists": true} se a matrícula já estiver no banco."""
     exists = db.query(User).filter(User.matricula == matricula).first() is not None
     return {"exists": exists}
 
 @router.get('/check-email/{email}')
-def verificar_email_endpoint(email: str, db: Session = Depends(get_db)):
+def verificar_email_endpoint(email: str, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     """Retorna {"exists": true} se o email já estiver no banco."""
     exists = db.query(User).filter(User.email == email).first() is not None
     return {"exists": exists}

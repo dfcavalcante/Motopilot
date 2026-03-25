@@ -111,7 +111,9 @@ export const UsersProvider = ({ children }) => {
   const verificarMatricula = useCallback(
     async (matricula) => {
       try {
-        const response = await fetch(`${BASE_URL}/users/check/${encodeURIComponent(matricula)}`);
+        const response = await fetch(`${BASE_URL}/users/check/${encodeURIComponent(matricula)}`, {
+          headers: { ...getAuthHeaders() },
+        });
         if (!response.ok) {
           throw new Error('Erro ao verificar matrícula');
         }
@@ -128,7 +130,9 @@ export const UsersProvider = ({ children }) => {
   const verificarEmail = useCallback(
     async (email) => {
       try {
-        const response = await fetch(`${BASE_URL}/users/check-email/${encodeURIComponent(email)}`);
+        const response = await fetch(`${BASE_URL}/users/check-email/${encodeURIComponent(email)}`, {
+          headers: { ...getAuthHeaders() },
+        });
         if (!response.ok) {
           throw new Error('Erro ao verificar email');
         }
@@ -161,6 +165,7 @@ export const UsersProvider = ({ children }) => {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
+            ...getAuthHeaders(),
           },
           body: JSON.stringify(payload),
         });

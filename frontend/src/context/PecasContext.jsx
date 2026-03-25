@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import axios from 'axios';
+import { getAuthHeaders } from './LoginContext';
 
 const PecaContext = createContext();
 
@@ -15,7 +16,9 @@ export const PecaProvider = ({ children }) => {
   // listar peças
   const listarPecas = async () => {
     try {
-      const response = await axios.get(`${API_URL}/pecas/listar`);
+      const response = await axios.get(`${API_URL}/pecas/listar`, {
+        headers: { ...getAuthHeaders() },
+      });
       setPecas(response.data || []);
     } catch (error) {
       console.error('Erro ao listar peças:', error);
@@ -25,7 +28,9 @@ export const PecaProvider = ({ children }) => {
   // adicionar peça
   const adicionarPeca = async (pecaData) => {
     try {
-      const response = await axios.post(`${API_URL}/pecas/adicionar`, pecaData);
+      const response = await axios.post(`${API_URL}/pecas/adicionar`, pecaData, {
+        headers: { ...getAuthHeaders() },
+      });
       const nomePeca = response.data?.nome || pecaData?.nome;
 
       setPecas((prev) => {
@@ -56,3 +61,4 @@ export const PecaProvider = ({ children }) => {
     </PecaContext.Provider>
   );
 };
+

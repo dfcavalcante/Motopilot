@@ -36,14 +36,14 @@ def buscar_historico(usuario_id: int, db: Session = Depends(get_db), current_use
 
 
 @router.get("/historico/moto/{moto_id}", response_model=List[ChatHistoricoItem])
-def buscar_historico_por_moto(moto_id: int, db: Session = Depends(get_db)):
+def buscar_historico_por_moto(moto_id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     """Retorna todo o histórico de conversas de uma moto (todos os usuários)."""
     service = ChatService(db)
     return service.listar_historico_por_moto(moto_id)
 
 
 @router.get("/historico/{usuario_id}/moto/{moto_id}", response_model=List[ChatHistoricoItem])
-def buscar_historico_usuario_moto(usuario_id: int, moto_id: int, db: Session = Depends(get_db)):
+def buscar_historico_usuario_moto(usuario_id: int, moto_id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     """Retorna o histórico de conversas de um usuário com uma moto específica."""
     service = ChatService(db)
     return service.listar_historico_usuario_moto(usuario_id, moto_id)

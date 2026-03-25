@@ -106,7 +106,7 @@ def criar_moto_endpoint(
 
 # --- LISTAR ---
 @router.get('/listar', response_model=List[MotoResponse])
-def listar_motos_endpoint(db: Session = Depends(get_db)):
+def listar_motos_endpoint(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     return moto_service.listar_motos(db)
 
 
@@ -123,7 +123,8 @@ def adicionar_manual_endpoint(
     moto_id: int, 
     background_tasks: BackgroundTasks,
     documento_pdf: UploadFile = File(...), 
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ):
     moto_existente = moto_service.buscar_moto_por_id(db, moto_id)
     if not moto_existente:
@@ -217,7 +218,7 @@ def salvar_arquivo(arquivo: UploadFile, sub_pasta: str = "") -> str | None:
 
 # --- VERIFICAÇÕES ---
 @router.get('/check/{numero_serie}')
-def verificar_numero_serie_endpoint(numero_serie: str, db: Session = Depends(get_db)):
+def verificar_numero_serie_endpoint(numero_serie: str, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     """Retorna `{{"exists": true}}` se o número de série já estiver no banco."""
     exists = moto_service.verificar_numero_serie_existente(db, numero_serie)
     return {"exists": exists}

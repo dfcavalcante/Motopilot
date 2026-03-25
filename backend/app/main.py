@@ -27,22 +27,16 @@ from app.routers import moto_router, chatbot_router, report_router, user_router,
 # from app.routers import auth_router
 
 # --- CONFIGURAÇÕES ---
-try:
-    from backend.app.config import Settings
-except ImportError:
-    class Settings:
-        API_NAME = "MotoPilot AI"
-        API_DESCRIPTION = "SaaS de IA para Gestão de Oficinas"
-        API_VERSION = "2.0.0 (Postgres Edition)"
+from app.config import settings
 
 # --- 1. CRIAÇÃO DAS TABELAS ---
 # O SQLAlchemy olha os imports acima e cria as tabelas se não existirem
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
-    title=Settings.API_NAME,
-    description=Settings.API_DESCRIPTION,
-    version=Settings.API_VERSION
+    title=settings.API_NAME,
+    description=settings.API_DESCRIPTION,
+    version=settings.API_VERSION
 )
 
 if os.path.exists("manuals"):
@@ -55,6 +49,12 @@ def on_startup():
     Roda assim que a API liga.
     Verifica se os cargos (ADMIN, MECANICO) existem. Se não, cria.
     """
+    # --- AVISOS DE SEGURANÇA ---
+    if settings.JWT_SECRET_KEY == "motopilot-secret-key-change-in-production":
+        print("⚠️  AVISO DE SEGURANÇA: Usando JWT_SECRET_KEY padrão! Defina uma chave segura no .env para produção.")
+    if settings.POSTGRES_PASSWORD == "12345":
+        print("⚠️  AVISO DE SEGURANÇA: Usando senha padrão do PostgreSQL! Defina POSTGRES_PASSWORD no .env para produção.")
+
     db = next(get_db()) # Abre uma sessão temporária
     try:
         print("🔄 Verificando cargos iniciais...")

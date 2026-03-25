@@ -37,7 +37,9 @@ export const MotoProvider = ({ children }) => {
 
   const listarMotos = async () => {
     try {
-      const response = await fetch(`${BASE_URL}/motos/listar`);
+      const response = await fetch(`${BASE_URL}/motos/listar`, {
+        headers: { ...getAuthHeaders() },
+      });
 
       if (!response.ok) {
         throw new Error('Erro ao buscar motos');
@@ -101,7 +103,9 @@ export const MotoProvider = ({ children }) => {
   // consulta backend para verificação de número de série
   const verificarNumeroSerie = async (numeroSerie) => {
     try {
-      const response = await fetch(`${BASE_URL}/motos/check/${encodeURIComponent(numeroSerie)}`);
+      const response = await fetch(`${BASE_URL}/motos/check/${encodeURIComponent(numeroSerie)}`, {
+        headers: { ...getAuthHeaders() },
+      });
       if (!response.ok) {
         throw new Error('Erro ao verificar número de série');
       }

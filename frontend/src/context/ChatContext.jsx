@@ -157,7 +157,7 @@ export const ChatProvider = ({ children }) => {
         // Busca chats e motos em paralelo para não depender de estado externo
         const [chatsUsuario, motosData] = await Promise.all([
           listarChats(usuarioId),
-          fetch(`${BASE_URL}/motos/listar`).then((r) => (r.ok ? r.json() : [])),
+          fetch(`${BASE_URL}/motos/listar`, { headers: { ...getAuthHeaders() } }).then((r) => (r.ok ? r.json() : [])),
         ]);
         const merge = montarChatsPorMoto(motosData, chatsUsuario);
         setChatsPorMoto(merge);
