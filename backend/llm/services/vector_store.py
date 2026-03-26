@@ -27,7 +27,7 @@ class VectorStoreService:
     def adicionar_chunks(self, textos: list, dados: list):
         """
         Salva os textos no banco vetorial.
-        'dados' deve conter o dicionário de metadados, incluindo 'moto_id'.
+        'dados' deve conter o dicionário de metadados, incluindo 'modelo_id'.
         """
         ids = [str(uuid.uuid4()) for _ in textos]
 
@@ -42,19 +42,19 @@ class VectorStoreService:
             print(f"❌ [ChromaDB] Erro ao adicionar chunks: {e}")
 
     # --- A MUDANÇA PRINCIPAL ESTÁ AQUI ---
-    def buscar_similaridade(self, pergunta: str, moto_id: int, k: int = settings.K_NEIGHBORS) -> list:
+    def buscar_similaridade(self, pergunta: str, modelo_id: int, k: int = settings.K_NEIGHBORS) -> list:
         """
-        Busca no banco vetorial filtrando EXATAMENTE pelo ID da moto.
+        Busca no banco vetorial filtrando EXATAMENTE pelo ID do modelo.
         """
-        if moto_id is None:
-            print("⚠️ Erro: Tentativa de busca sem ID de moto definido.")
+        if modelo_id is None:
+            print("⚠️ Erro: Tentativa de busca sem ID de modelo definido.")
             return []
 
         try:
             resultados = self.collection.query(
                 query_texts=[pergunta],
                 n_results=50, # Aumentado para buscar mais candidatos
-                where={"moto_id": moto_id} 
+                where={"modelo_id": modelo_id} 
             )
 
             if resultados and resultados['documents']:

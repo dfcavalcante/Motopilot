@@ -18,7 +18,10 @@ const ImageUploader = ({ onFileSelect, arquivo, error, readOnly = false }) => {
       objectUrl = URL.createObjectURL(arquivo);
       setPreview(objectUrl);
     } else if (typeof arquivo === 'string') {
-      setPreview(arquivo);
+      const fullUrl = arquivo.startsWith('http') 
+        ? arquivo 
+        : `http://localhost:8000/${arquivo.replace(/\\/g, '/')}`;
+      setPreview(fullUrl);
     }
 
     return () => {

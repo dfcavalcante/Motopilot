@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException, Depends, Response, Form, File, UploadFile, status, BackgroundTasks
-from typing import List
+from typing import List, Optional
 from sqlalchemy.orm import Session
 import shutil
 import os
@@ -33,7 +33,7 @@ moto_pai_service = Moto_pai_service()
 UPLOAD_DIR = "manuals"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
-def processar_manual_background(file_path: str, moto_id: int, modelo: str, ano: str):
+def processar_manual_background(file_path: str, modelo_id: int, modelo: str, ano: str):
     """
     Chama o processador INTELIGENTE (Markdown) e salva no ChromaDB.
     """
@@ -41,8 +41,8 @@ def processar_manual_background(file_path: str, moto_id: int, modelo: str, ano: 
         print(f"🔄 [IA] Iniciando processamento inteligente: {modelo}")
         
         # 1. Chama a função que lê tabelas direito (do pdf_processor.py)
-        # Ela já devolve os textos e os metadados prontinhos com o moto_id
-        chunks, metadatas = processar_manual_unico(file_path, moto_id, modelo, ano)
+        # Ela já devolve os textos e os metadados prontinhos com o modelo_id
+        chunks, metadatas = processar_manual_unico(file_path, modelo_id, modelo, ano)
         
         if not chunks:
             print("⚠️ [IA] Nenhum texto extraído do manual (ou arquivo vazio).")
@@ -52,7 +52,7 @@ def processar_manual_background(file_path: str, moto_id: int, modelo: str, ano: 
         print(f"💾 [IA] Salvando {len(chunks)} trechos no ChromaDB...")
         vector_store.adicionar_chunks(textos=chunks, dados=metadatas)
         
-        print(f"✅ [IA] Manual do {modelo} (ID: {moto_id}) indexado com sucesso!")
+        print(f"✅ [IA] Manual do {modelo} (Modelo ID: {modelo_id}) indexado com sucesso!")
         
     except Exception as e:
         print(f"❌ [IA] Erro na task de background: {e}")
@@ -60,22 +60,43 @@ def processar_manual_background(file_path: str, moto_id: int, modelo: str, ano: 
 # --- ROTAS ---
 @router.post("/modeloMoto/criar", response_model=ModeloMotoResponse, status_code=status.HTTP_201_CREATED)
 def criar_modelo_moto_endpoint(
+    background_tasks: BackgroundTasks,
     marca: str = Form(...),
     modelo: str = Form(...),
+    ano: int = Form(...),
     imagem_moto: UploadFile = File(...),
+    documento_pdf: UploadFile = File(...),
     db: Session = Depends(get_db),
 ):
 
-    modelo_existente = moto_pai_service.buscar_moto_pai_moto(db, marca, modelo)
+    modelo_existente = moto_pai_service.buscar_moto_pai_moto(db, marca, modelo, ano)
     if modelo_existente:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
-            detail=f"Modelo '{marca} {modelo}' já está registrado no sistema."
+            detail=f"Modelo '{marca} {modelo} {ano}' já está registrado no sistema."
         )
     
     caminho_imagem = salvar_arquivo(imagem_moto, sub_pasta="imagens")
-    novo_modelo = ModeloMotoBase(marca=marca, modelo=modelo, imagem_moto=caminho_imagem)
+    caminho_pdf = salvar_arquivo(documento_pdf, sub_pasta="manuais")
+    
+    novo_modelo = ModeloMotoBase(
+        marca=marca, 
+        modelo=modelo, 
+        ano=ano, 
+        imagem_moto=caminho_imagem,
+        manual_pdf_path=caminho_pdf
+    )
     novo_modelo_moto = moto_pai_service.criar_modelo_moto(db, novo_modelo)
+
+    # Disparar Ingestão da IA atrelada ao Modelo
+    background_tasks.add_task(
+        processar_manual_background, 
+        file_path=caminho_pdf,
+        modelo_id=novo_modelo_moto.id, 
+        modelo=modelo, 
+        ano=str(ano)
+    )
+
     return novo_modelo_moto
 
 
@@ -86,14 +107,12 @@ def listar_modelos_moto_endpoint(db: Session = Depends(get_db)):
 
 @router.post("/", response_model=MotoResponse, status_code=status.HTTP_201_CREATED)
 def criar_moto_endpoint(
-    background_tasks: BackgroundTasks, 
     marca: str = Form(...),
     modelo: str = Form(...),
     ano: int = Form(...),
     numeroSerie: str = Form(...), # Recebe do Front como numeroSerie
     descricao: str = Form(None),
-    documento_pdf: UploadFile = File(...),
-    imagem_moto: UploadFile = File(...),
+    imagem_moto: Optional[UploadFile] = File(None),
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
@@ -104,31 +123,26 @@ def criar_moto_endpoint(
             detail=f"Número de série '{numeroSerie}' já está registrado no sistema."
         )
 
-    # 1. Buscar ou criar o ModeloMoto (moto "pai") por marca/modelo
-    modelo_moto = moto_pai_service.buscar_moto_pai_moto(db, marca, modelo)
+    # 1. Buscar ou criar o ModeloMoto (moto "pai") por marca/modelo/ano
+    modelo_moto = moto_pai_service.buscar_moto_pai_moto(db, marca, modelo, ano)
     if not modelo_moto:
-        print(f"🔍 Modelo '{marca} {modelo}' não encontrado. Crie o modelo")
+        print(f"🔍 Modelo '{marca} {modelo} {ano}' não encontrado. Crie o modelo")
     if not modelo_moto:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Modelo '{marca} {modelo}' não encontrado. Cadastre a moto pai primeiro."
+            detail=f"Modelo '{marca} {modelo} {ano}' não encontrado. Cadastre a moto pai primeiro."
         )
 
-    # 2. Salvar arquivos
-    caminho_pdf = salvar_arquivo(documento_pdf, sub_pasta="manuais")
+    # 2. Herdando arquivos do Modelo Pai
+    caminho_pdf = modelo_moto.manual_pdf_path
 
-    # A moto filha herda exatamente a imagem da moto pai.
-    caminho_imagem = modelo_moto.imagem_moto
-
-    # Compatibilidade para modelos antigos sem imagem cadastrada.
-    if not caminho_imagem and imagem_moto:
+    # A moto filha herda a imagem da moto pai, ou usa uma própria se enviada
+    if imagem_moto:
         caminho_imagem = salvar_arquivo(imagem_moto, sub_pasta="imagens")
-        modelo_moto.imagem_moto = caminho_imagem
-        db.add(modelo_moto)
-        db.commit()
+    else:
+        caminho_imagem = modelo_moto.imagem_moto
 
     # 3. Criar o Schema de Dados
-    # Nota: Agora usamos o modelo_moto_id ao invés de marca/modelo
     moto_data = MotoBase(
         marca=marca,
         modelo=modelo,
@@ -149,15 +163,6 @@ def criar_moto_endpoint(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=str(e)
         )
-
-    # 5. Disparar Ingestão da IA
-    background_tasks.add_task(
-        processar_manual_background, 
-        file_path=caminho_pdf,
-        moto_id=nova_moto.id, 
-        modelo=modelo, 
-        ano=str(ano)
-    )
 
     return nova_moto
 
@@ -208,11 +213,11 @@ def adicionar_manual_endpoint(
 
     moto_com_manual = moto_service.adicionar_manual(db, moto_id, file_path)
     
-    # Disparar Ingestão da IA (Atualização)
+    # Se o manual for adicionado na moto individual, a compatibilidade do modelo seria ideal, mas mantemos o fallback:
     background_tasks.add_task(
         processar_manual_background, 
         file_path=file_path, 
-        moto_id=moto_id, 
+        modelo_id=moto_existente.modelo_moto_id, 
         modelo=moto_existente.modelo, 
         ano=moto_existente.ano
     )

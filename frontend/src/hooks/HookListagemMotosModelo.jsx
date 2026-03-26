@@ -30,7 +30,7 @@ export const HookListagemMotosModelo = () => {
   const [mecanicoSelecionado, setMecanicoSelecionado] = useState({});
 
   const role = String(user?.funcao || '').toLowerCase();
-  const isGerente = role === 'gerente' || role === 'administrador';
+  const isGerente = role === 'gerente' || role === 'administrador' || role === 'admin';
   const isTecnico = role === 'tecnico' || role === 'técnico';
 
   useEffect(() => {

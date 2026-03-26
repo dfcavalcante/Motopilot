@@ -36,8 +36,6 @@ const CadastroDeMoto = () => {
           p: 2,
         }}
       >
-        <EtapasMoto etapa={etapaAtual} />
-
         <Box
           component="form"
           onSubmit={handleSubmit(onSubmitForm)}
@@ -48,23 +46,12 @@ const CadastroDeMoto = () => {
               register={register}
               setValue={setValue}
               errors={errors}
-              onNext={handleProximo}
               watch={watch}
               modeloPaiSelecionado={modeloPaiSelecionado}
             />
           )}
 
-          {etapaAtual === 2 && (
-            <ManualMoto
-              setValue={setValue}
-              errors={errors}
-              onBack={handleVoltar}
-              loading={loading}
-              watch={watch}
-            />
-          )}
-
-          {etapaAtual === 3 && <Concluido />}
+          {etapaAtual === 2 && <Concluido />}
         </Box>
       </Box>
     </BaseFront>

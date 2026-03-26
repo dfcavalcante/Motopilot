@@ -50,7 +50,7 @@ class Settings(BaseSettings):
     # 4. Serviços de IA (LLM e Ollama)
     # =================================================================
     OPENAI_API_KEY: Optional[str] = None
-    OLLAMA_BASE_URL: str = "http://localhost:11434"
+    OLLAMA_BASE_URL: str = "http://127.0.0.1:11434"
     LLM_MODEL_NAME: str = "mistral"
     
     # =================================================================

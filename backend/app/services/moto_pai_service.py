@@ -26,8 +26,8 @@ class Moto_pai_service:
         stmt = select(ModeloMoto).order_by(ModeloMoto.marca, ModeloMoto.modelo)
         return list(db.scalars(stmt).all())
 
-    def buscar_moto_pai_moto(self, db: Session, marca: str, modelo: str) -> Optional[ModeloMoto]:
-        return db.scalars(select(ModeloMoto).where(ModeloMoto.marca == marca, ModeloMoto.modelo == modelo)).first()
+    def buscar_moto_pai_moto(self, db: Session, marca: str, modelo: str, ano: int) -> Optional[ModeloMoto]:
+        return db.scalars(select(ModeloMoto).where(ModeloMoto.marca == marca, ModeloMoto.modelo == modelo, ModeloMoto.ano == ano)).first()
 
     def buscar_modelo_moto_por_id(self, db: Session, id: int) -> Optional[ModeloMoto]:      
         """Busca um ModeloMoto pelo ID."""

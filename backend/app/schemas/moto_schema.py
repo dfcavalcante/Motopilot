@@ -32,6 +32,7 @@ class ModeloMotoBase(BaseModel):
     '''
     marca: str
     modelo: str
+    ano: int
 
     imagem_moto: str
 
@@ -40,7 +41,9 @@ class ModeloMotoResponse(BaseModel):
     id: int
     marca: str
     modelo: str
+    ano: int
     imagem_moto: Optional[str] = Field(None, alias="imagemMoto")
+    manual_pdf_path: Optional[str] = None
 
     model_config = ConfigDict(from_attributes=True, populate_by_name=True)
 

@@ -13,7 +13,6 @@ const motoSchema = z.object({
   numeroSerie: z.string().min(1, 'O número de série é obrigatório.'),
   descricao: z.string().optional(),
   foto: z.any().optional(),
-  manual_pdf_path: z.any().optional(), // Validado no segundo passo
 });
 
 export const HookCadastroMoto = () => {
@@ -56,6 +55,7 @@ export const HookCadastroMoto = () => {
     if (modeloPaiSelecionado) {
       setValue('marca', modeloPaiSelecionado.marca || '');
       setValue('modelo', modeloPaiSelecionado.modelo || '');
+      setValue('ano', String(modeloPaiSelecionado.ano || ''));
       setValue(
         'foto',
         modeloPaiSelecionado.imagemMoto || modeloPaiSelecionado.imagem_moto || null,
@@ -103,22 +103,10 @@ export const HookCadastroMoto = () => {
         return;
       }
     }
-
-    setEtapaAtual((prev) => prev + 1);
   };
 
-  const handleVoltar = () => {
-    setEtapaAtual((prev) => (prev > 1 ? prev - 1 : prev));
-  };
-
-  // Submit Form da moto "filha" (com manual)
+  // Submit Form da moto "filha" (sem manual, já foi pro pai)
   const onSubmitForm = async (data) => {
-    if (!data.manual_pdf_path) {
-      setError('manual_pdf_path', { type: 'manual', message: 'O manual (PDF) é obrigatório.' });
-      toast.error('Adicione o manual em PDF para continuar.');
-      return;
-    }
-
     setLoading(true);
 
     const marcaFinal = modeloPaiSelecionado?.marca || data.marca;
@@ -130,13 +118,15 @@ export const HookCadastroMoto = () => {
     formData.append('ano', data.ano);
     formData.append('numeroSerie', data.numeroSerie);
     formData.append('descricao', data.descricao || '');
-    formData.append('documento_pdf', data.manual_pdf_path);
+    if (data.foto instanceof File) {
+      formData.append('imagem_moto', data.foto);
+    }
 
     try {
       const sucesso = await cadastrarMoto(formData);
 
       if (sucesso) {
-        setEtapaAtual(3);
+        setEtapaAtual(2); // Pula direto pra etapa final
       } else {
         const msgErro = erroContexto || 'Erro ao cadastrar moto.';
         toast.error(msgErro); // Toast de erro específico do contexto ou genérico
@@ -156,8 +146,6 @@ export const HookCadastroMoto = () => {
     setValue,
     handleSubmit,
     onSubmitForm,
-    handleProximo,
-    handleVoltar,
     watch,
     modeloPaiSelecionado,
   };

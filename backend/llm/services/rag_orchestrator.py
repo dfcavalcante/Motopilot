@@ -34,14 +34,18 @@ class RagOrchestrator:
         if not moto:
             return "Erro: Moto não identificada no sistema."
 
-        print(f"🤖 RAG Iniciado | Buscando no manual da moto ID: {moto_id} ({moto.modelo})")
+        print(f"🤖 RAG Iniciado | Buscando no manual do modelo vinculado à moto ID: {moto_id} ({moto.modelo})")
+
+        modelo_id = moto.modelo_moto_id
+        if not modelo_id:
+            return "Erro: Esta moto não possui um modelo associado para consulta de manual."
 
         # 2. Recuperação Inicial (Retrieval)
         # IMPORTANTE: Certifique-se de que K_NEIGHBORS no config.py esteja ALTO (ex: 50).
         # Precisamos pegar uma "rede larga" para trazer a tabela técnica que está escondida.
         contexto_bruto = self.vector_store.buscar_similaridade(
             pergunta=pergunta_texto, 
-            moto_id=moto_id
+            modelo_id=modelo_id
         )
 
         if not contexto_bruto:

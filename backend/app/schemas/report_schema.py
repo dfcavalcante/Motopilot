@@ -23,7 +23,6 @@ class ReportBase(BaseModel):
     status: Optional[str] = Field("pendente", example="pendente")  # Ex: "pendente", "concluido", "arquivado"
     
     imagem_path: Optional[str] = Field(None)
-    assinatura_path: Optional[str] = Field(None)
     
 class ReportUpdate(BaseModel):
     '''
@@ -41,7 +40,6 @@ class ReportUpdate(BaseModel):
     status: Optional[str] = None
     
     imagem_path: Optional[str] = None
-    assinatura_path: Optional[str] = None
 
 class ReportFilter(BaseModel):
     '''

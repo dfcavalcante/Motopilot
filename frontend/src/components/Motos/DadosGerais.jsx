@@ -2,7 +2,7 @@ import React from 'react';
 import { Box, Typography, TextField, Grid, Button, Stack } from '@mui/material';
 import ImageUploader from '../Motos/ImageUploader.jsx';
 
-const DadosGerais = ({ register, setValue, errors, onNext, watch, modeloPaiSelecionado }) => {
+const DadosGerais = ({ register, setValue, errors, watch, modeloPaiSelecionado }) => {
   const labelStyle = {
     color: '#000000',
     fontSize: '15px',
@@ -87,6 +87,7 @@ const DadosGerais = ({ register, setValue, errors, onNext, watch, modeloPaiSelec
             sx={inputSx}
             error={!!errors.modelo}
             helperText={errors.modelo?.message}
+            disabled={Boolean(modeloPaiSelecionado?.id)}
           />
 
           <Typography sx={labelStyle}>Número de Série</Typography>
@@ -111,17 +112,19 @@ const DadosGerais = ({ register, setValue, errors, onNext, watch, modeloPaiSelec
             sx={inputSx}
             error={!!errors.marca}
             helperText={errors.marca?.message}
+            disabled={Boolean(modeloPaiSelecionado?.id)}
           />
 
           <Typography sx={labelStyle}>Ano</Typography>
           <TextField
             {...register('ano')}
             fullWidth
-            placeholder="DD/MM/AA"
+            placeholder="YYYY"
             variant="outlined"
             sx={inputSx}
             error={!!errors.ano}
             helperText={errors.ano?.message}
+            disabled={Boolean(modeloPaiSelecionado?.id)}
           />
         </Stack>
       </Grid>
@@ -163,7 +166,7 @@ const DadosGerais = ({ register, setValue, errors, onNext, watch, modeloPaiSelec
           Cancelar
         </Button>
         <Button
-          onClick={onNext} // Valida os dados da etapa 1 e avança se tudo estiver ok
+          type="submit"
           variant="contained"
           sx={{
             backgroundColor: '#666',
@@ -174,7 +177,7 @@ const DadosGerais = ({ register, setValue, errors, onNext, watch, modeloPaiSelec
             '&:hover': { backgroundColor: '#444' },
           }}
         >
-          Próximo
+          Cadastrar Moto
         </Button>
       </Box>
     </Box>

@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Box, Typography, TextField, Button, Grid, Stack } from '@mui/material';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
@@ -6,6 +6,9 @@ import { toast } from 'react-toastify';
 import BaseFront from '../utils/BaseFront.jsx';
 import { MotoContext } from '../context/MotoContext.jsx';
 import ImageUploader from './../components/Motos/ImageUploader';
+import EtapasMoto from '../components/Motos/EtapasMoto.jsx';
+import ManualMoto from '../components/Motos/DadosManual.jsx';
+import Concluido from '../components/Motos/Concluido.jsx';
 
 const CadastroMotoAtribuir = () => {
   const navigate = useNavigate();
@@ -16,13 +19,15 @@ const CadastroMotoAtribuir = () => {
     handleSubmit,
     setValue,
     watch,
-    onSubmit: onNext,
+    trigger,
     formState: { errors },
   } = useForm({
     defaultValues: {
       marca: '',
       modelo: '',
+      ano: '',
       imagem_moto: null,
+      manual_pdf_path: null,
     },
   });
 
@@ -47,11 +52,18 @@ const CadastroMotoAtribuir = () => {
     },
   };
 
+  const [etapaAtual, setEtapaAtual] = useState(1);
+
   useEffect(() => {
     register('imagem_moto', { required: 'A foto da moto pai é obrigatória.' });
   }, [register]);
 
   const imagemSelecionada = watch('imagem_moto');
+
+  const handleProximo = async () => {
+    const valid = await trigger(['marca', 'modelo', 'ano', 'imagem_moto']);
+    if (valid) setEtapaAtual(2);
+  };
 
   const onSubmit = async (data) => {
     const novoModelo = await criarMotoPai(data);
@@ -61,7 +73,7 @@ const CadastroMotoAtribuir = () => {
     }
 
     toast.success('MotoPai criada com sucesso!');
-    navigate('/listagemMotos');
+    setEtapaAtual(3);
   };
 
   return (
@@ -81,26 +93,32 @@ const CadastroMotoAtribuir = () => {
           overflow: 'visible',
         }}
       >
-        <Typography variant="h5" align="center" sx={{ mb: 4, color: '#000000', fontWeight: 400 }}>
-          Dados Gerais
-        </Typography>
+        <EtapasMoto etapa={etapaAtual} />
+
+        <Box component="form" onSubmit={handleSubmit(onSubmit)} sx={{ width: '100%', mt: 2 }}>
+          
+          {etapaAtual === 1 && (
+            <>
+              <Typography variant="h5" align="center" sx={{ mb: 4, color: '#000000', fontWeight: 400 }}>
+                Dados Gerais
+              </Typography>
 
         <Grid container spacing={4}>
           {/* LADO ESQUERDO: FOTO */}
           <Grid>
             <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
               <ImageUploader
-                arquivo={watch('foto')}
-                onFileSelect={(file) => setValue('foto', file, { shouldValidate: true })}
+                arquivo={watch('imagem_moto')}
+                onFileSelect={(file) => setValue('imagem_moto', file, { shouldValidate: true })}
               />
 
-              {errors.foto && (
+              {errors.imagem_moto && (
                 <Typography
                   variant="caption"
                   color="error"
                   sx={{ mt: 1, textAlign: 'center', fontSize: '0.9rem' }}
                 >
-                  {errors.foto.message}
+                  {errors.imagem_moto.message}
                 </Typography>
               )}
             </Box>
@@ -136,7 +154,7 @@ const CadastroMotoAtribuir = () => {
             <TextField
               {...register('ano')}
               fullWidth
-              placeholder="DD/MM/AA"
+              placeholder="YYYY"
               variant="outlined"
               sx={inputSx}
               error={!!errors.ano}
@@ -161,7 +179,7 @@ const CadastroMotoAtribuir = () => {
             Cancelar
           </Button>
           <Button
-            onClick={onNext} // Valida os dados da etapa 1 e avança se tudo estiver ok
+            onClick={handleProximo}
             variant="contained"
             sx={{
               backgroundColor: '#666',
@@ -175,6 +193,21 @@ const CadastroMotoAtribuir = () => {
             Próximo
           </Button>
         </Box>
+        </>
+      )}
+
+      {etapaAtual === 2 && (
+        <ManualMoto
+          setValue={setValue}
+          watch={watch}
+          onBack={() => setEtapaAtual(1)}
+          loading={loading}
+        />
+      )}
+
+      {etapaAtual === 3 && <Concluido />}
+      
+      </Box>
       </Box>
     </BaseFront>
   );
