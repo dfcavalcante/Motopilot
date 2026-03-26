@@ -1,11 +1,12 @@
 import React from 'react';
 import { Box, Stack, Typography } from '@mui/material';
 
+{/* Componente de caixa para o dashboard, usado para mostrar os números principais das motos(andamento, totais, concluidas, etc) */}
 const BoxDashboard = ({ icone, titulo, descricao, numero }) => {
   return (
     <Box
-      minWidth={375}
-      height={160}
+      width="100%" 
+      height="100%"
       borderRadius={4}
       p={2}
       display="flex"
@@ -13,13 +14,13 @@ const BoxDashboard = ({ icone, titulo, descricao, numero }) => {
       alignItems="flex-start"
       justifyContent="center"
       boxSizing="border-box"
-      border={'1.3px solid #E0E0E0'}
+      boxShadow={1}
     >
       <Box sx={{ flex: 1, minWidth: 0, marginLeft: 2 }}>
         {/*Icone e número um do lado do outro*/}
         <Stack direction="row" alignItems="center" justifyContent="space-between" gap={2}>
           <Box
-            bgcolor="#D9D9D9"
+            boxShadow={1}
             height={40}
             width={40}
             padding={3}
@@ -41,11 +42,16 @@ const BoxDashboard = ({ icone, titulo, descricao, numero }) => {
 
         {/*Titulo e descrição um embaixo do outro*/}
         <Stack direction="column" alignItems="flex-start" justifyContent="space-between" gap={1}>
-          <Typography fontSize={20} variant="body-1" marginBottom={1}>
+          <Typography
+            fontSize={20}
+            variant="body-1"
+            marginBottom={1}
+            noWrap 
+          >
             {titulo}
           </Typography>
 
-          <Typography fontSize={14} variant="body-2" color="#00000080">
+          <Typography fontSize={14} variant="body-2" color="#00000080" noWrap>
             {descricao}
           </Typography>
         </Stack>

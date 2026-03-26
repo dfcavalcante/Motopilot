@@ -1,5 +1,6 @@
 import { createContext, useState, useCallback } from 'react';
 import React from 'react';
+import { getAuthHeaders } from './LoginContext';
 
 export const DashboardContext = createContext();
 
@@ -26,9 +27,14 @@ export const DashboardProvider = ({ children }) => {
     setLoading(true);
     setErro(null);
     try {
-      const response = await fetch(`${BASE_URL}/dashboard/gerente`);
+      const response = await fetch(`${BASE_URL}/dashboard/gerente`, {
+        headers: { ...getAuthHeaders() },
+      });
 
       if (!response.ok) {
+        if (response.status === 401) {
+          throw new Error('Sessao expirada. Faca login novamente.');
+        }
         throw new Error('Erro ao buscar dados do dashboard do gerente');
       }
 

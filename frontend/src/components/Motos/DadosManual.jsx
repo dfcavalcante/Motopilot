@@ -3,7 +3,7 @@ import { Box, Typography, Button, IconButton } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import PdfUploader from '../../utils/PdfUploader.jsx';
 
-const ManualMoto = ({ onBack, setValue, watch, loading }) => {
+const ManualMoto = ({ onBack, setValue, watch, loading, onNext }) => {
   const arquivoAtual = watch('manual_pdf_path');
 
   const handleFileSelect = (file) => {
@@ -11,21 +11,7 @@ const ManualMoto = ({ onBack, setValue, watch, loading }) => {
   };
 
   return (
-    <Box
-      sx={{
-        backgroundColor: '#E0E0E0',
-        p: 4,
-        borderRadius: '16px',
-        width: '100%',
-        maxWidth: '800px',
-        margin: '0 auto',
-        fontFamily: 'Roboto, sans-serif',
-        boxShadow: '0px 4px 10px rgba(0,0,0,0.1)',
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'space-between',
-      }}
-    >
+    <>
       {/* --- Cabeçalho --- */}
       <Box sx={{ position: 'relative', mb: 2 }}>
         <IconButton
@@ -36,10 +22,6 @@ const ManualMoto = ({ onBack, setValue, watch, loading }) => {
             top: -5,
             color: '#000000',
             borderRadius: 2,
-            backgroundColor: 'rgba(0, 0, 0, 0.1)',
-            '&:hover': {
-              backgroundColor: 'rgba(0, 0, 0, 0.2)',
-            },
           }}
         >
           <ArrowBackIcon />
@@ -87,6 +69,7 @@ const ManualMoto = ({ onBack, setValue, watch, loading }) => {
         <Button
           type="submit"
           variant="contained"
+          onClick={onNext}
           disabled={!arquivoAtual || loading}
           sx={{
             backgroundColor: '#888',
@@ -103,7 +86,7 @@ const ManualMoto = ({ onBack, setValue, watch, loading }) => {
           {loading ? 'Salvando...' : 'Finalizar'}
         </Button>
       </Box>
-    </Box>
+    </>
   );
 };
 

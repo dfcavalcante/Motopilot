@@ -5,11 +5,11 @@ const TableHeader = () => (
   <Box
     sx={{
       display: 'grid',
-      gridTemplateColumns: '2.2fr 2.2fr 1.5fr 1fr auto',
-      columnGap: 2,
+      gridTemplateColumns: '2fr 2.3fr 1.5fr 0.8fr auto',
+      columnGap: 1,
       alignItems: 'center',
       width: '100%',
-      px: 2,
+      px: { xs: 2, sm: 3 },
       mt: 3,
       mb: 2,
       borderBottom: '1px dashed #969696',
@@ -21,19 +21,19 @@ const TableHeader = () => (
       <Typography color="black">Funcionário</Typography>
     </Box>
 
-    <Box sx={{ display: 'flex', minWidth: 0 }}>
+    <Box sx={{ display: 'flex', justifyContent: 'flex-start', minWidth: 0 }}>
       <Typography color="black" textAlign="left">
         Email
       </Typography>
     </Box>
 
-    <Box sx={{ display: 'flex', minWidth: 0 }}>
-      <Typography color="black" textAlign="left">
+    <Box sx={{ display: 'flex', justifyContent: 'center', minWidth: 0 }}>
+      <Typography color="black" textAlign="center">
         Função
       </Typography>
     </Box>
 
-    <Box sx={{ display: 'flex', justifyContent: 'flex-start' }}>
+    <Box sx={{ display: 'flex', justifyContent: 'center' }}>
       <Typography color="black">Status</Typography>
     </Box>
 

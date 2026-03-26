@@ -39,6 +39,7 @@ const Chatbot = () => {
   }, [user?.id]);
 
   const nomeChat = motoSelecionada ? `${motoSelecionada.modelo}` : 'Novo Chat';
+  const emConversa = Boolean(motoSelecionada && messages.length > 0);
   const estadoAtualMoto = String(motoSelecionada?.estado || '')
     .trim()
     .toLowerCase();
@@ -105,18 +106,6 @@ const Chatbot = () => {
   return (
     <BaseFrontChat>
       <Box sx={{ display: 'flex', height: '100%', overflow: 'hidden' }}>
-        {/* Painel de Histórico (condicional) */}
-        {showHistorico && (
-          <HistoricoPanel
-            chatsPorMoto={chatsPorMoto}
-            loading={loadingHistorico}
-            onSelectMoto={(moto, chats) => {
-              abrirConversa(moto, chats);
-              setShowHistorico(false);
-            }}
-          />
-        )}
-
         {/* Área principal do chat */}
         <Box
           sx={{
@@ -137,21 +126,23 @@ const Chatbot = () => {
             position="relative"
             justifyContent="center"
           >
-            <IconButton
-              onClick={() => window.history.back()}
-              sx={{
-                color: '#000000',
-                borderRadius: 2,
-                backgroundColor: '#B5B5B5',
-                width: 40,
-                height: 40,
-                position: 'absolute',
-                left: 0,
-                '&:hover': { backgroundColor: 'rgba(0, 0, 0, 0.2)' },
-              }}
-            >
-              <ArrowBackIcon />
-            </IconButton>
+            {emConversa && (
+              <IconButton
+                onClick={() => window.history.back()}
+                sx={{
+                  color: '#ffffff',
+                  borderRadius: 2,
+                  backgroundColor: '#fdb1b1',
+                  width: 40,
+                  height: 40,
+                  position: 'absolute',
+                  left: 0,
+                  '&:hover': { backgroundColor: '#D90000' },
+                }}
+              >
+                <ArrowBackIcon />
+              </IconButton>
+            )}
 
             <Typography fontSize={30}>{nomeChat}</Typography>
 
@@ -165,14 +156,14 @@ const Chatbot = () => {
             <IconButton
               onClick={() => setShowHistorico((prev) => !prev)}
               sx={{
-                color: showHistorico ? '#fff' : '#000000',
+                color: '#fff',
                 borderRadius: 2,
-                backgroundColor: showHistorico ? '#676767' : '#B5B5B5',
+                backgroundColor: showHistorico ? '#D90000' : '#F30000',
                 width: 40,
                 height: 40,
                 position: 'absolute',
                 right: 0,
-                '&:hover': { backgroundColor: showHistorico ? '#444' : 'rgba(0, 0, 0, 0.2)' },
+                '&:hover': { backgroundColor: '#D90000' },
               }}
             >
               <HistoryIcon />
@@ -255,6 +246,28 @@ const Chatbot = () => {
               )}
             </Box>
           )}
+        </Box>
+
+        {/* Painel de Histórico com animação lateral */}
+        <Box
+          sx={{
+            width: showHistorico ? 278 : 0,
+            opacity: showHistorico ? 1 : 0,
+            transform: showHistorico ? 'translateX(0)' : 'translateX(16px)',
+            overflow: 'hidden',
+            flexShrink: 0,
+            pointerEvents: showHistorico ? 'auto' : 'none',
+            transition: 'width 280ms ease, opacity 220ms ease, transform 280ms ease',
+          }}
+        >
+          <HistoricoPanel
+            chatsPorMoto={chatsPorMoto}
+            loading={loadingHistorico}
+            onSelectMoto={(moto, chats) => {
+              abrirConversa(moto, chats);
+              setShowHistorico(false);
+            }}
+          />
         </Box>
       </Box>
     </BaseFrontChat>

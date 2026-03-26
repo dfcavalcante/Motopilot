@@ -6,7 +6,7 @@ const Concluido = () => {
   return (
     <Box
       sx={{
-        backgroundColor: '#D9D9D9',
+        boxShadow: 3,
         p: 4,
         borderRadius: '16px',
         width: '100%',
@@ -22,7 +22,7 @@ const Concluido = () => {
     >
       {/* Header com Ícone e Título */}
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
-        <CheckCircleIcon sx={{ fontSize: 40, color: '#A0A0A0' }} />
+        <CheckCircleIcon sx={{ fontSize: 40, color: '#216A13' }} />
         <Typography variant="h5" sx={{ color: '#000', fontWeight: 500 }}>
           Usuário salvo
         </Typography>
@@ -38,16 +38,14 @@ const Concluido = () => {
         <Button
           variant="contained"
           sx={{
-            backgroundColor: '#666',
+            backgroundColor: '#F30000',
             color: '#FFF',
             textTransform: 'none',
             height: '48px',
             width: '350px',
             borderRadius: '8px',
             fontWeight: 'bold',
-            '&:hover': {
-              backgroundColor: '#444',
-            },
+            fontSize: '19px',
           }}
           onClick={() => window.location.href = '/usuarios'} // Redireciona para a página de usuários
         >

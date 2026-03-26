@@ -226,8 +226,12 @@ export const MotoProvider = ({ children }) => {
       const formData = new FormData();
       formData.append('marca', dados.marca || '');
       formData.append('modelo', dados.modelo || '');
+      formData.append('ano', dados.ano || '');
       if (dados.imagem_moto instanceof File) {
         formData.append('imagem_moto', dados.imagem_moto);
+      }
+      if (dados.manual_pdf_path instanceof File) {
+        formData.append('documento_pdf', dados.manual_pdf_path);
       }
 
       const response = await fetch(`${BASE_URL}/motos/modeloMoto/criar`, {

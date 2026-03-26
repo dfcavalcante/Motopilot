@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
 import { MotoContext } from '../context/MotoContext.jsx';
 
 // Molde do formulário e regras de validação usando Zod
@@ -13,7 +14,6 @@ const motoSchema = z.object({
   numeroSerie: z.string().min(1, 'O número de série é obrigatório.'),
   descricao: z.string().optional(),
   foto: z.any().optional(),
-  manual_pdf_path: z.any().optional(), // Validado no segundo passo
 });
 
 export const HookCadastroMoto = () => {
@@ -24,8 +24,9 @@ export const HookCadastroMoto = () => {
     listarMotos,
     verificarNumeroSerie,
     modeloPaiSelecionado,
+    setModeloPaiSelecionado,
   } = useContext(MotoContext);
-
+  const navigate = useNavigate();
   const [etapaAtual, setEtapaAtual] = useState(1);
   const [loading, setLoading] = useState(false);
 
@@ -36,6 +37,7 @@ export const HookCadastroMoto = () => {
     setError,
     setValue,
     watch,
+    reset,
     formState: { errors },
   } = useForm({
     resolver: zodResolver(motoSchema),
@@ -56,6 +58,7 @@ export const HookCadastroMoto = () => {
     if (modeloPaiSelecionado) {
       setValue('marca', modeloPaiSelecionado.marca || '');
       setValue('modelo', modeloPaiSelecionado.modelo || '');
+      setValue('ano', String(modeloPaiSelecionado.ano || ''));
       setValue(
         'foto',
         modeloPaiSelecionado.imagemMoto || modeloPaiSelecionado.imagem_moto || null,
@@ -65,19 +68,24 @@ export const HookCadastroMoto = () => {
   }, [modeloPaiSelecionado, setValue]);
 
   const handleProximo = async () => {
+    console.log('🔵 handleProximo chamado');
+    
     // Validação da etapa 1: campos obrigatórios
     const camposValidos = await trigger(['modelo', 'marca', 'ano', 'numeroSerie']);
+    console.log('🔵 Campos válidos:', camposValidos);
     if (!camposValidos) {
-      toast.warning('Preencha os campos obrigatórios.'); // <-- Notificação visual
+      toast.warning('Preencha os campos obrigatórios.');
       return;
     }
 
+    console.log('🔵 modeloPaiSelecionado:', modeloPaiSelecionado);
     if (!modeloPaiSelecionado?.id) {
       toast.warning('Selecione um modelo de moto pai antes de continuar.');
       return;
     }
 
     const numeroSerieAtual = watch('numeroSerie');
+    console.log('🔵 Número de série:', numeroSerieAtual);
 
     // Validação de Duplicidade no State
     if (
@@ -85,6 +93,7 @@ export const HookCadastroMoto = () => {
         (moto) => moto.numero_serie === numeroSerieAtual || moto.numeroSerie === numeroSerieAtual
       )
     ) {
+      console.log('🔴 Série duplicada no state');
       setError('numeroSerie', {
         type: 'manual',
         message: 'Este número de série já está registrado.',
@@ -95,6 +104,7 @@ export const HookCadastroMoto = () => {
     // Validação de Duplicidade no Backend
     if (verificarNumeroSerie) {
       const exists = await verificarNumeroSerie(numeroSerieAtual);
+      console.log('🔵 Série existe no backend:', exists);
       if (exists) {
         setError('numeroSerie', {
           type: 'manual',
@@ -104,21 +114,27 @@ export const HookCadastroMoto = () => {
       }
     }
 
-    setEtapaAtual((prev) => prev + 1);
+    // Todas as validações passaram → submeter o formulário
+    console.log('🟢 Todas validações OK, submetendo...');
+    handleSubmit(onSubmitForm)();
   };
 
   const handleVoltar = () => {
-    setEtapaAtual((prev) => (prev > 1 ? prev - 1 : prev));
+    reset({
+      modelo: '',
+      marca: '',
+      ano: '',
+      numeroSerie: '',
+      descricao: '',
+      foto: null,
+    });
+    setEtapaAtual(1);
+    setModeloPaiSelecionado(null);
+    navigate('/listagemMotos');
   };
 
-  // Submit Form da moto "filha" (com manual)
+  // Submit Form da moto "filha" (sem manual, já foi pro pai)
   const onSubmitForm = async (data) => {
-    if (!data.manual_pdf_path) {
-      setError('manual_pdf_path', { type: 'manual', message: 'O manual (PDF) é obrigatório.' });
-      toast.error('Adicione o manual em PDF para continuar.');
-      return;
-    }
-
     setLoading(true);
 
     const marcaFinal = modeloPaiSelecionado?.marca || data.marca;
@@ -130,19 +146,21 @@ export const HookCadastroMoto = () => {
     formData.append('ano', data.ano);
     formData.append('numeroSerie', data.numeroSerie);
     formData.append('descricao', data.descricao || '');
-    formData.append('documento_pdf', data.manual_pdf_path);
+    if (data.foto instanceof File) {
+      formData.append('imagem_moto', data.foto);
+    }
 
     try {
       const sucesso = await cadastrarMoto(formData);
 
       if (sucesso) {
-        setEtapaAtual(3);
+        setEtapaAtual(2); // Pula direto pra etapa final
       } else {
         const msgErro = erroContexto || 'Erro ao cadastrar moto.';
-        toast.error(msgErro); // Toast de erro específico do contexto ou genérico
+        toast.error(msgErro);
       }
     } catch (error) {
-      toast.error('Erro inesperado de conexão.'); // Toast de erro genérico para falhas de conexão ou outras exceções
+      toast.error('Erro inesperado de conexão.');
     } finally {
       setLoading(false);
     }
@@ -156,11 +174,12 @@ export const HookCadastroMoto = () => {
     setValue,
     handleSubmit,
     onSubmitForm,
+    watch,
     handleProximo,
     handleVoltar,
-    watch,
     modeloPaiSelecionado,
   };
 };
 
 export default HookCadastroMoto;
+

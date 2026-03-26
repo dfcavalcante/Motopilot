@@ -16,7 +16,7 @@ export const getUserInitials = (nome = '', email = '') => {
     );
   }
 
-  return `${partes[0][0] || ''}${partes[1][0] || ''}`.toUpperCase();
+  return `${partes[0][0] || ''}`.toUpperCase();
 };
 
 export const getAvatarColor = (nome = '', email = '') => {

@@ -197,6 +197,38 @@ export const ReportProvider = ({ children }) => {
     [BASE_URL, relatorioAtual?.id]
   );
 
+  // Upload de imagem para relatório
+  const uploadImagemRelatorio = useCallback(
+    async (reportId, file) => {
+      try {
+        const formData = new FormData();
+        formData.append('imagem', file);
+
+        const response = await fetch(`${BASE_URL}/relatorio/${reportId}/imagem`, {
+          method: 'PATCH',
+          headers: { ...getAuthHeaders() },
+          body: formData,
+        });
+
+        if (!response.ok) {
+          throw new Error('Erro ao enviar imagem.');
+        }
+
+        const relatorioAtualizado = await response.json();
+        setRelatorios((prev) => prev.map((r) => (r.id === reportId ? relatorioAtualizado : r)));
+        if (relatorioAtual?.id === reportId) {
+          setRelatorioAtual(relatorioAtualizado);
+        }
+        return relatorioAtualizado;
+      } catch (error) {
+        setErro(error.message);
+        console.error('Erro ao enviar imagem:', error);
+        return null;
+      }
+    },
+    [BASE_URL, relatorioAtual?.id]
+  );
+
   return (
     <ReportContext.Provider
       value={{
@@ -210,6 +242,7 @@ export const ReportProvider = ({ children }) => {
         atualizarRelatorio,
         deletarRelatorio,
         concluirRelatorio,
+        uploadImagemRelatorio,
         setRelatorioAtual,
         watch
       }}

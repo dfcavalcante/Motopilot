@@ -12,7 +12,6 @@ import {
 import Check from '@mui/icons-material/Check';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
-
 const CriarSenha = ({ onBack, register, errors, watch, loading }) => {
   const [showSenha1, setShowSenha1] = useState(false);
   const [showSenha2, setShowSenha2] = useState(false);
@@ -27,7 +26,8 @@ const CriarSenha = ({ onBack, register, errors, watch, loading }) => {
   };
 
   const senhasConferem = senhaAtual === confirmarSenhaAtual && confirmarSenhaAtual !== '';
-  const podeAvancar = validacoes.caracteres && validacoes.maiuscula && validacoes.numero && senhasConferem;
+  const podeAvancar =
+    validacoes.caracteres && validacoes.maiuscula && validacoes.numero && senhasConferem;
 
   const renderRequirement = (label, isMet) => (
     <Stack direction="row" alignItems="center" spacing={1} sx={{ opacity: isMet ? 0.5 : 1 }}>
@@ -48,7 +48,7 @@ const CriarSenha = ({ onBack, register, errors, watch, loading }) => {
   return (
     <Box
       sx={{
-        backgroundColor: '#E0E0E0',
+        backgroundColor: 'white',
         p: 4,
         borderRadius: '16px',
         width: '100%',
@@ -56,7 +56,7 @@ const CriarSenha = ({ onBack, register, errors, watch, loading }) => {
         minHeight: '550px',
         margin: '0 auto',
         fontFamily: 'Roboto, sans-serif',
-        boxShadow: '0px 4px 10px rgba(0,0,0,0.1)',
+        boxShadow: 3,
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'space-between',
@@ -74,8 +74,8 @@ const CriarSenha = ({ onBack, register, errors, watch, loading }) => {
             top: -5,
             color: '#000000',
             borderRadius: 2,
-            backgroundColor: 'rgba(0, 0, 0, 0.1)',
-            '&:hover': { backgroundColor: 'rgba(0, 0, 0, 0.2)' },
+            backgroundColor: '#FEDCDB',
+            '&:hover': { backgroundColor: '#FEDCDB' },
           }}
         >
           <ArrowBackIcon />
@@ -86,28 +86,47 @@ const CriarSenha = ({ onBack, register, errors, watch, loading }) => {
       </Box>
 
       {/* --- Área Central (Inputs) --- */}
-      <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%', maxWidth: '400px', margin: '0 auto', mt: 4 }}>
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          width: '100%',
+          maxWidth: '400px',
+          margin: '0 auto',
+          mt: 4,
+        }}
+      >
         <InputLabel sx={{ color: 'black', fontSize: 16, mb: 1 }}>Senha</InputLabel>
         <TextField
           type={showSenha1 ? 'text' : 'password'}
           variant="outlined"
           fullWidth
           size="small"
-          {...register('senha')} 
+          {...register('senha')}
           error={!!errors.senha}
           helperText={errors.senha?.message}
           InputProps={{
             endAdornment: (
               <InputAdornment position="end">
                 <IconButton onClick={() => setShowSenha1(!showSenha1)} edge="end">
-                  <img src={showSenha1 ? '/images/olhoAberto.png' : '/images/olhoFechado.png'} alt="Mostrar" style={{ width: '20px' }} />
+                  <img
+                    src={showSenha1 ? '/images/olhoAberto.png' : '/images/olhoFechado.png'}
+                    alt="Mostrar"
+                    style={{ width: '20px' }}
+                  />
                 </IconButton>
               </InputAdornment>
             ),
           }}
           sx={{
             mb: 2,
-            '& .MuiOutlinedInput-root': { borderRadius: '12px', bgcolor: '#E0E0E0' },
+            '& .MuiOutlinedInput-root': {
+              borderRadius: '12px',
+              backgroundColor: '#FFF9F9',
+              '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                borderColor: '#d4d4d4',
+              },
+            },
             '& input[type="password"]': { letterSpacing: '0.3em' },
           }}
         />
@@ -125,14 +144,24 @@ const CriarSenha = ({ onBack, register, errors, watch, loading }) => {
             endAdornment: (
               <InputAdornment position="end">
                 <IconButton onClick={() => setShowSenha2(!showSenha2)} edge="end">
-                  <img src={showSenha2 ? '/images/olhoAberto.png' : '/images/olhoFechado.png'} alt="Mostrar" style={{ width: '20px' }} />
+                  <img
+                    src={showSenha2 ? '/images/olhoAberto.png' : '/images/olhoFechado.png'}
+                    alt="Mostrar"
+                    style={{ width: '20px' }}
+                  />
                 </IconButton>
               </InputAdornment>
             ),
           }}
           sx={{
             mb: 2,
-            '& .MuiOutlinedInput-root': { borderRadius: '12px', bgcolor: '#E0E0E0' },
+            '& .MuiOutlinedInput-root': {
+              borderRadius: '12px',
+              backgroundColor: '#FFF9F9',
+              '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                borderColor: '#d4d4d4',
+              },
+            },
             '& input[type="password"]': { letterSpacing: '0.3em' },
           }}
         />
@@ -172,7 +201,7 @@ const CriarSenha = ({ onBack, register, errors, watch, loading }) => {
           variant="contained"
           disabled={!podeAvancar || loading}
           sx={{
-            backgroundColor: '#444',
+            backgroundColor: '#F30000',
             color: 'white',
             borderRadius: '8px',
             textTransform: 'none',
@@ -180,7 +209,6 @@ const CriarSenha = ({ onBack, register, errors, watch, loading }) => {
             width: '140px',
             boxShadow: 'none',
             transition: 'all 0.3s ease',
-            '&:hover': { backgroundColor: '#222', boxShadow: 'none' },
             '&.Mui-disabled': { backgroundColor: '#bbb', color: '#eee', cursor: 'not-allowed' },
           }}
         >

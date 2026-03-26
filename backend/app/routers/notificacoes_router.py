@@ -5,7 +5,8 @@ from app.models.notification_model import Notification
 from app.database import get_db
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
-from sqlalchemy.orm import Session
+from app.services.jwt_service import get_current_user
+from app.models.user_model import User
 
 router = APIRouter(prefix="/notificacoes", tags=['Notificações'])
 
@@ -20,13 +21,13 @@ def criar_notificacao_endpoint(notificacao: NotificationCreate, db: Session = De
 
 #Listar notificações do usuário sem filtros
 @router.get("/listar", response_model=list[NotificationResponse])
-def listar_notificacoes_endpoint( db: Session = Depends(get_db)):
+def listar_notificacoes_endpoint( db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     notification_service = NotificationService(db)
-    listar_notificacoes = notification_service.listar_notificacoes()
+    listar_notificacoes = notification_service.listar_notificacoes(user=current_user)
     return listar_notificacoes
 
 @router.patch("/{notification_id}/marcar_como_lida", response_model=NotificationResponse)
-def marcar_lido_endpoint(notification_id: int, db: Session = Depends(get_db)):
+def marcar_lido_endpoint(notification_id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     notification_service = NotificationService(db)
     notificacao = notification_service.marcar_lido(notification_id)
     if not notificacao:
@@ -34,9 +35,9 @@ def marcar_lido_endpoint(notification_id: int, db: Session = Depends(get_db)):
     return notificacao
 
 @router.patch("/marcar_todas_lidas", response_model=MarcarTodasLidasResponse)
-def marcar_todas_lidas_endpoint(db: Session = Depends(get_db)):
+def marcar_todas_lidas_endpoint(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     notification_service = NotificationService(db)
 
-    quantidade = notification_service.marcar_todas_lidas()
+    quantidade = notification_service.marcar_todas_lidas(user=current_user)
     
     return {"quantidade": quantidade}

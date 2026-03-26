@@ -6,6 +6,7 @@ import BoxMoto from '../components/CadastroMoto/BoxMoto';
 import { MotoContext } from '../context/MotoContext';
 import BarraPesquisa from '../components/CadastroMoto/BarraPesquisa';
 
+{/* Página de Listagem de Motos - Mostra os modelos de motos cadastrados, com busca e ordenação */}
 const ListagemMotos = () => {
   const navigate = useNavigate();
   const { listarModelosMoto, modelosMoto, setModeloPaiSelecionado } = useContext(MotoContext);
@@ -79,7 +80,6 @@ const ListagemMotos = () => {
 
       {/* Grid de Motos */}
       <Box
-        backgroundColor="#DBDBDB"
         sx={{
           flexGrow: 100,
           width: '100%',

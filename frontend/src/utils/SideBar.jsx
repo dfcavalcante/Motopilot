@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Typography, Stack, Divider, Button } from '@mui/material';
+import { Box, Typography, Stack, Divider, Button, IconButton } from '@mui/material';
 import { useLocation, useNavigate } from 'react-router-dom';
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
 
@@ -96,6 +96,7 @@ const SideBar = ({ historico = [] }) => {
         p: '20px',
         boxSizing: 'border-box',
         position: 'relative',
+        boxShadow: 6
       }}
     >
       {/* Botão de abrir/fechar */}
@@ -105,7 +106,7 @@ const SideBar = ({ historico = [] }) => {
           position: 'absolute',
           right: -12,
           top: 90,
-          backgroundColor: '#DBDBDB',
+          backgroundColor: '#F30000',
           boxShadow: '0px 2px 4px rgba(0,0,0,0.2)',
           zIndex: 10,
           minWidth: '20px',
@@ -134,26 +135,31 @@ const SideBar = ({ historico = [] }) => {
 
       <Stack spacing={2} sx={{ height: '100%', overflow: 'hidden' }}>
         {/* Logo */}
-        <Box
+        <IconButton
+          onClick={() => navigate('/dashboard')}
           sx={{
             display: 'flex',
             alignItems: 'center',
             justifyContent: open ? 'flex-start' : 'center',
             gap: 18,
-            minHeight: '40px',
+            minHeight: '60px',
+            '&:hover': {
+              transform: 'none',
+              backgroundColor: 'transparent',
+            },
           }}
         >
-          {!open && <img src="/images/LogoNova.png" alt="Logo" width="30" />}
+          {!open && <img src="/images/LogoNova.png" alt="Logo" width="45" />}
           {open && (
             <img
-              src="/images/Motopilot Logo.png"
+              src="/images/LogoNovaGrande.png"
               alt="Logo"
               width="220"
               height={30}
               style={{ borderRadius: '8px' }}
             />
           )}
-        </Box>
+        </IconButton>
 
         <Divider />
 
@@ -188,7 +194,7 @@ const SideBar = ({ historico = [] }) => {
                   mb: 0.5,
                   justifyContent: open ? 'flex-start' : 'center',
 
-                  backgroundColor: location.pathname === menu.link ? '#e0e0e0' : 'transparent',
+                  backgroundColor: location.pathname === menu.link ? '#FEDCDB' : 'transparent',
                   color: location.pathname === menu.link,
                   '&:hover': {
                     backgroundColor: location.pathname === menu.link ? '#d5d5d5' : '#f5f5f5',
