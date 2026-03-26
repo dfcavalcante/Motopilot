@@ -54,7 +54,7 @@ const Routers = () => {
                           <Route
                             path="/cadastroMoto"
                             element={
-                              <RotaProtegida>
+                              <RotaProtegida coordinatorOnly>
                                 <CadastroDeMoto />
                               </RotaProtegida>
                             }
@@ -127,7 +127,7 @@ const Routers = () => {
                           <Route
                             path="/cadastroMotoAtribuir"
                             element={
-                              <RotaProtegida>
+                              <RotaProtegida coordinatorOnly>
                                 <CadastroMotoAtribuir />
                               </RotaProtegida>
                             }

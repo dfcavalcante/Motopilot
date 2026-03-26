@@ -9,8 +9,8 @@ const MotoListItem = ({ moto, onClick, onInfoClick }) => {
 
   const getStatusStyles = (statusName) => {
     switch (statusName.toLowerCase()) {
-      case 'concluído':
-      case 'concluido':
+      case 'concluída':
+      case 'Concluida':
         return {
           color: '#29C406',
           border: '1px solid #29C406',

@@ -38,6 +38,9 @@ const ListagemMotos = () => {
           backgroundColor: '#FEDCDB',
           width: 40,
           height: 40,
+          position: 'absolute',
+          top: 130,
+          left: 150,
         }}
       >
         <ArrowBackIcon />

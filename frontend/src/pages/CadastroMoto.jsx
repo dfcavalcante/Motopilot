@@ -24,7 +24,7 @@ const CadastroDeMoto = () => {
 
   return (
     <BaseFront nome="Adicionar moto">
-      <EtapasMotoIndividual etapaAtual={etapaAtual} />
+      <EtapasMotoIndividual etapa={etapaAtual} />
       <Box
         sx={{
           flexGrow: 1,
@@ -36,11 +36,7 @@ const CadastroDeMoto = () => {
           p: 2,
         }}
       >
-        <Box
-          component="form"
-          onSubmit={handleSubmit(onSubmitForm)}
-          sx={{ width: '100%', flex: 1}}
-        >
+        <Box component="form" onSubmit={handleSubmit(onSubmitForm)} sx={{ width: '100%', flex: 1 }}>
           {etapaAtual === 1 && (
             <DadosGerais
               register={register}

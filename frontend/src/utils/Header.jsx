@@ -1,4 +1,4 @@
-import { Box, Typography, Button, IconButton, Avatar } from '@mui/material';
+import { Box, Typography, Button, IconButton, Avatar, Tooltip } from '@mui/material';
 import React, { useContext, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { NotificacaoContext } from '../context/NotificacoesContext.jsx';
@@ -24,14 +24,28 @@ const Header = ({ onNovoChat }) => {
 
   const nomeCompleto = (user?.nome || '').trim();
   const nomeExibicao = nomeCompleto || user?.email || 'Usuário';
+  const role = String(user?.funcao || '')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .trim();
+  const isCoordenador =
+    role === 'coordenador' ||
+    role === 'coordenadora' ||
+    role === 'gerente' ||
+    role === 'administrador' ||
+    role === 'admin';
+  const disableCadastroMoto = !isCoordenador;
 
   const handleCadastroMoto = (e) => {
     e.preventDefault();
+    if (disableCadastroMoto) return;
     navigate('/cadastroMoto');
   };
 
   const handleCadastroMotoPai = (e) => {
     e.preventDefault();
+    if (disableCadastroMoto) return;
     navigate('/cadastroMotoAtribuir');
   };
 
@@ -65,24 +79,35 @@ const Header = ({ onNovoChat }) => {
     }
     if (location.pathname === '/listagemMotos') {
       return (
-        <Button
-          startIcon={<img src="/images/add.png" alt="Add" width="20" />}
-          onClick={handleCadastroMotoPai}
-          sx={{
-            width: 250,
-            height: '40px',
-            whiteSpace: 'nowrap',
-            backgroundColor: '#F30000',
-            borderColor: '#F30000',
-            color: 'white',
-            borderRadius: '10px',
-            textTransform: 'none',
-            fontSize: '18px',
-            '&:hover': { borderColor: '#F30000', backgroundColor: '#F30000', color: 'white' },
-          }}
+        <Tooltip
+          title={disableCadastroMoto ? 'Apenas coordenadores podem cadastrar modelo e moto.' : ''}
         >
-          Adicionar modelo
-        </Button>
+          <span>
+            <Button
+              startIcon={<img src="/images/add.png" alt="Add" width="20" />}
+              onClick={handleCadastroMotoPai}
+              disabled={disableCadastroMoto}
+              sx={{
+                width: 250,
+                height: '40px',
+                whiteSpace: 'nowrap',
+                backgroundColor: '#F30000',
+                borderColor: '#F30000',
+                color: 'white',
+                borderRadius: '10px',
+                textTransform: 'none',
+                fontSize: '18px',
+                '&:hover': { borderColor: '#F30000', backgroundColor: '#F30000', color: 'white' },
+                '&.Mui-disabled': {
+                  backgroundColor: '#f1b8b8',
+                  color: '#ffffff',
+                },
+              }}
+            >
+              Adicionar modelo
+            </Button>
+          </span>
+        </Tooltip>
       );
     }
 
@@ -91,46 +116,68 @@ const Header = ({ onNovoChat }) => {
       /^\/modeloMoto\/\d+\/motos$/.test(location.pathname)
     ) {
       return (
-        <Button
-          startIcon={<img src="/images/add.png" alt="Add" width="20" />}
-          onClick={handleCadastroMoto}
-          sx={{
-            width: 250,
-            height: '40px',
-            whiteSpace: 'nowrap',
-            backgroundColor: '#F30000',
-            borderColor: '#F30000',
-            color: 'white',
-            borderRadius: '10px',
-            textTransform: 'none',
-            fontSize: '18px',
-            '&:hover': { borderColor: '#F30000', backgroundColor: '#F30000', color: 'white' },
-          }}
+        <Tooltip
+          title={disableCadastroMoto ? 'Apenas coordenadores podem cadastrar modelo e moto.' : ''}
         >
-          Cadastrar moto
-        </Button>
+          <span>
+            <Button
+              startIcon={<img src="/images/add.png" alt="Add" width="20" />}
+              onClick={handleCadastroMoto}
+              disabled={disableCadastroMoto}
+              sx={{
+                width: 250,
+                height: '40px',
+                whiteSpace: 'nowrap',
+                backgroundColor: '#F30000',
+                borderColor: '#F30000',
+                color: 'white',
+                borderRadius: '10px',
+                textTransform: 'none',
+                fontSize: '18px',
+                '&:hover': { borderColor: '#F30000', backgroundColor: '#F30000', color: 'white' },
+                '&.Mui-disabled': {
+                  backgroundColor: '#f1b8b8',
+                  color: '#ffffff',
+                },
+              }}
+            >
+              Cadastrar moto
+            </Button>
+          </span>
+        </Tooltip>
       );
     }
     if (location.pathname === '/motos-atribuir' || location.pathname === '/cadastro-atribuir') {
       return (
-        <Button
-          startIcon={<img src="/images/add.png" alt="Add" width="20" />}
-          onClick={handleCadastroMoto}
-          sx={{
-            width: 250,
-            height: '40px',
-            whiteSpace: 'nowrap',
-            backgroundColor: '#F30000',
-            borderColor: '#F30000',
-            borderRadius: '10px',
-            color: 'white',
-            textTransform: 'none',
-            fontSize: '18px',
-            '&:hover': { borderColor: '#F30000', backgroundColor: '#F30000', color: 'white' },
-          }}
+        <Tooltip
+          title={disableCadastroMoto ? 'Apenas coordenadores podem cadastrar modelo e moto.' : ''}
         >
-          Adicionar moto
-        </Button>
+          <span>
+            <Button
+              startIcon={<img src="/images/add.png" alt="Add" width="20" />}
+              onClick={handleCadastroMoto}
+              disabled={disableCadastroMoto}
+              sx={{
+                width: 250,
+                height: '40px',
+                whiteSpace: 'nowrap',
+                backgroundColor: '#F30000',
+                borderColor: '#F30000',
+                borderRadius: '10px',
+                color: 'white',
+                textTransform: 'none',
+                fontSize: '18px',
+                '&:hover': { borderColor: '#F30000', backgroundColor: '#F30000', color: 'white' },
+                '&.Mui-disabled': {
+                  backgroundColor: '#f1b8b8',
+                  color: '#ffffff',
+                },
+              }}
+            >
+              Adicionar moto
+            </Button>
+          </span>
+        </Tooltip>
       );
     }
     if (location.pathname === '/usuarios' || location.pathname === '/cadastro') {
@@ -182,7 +229,7 @@ const Header = ({ onNovoChat }) => {
             sx={{
               backgroundColor: corAvatar,
               border: '1 px corAvatar solid',
-              color: 'white', 
+              color: 'white',
             }}
           >
             {iniciais}
