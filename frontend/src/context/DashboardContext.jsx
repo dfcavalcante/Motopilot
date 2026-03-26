@@ -1,5 +1,6 @@
 import { createContext, useState, useCallback } from 'react';
 import React from 'react';
+import { getAuthHeaders } from './LoginContext';
 
 export const DashboardContext = createContext();
 
@@ -26,7 +27,8 @@ export const DashboardProvider = ({ children }) => {
     setLoading(true);
     setErro(null);
     try {
-      const response = await fetch(`${BASE_URL}/dashboard/gerente`);
+      const headers = getAuthHeaders();
+      const response = await fetch(`${BASE_URL}/dashboard/gerente`, { headers });
 
       if (!response.ok) {
         throw new Error('Erro ao buscar dados do dashboard do gerente');

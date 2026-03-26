@@ -126,6 +126,9 @@ class RagOrchestrator:
         - "Consulte uma concessionária Honda" -> ERRADO
         - "Acesse o manual para mais detalhes" -> ERRADO
         - "Consulte o manual do proprietário" -> ERRADO
+        - "Consulte um técnico especialista" -> ERRADO
+        - " Procure a sua concessionária" -> ERRADO
+        - "Dirija-se a uma concessionária" -> ERRADO
 
         FORMATO DE RESPOSTA:
         - Se a pergunta for sobre um PROCEDIMENTO (como trocar, instalar, remover algo), use este formato:
