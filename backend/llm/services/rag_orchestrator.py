@@ -27,12 +27,26 @@ class RagOrchestrator:
         print("🧠 Carregando modelo de Re-ranking (FlashRank)...")
         self.ranker = Ranker(model_name="ms-marco-MiniLM-L-12-v2")
 
+    def _eh_saudacao(self, texto: str) -> bool:
+        """Detecta se a mensagem é uma saudação simples."""
+        saudacoes = [
+            "oi", "olá", "ola", "hey", "ei", "eae", "eai", "e aí", "e ai",
+            "bom dia", "boa tarde", "boa noite", "tudo bem", "tudo bom",
+            "como vai", "fala", "salve", "hello", "hi", "opa",
+        ]
+        texto_limpo = texto.strip().lower().rstrip("!?.,:;")
+        return texto_limpo in saudacoes
+
     def processar_pergunta(self, db, user_id, moto_id, pergunta_texto):
         # 1. Recupera os dados da Moto
         moto = db.query(Moto).filter(Moto.id == moto_id).first()
         
         if not moto:
             return "Erro: Moto não identificada no sistema."
+
+        # PRÉ-FILTRO: saudações são respondidas diretamente, sem RAG
+        if self._eh_saudacao(pergunta_texto):
+            return f"Olá! Estou pronto para ajudar com a manutenção da sua moto. Como posso te ajudar?"
 
         print(f"🤖 RAG Iniciado | Buscando no manual do modelo vinculado à moto ID: {moto_id} ({moto.modelo})")
 
@@ -103,11 +117,15 @@ class RagOrchestrator:
         3. Liste passos caso seja um procedimento e remova dicas irrelevantes.
         4. OCORTE e EXCLUA qualquer referência a número de páginas (ex: "(página 59)", "veja a página X"). Se existir no contexto, simplesmente delete essa citação.
         5. OCORTE e EXCLUA qualquer recomendação para ir a uma concessionária, assistência técnica ou procurar um mecânico. O usuário JÁ É o mecânico trabalhando na moto. Apenas omita essas recomendações do texto final.
-        6. Se a pergunta NÃO tiver relação com motos, manutenção, peças ou mecânica, responda APENAS: "O MotoPilot é um assistente exclusivo para manutenção de motos. Por favor, faça perguntas relacionadas à sua moto!" e NADA mais.
+        6. Se a mensagem for algum tipo de saudação, responda de forma educada e cordial, mencionando brevemente que está pronto para ajudar com a moto.
+        7. Se a pergunta NÃO tiver relação DIRETA com motos, manutenção, peças ou mecânica (ex: emergências pessoais, incêndios, problemas domésticos, saúde, política, culinária, etc.), responda APENAS: "O MotoPilot é um assistente exclusivo para manutenção de motos. Por favor, faça perguntas relacionadas à sua moto!" e NADA mais. NÃO use informações de segurança ou emergência do manual para responder perguntas fora do contexto mecânico. IGNORE completamente o contexto do manual nesses casos.
+        8. NUNCA diga ao usuário para "acessar o manual", "consultar o manual", "verificar no manual" ou "ver o manual". Você JÁ É a interface do manual. Todas as informações que você fornece já vieram do manual. Simplesmente responda com a informação diretamente.
 
         EXEMPLO DO QUE ***NÃO*** FAZER:
         - "Remova a bateria (página 59)" -> ERRADO
         - "Consulte uma concessionária Honda" -> ERRADO
+        - "Acesse o manual para mais detalhes" -> ERRADO
+        - "Consulte o manual do proprietário" -> ERRADO
 
         FORMATO DE RESPOSTA:
         - Se a pergunta for sobre um PROCEDIMENTO (como trocar, instalar, remover algo), use este formato:
@@ -160,6 +178,9 @@ class RagOrchestrator:
             resposta_ia = re.sub(r'(?i)procure\s+(uma|um|a|o)?\s*concession[aá]ria[^\.\n]*[\.\n]?', '', resposta_ia)
             resposta_ia = re.sub(r'(?i)dirija-se\s+a\s+(uma|um|a|o)?\s*concession[aá]ria[^\.\n]*[\.\n]?', '', resposta_ia)
             resposta_ia = re.sub(r'(?i)concession[aá]ria\s+honda[^\.\n]*[\.\n]?', '', resposta_ia)
+            
+            # 5.3 Remove referências ao manual ("acesse o manual", "consulte o manual", etc.)
+            resposta_ia = re.sub(r'(?i)(acesse|consulte|veja|verifique|confira|leia)\s+(o|no|a)?\s*manual[^\.\n]*[\.\n]?', '', resposta_ia)
             
             return resposta_ia
         except Exception as e:

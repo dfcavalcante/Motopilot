@@ -84,6 +84,24 @@ def garantir_coluna_status_relatorio(db: Session):
     print("✅ Migração aplicada: coluna relatorios.status criada")
 
 
+def garantir_coluna_imagem_path_relatorios(db: Session):
+    """Garante que a coluna `imagem_path` exista na tabela `relatorios` em bancos já criados."""
+    bind = db.get_bind()
+    inspector = inspect(bind)
+
+    if "relatorios" not in inspector.get_table_names():
+        return
+
+    colunas = {coluna["name"] for coluna in inspector.get_columns("relatorios")}
+    if "imagem_path" in colunas:
+        return
+
+    db.execute(text("ALTER TABLE relatorios ADD COLUMN imagem_path VARCHAR(255)"))
+    db.commit()
+    print("✅ Migração aplicada: coluna relatorios.imagem_path criada")
+
+
+
 def garantir_coluna_imagem_modelo_motos(db: Session):
     """Garante que a coluna `imagem_moto` exista na tabela `modelo_motos` em bancos já criados."""
     bind = db.get_bind()
@@ -134,15 +152,15 @@ def migrar_motos_para_modelo_moto_id(db: Session):
             return
 
         # 3. Só dá para reconstruir o relacionamento automaticamente se marca/modelo existem
-        if "marca" not in colunas or "modelo" not in colunas:
+        if "marca" not in colunas or "modelo" not in colunas or "ano" not in colunas:
             print(
-                "⚠️ Existem motos com modelo_moto_id nulo, mas não há colunas marca/modelo para backfill automático"
+                "⚠️ Existem motos com modelo_moto_id nulo, mas não há colunas marca/modelo/ano para backfill automático"
             )
             return
 
         # 4. Buscar apenas motos que ainda não têm FK preenchida
         motos_result = db.execute(
-            text("SELECT id, marca, modelo FROM motos WHERE modelo_moto_id IS NULL")
+            text("SELECT id, marca, modelo, ano FROM motos WHERE modelo_moto_id IS NULL")
         )
         motos = motos_result.fetchall()
 
@@ -150,11 +168,15 @@ def migrar_motos_para_modelo_moto_id(db: Session):
             print("ℹ️ Nenhuma moto pendente para migração")
             return
 
-        for moto_id, marca, modelo in motos:
+        for moto_id, marca, modelo, ano in motos:
+            # Em caso de ano nulo ou inválido, define um valor padrão
+            if ano is None:
+                ano = 0
+            
             # Verificar se ModeloMoto já existe
             modelo_moto_existente = db.execute(
-                text("SELECT id FROM modelo_motos WHERE marca = :marca AND modelo = :modelo"),
-                {"marca": marca, "modelo": modelo}
+                text("SELECT id FROM modelo_motos WHERE marca = :marca AND modelo = :modelo AND ano = :ano"),
+                {"marca": marca, "modelo": modelo, "ano": ano}
             ).first()
 
             if modelo_moto_existente:
@@ -162,12 +184,12 @@ def migrar_motos_para_modelo_moto_id(db: Session):
             else:
                 # Criar novo modelo e recuperar o id
                 db.execute(
-                    text("INSERT INTO modelo_motos (marca, modelo) VALUES (:marca, :modelo)"),
-                    {"marca": marca, "modelo": modelo}
+                    text("INSERT INTO modelo_motos (marca, modelo, ano) VALUES (:marca, :modelo, :ano)"),
+                    {"marca": marca, "modelo": modelo, "ano": ano}
                 )
                 resultado = db.execute(
-                    text("SELECT id FROM modelo_motos WHERE marca = :marca AND modelo = :modelo"),
-                    {"marca": marca, "modelo": modelo}
+                    text("SELECT id FROM modelo_motos WHERE marca = :marca AND modelo = :modelo AND ano = :ano"),
+                    {"marca": marca, "modelo": modelo, "ano": ano}
                 ).first()
                 modelo_moto_id = resultado[0]
 

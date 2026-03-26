@@ -45,8 +45,9 @@ export const HookHistoricoRelatorios = () => {
     setLoadingDetail(false);
   };
 
-  const handleDownloadPDF = (report) => {
-    generateReportPdf(report);
+  const handleDownloadPDF = async (report) => {
+    console.log('🔵 PDF download - imagem_path:', report.imagem_path, '| report keys:', Object.keys(report));
+    await generateReportPdf(report);
   };
 
   const handleSaveReport = async (updatedData) => {

@@ -149,6 +149,17 @@ class ReportService():
         ).first()
 
     @staticmethod
+    def atualizar_imagem(db: Session, report_id: int, caminho_imagem: str):
+        db_relatorio = db.scalars(select(Report).where(Report.id == report_id)).first()
+        if not db_relatorio:
+            return None
+        db_relatorio.imagem_path = caminho_imagem
+        db.commit()
+        return db.scalars(
+            ReportService._query_com_relacoes().where(Report.id == report_id)
+        ).first()
+
+    @staticmethod
     def arquivar_relatorio(db: Session, report_id: int):
         # TODO: implementar lógica de arquivamento (campo is_archived, etc.)
         pass

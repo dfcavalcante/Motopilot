@@ -44,9 +44,9 @@ const DadosGerais = ({ register, setValue, errors, watch, modeloPaiSelecionado, 
         Dados Gerais
       </Typography>
 
-      <Grid container spacing={4}>
+      <Grid container spacing={4} sx={{ flexWrap: 'nowrap' }}>
         {/* LADO ESQUERDO: FOTO */}
-        <Grid>
+        <Grid item xs="auto">
           <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
             <ImageUploader
               arquivo={watch('foto')}
@@ -76,57 +76,62 @@ const DadosGerais = ({ register, setValue, errors, watch, modeloPaiSelecionado, 
           </Box>
         </Grid>
 
-        {/* LADO DIREITO: INPUTS */}
-        <Stack spacing={1} sx={{ height: '100%', width: '25%', ml: 5 }}>
-          <Typography sx={labelStyle}>Modelo</Typography>
-          <TextField
-            {...register('modelo')}
-            fullWidth
-            placeholder="Inserir nome"
-            variant="outlined"
-            sx={inputSx}
-            error={!!errors.modelo}
-            helperText={errors.modelo?.message}
-            disabled={Boolean(modeloPaiSelecionado?.id)}
-          />
+        {/* COLUNA CENTRAL: MODELO + NÚMERO DE SÉRIE */}
+        <Grid item xs>
+          <Stack spacing={1}>
+            <Typography sx={labelStyle}>Modelo</Typography>
+            <TextField
+              {...register('modelo')}
+              fullWidth
+              placeholder="Inserir nome"
+              variant="outlined"
+              sx={inputSx}
+              error={!!errors.modelo}
+              helperText={errors.modelo?.message}
+              disabled={Boolean(modeloPaiSelecionado?.id)}
+            />
 
-          <Typography sx={labelStyle}>Número de Série</Typography>
-          <TextField
-            {...register('numeroSerie')}
-            fullWidth
-            placeholder="Inserir número de série"
-            variant="outlined"
-            sx={inputSx}
-            error={!!errors.numeroSerie}
-            helperText={errors.numeroSerie?.message}
-          />
-        </Stack>
+            <Typography sx={labelStyle}>Número de Série</Typography>
+            <TextField
+              {...register('numeroSerie')}
+              fullWidth
+              placeholder="Inserir número de série"
+              variant="outlined"
+              sx={inputSx}
+              error={!!errors.numeroSerie}
+              helperText={errors.numeroSerie?.message}
+            />
+          </Stack>
+        </Grid>
 
-        <Stack spacing={1} sx={{ height: '100%', width: '25%', ml: 5 }}>
-          <Typography sx={labelStyle}>Marca</Typography>
-          <TextField
-            {...register('marca')}
-            fullWidth
-            placeholder="Inserir Marca"
-            variant="outlined"
-            sx={inputSx}
-            error={!!errors.marca}
-            helperText={errors.marca?.message}
-            disabled={Boolean(modeloPaiSelecionado?.id)}
-          />
+        {/* COLUNA DIREITA: MARCA + ANO */}
+        <Grid item xs>
+          <Stack spacing={1}>
+            <Typography sx={labelStyle}>Marca</Typography>
+            <TextField
+              {...register('marca')}
+              fullWidth
+              placeholder="Inserir Marca"
+              variant="outlined"
+              sx={inputSx}
+              error={!!errors.marca}
+              helperText={errors.marca?.message}
+              disabled={Boolean(modeloPaiSelecionado?.id)}
+            />
 
-          <Typography sx={labelStyle}>Ano</Typography>
-          <TextField
-            {...register('ano')}
-            fullWidth
-            placeholder="YYYY"
-            variant="outlined"
-            sx={inputSx}
-            error={!!errors.ano}
-            helperText={errors.ano?.message}
-            disabled={Boolean(modeloPaiSelecionado?.id)}
-          />
-        </Stack>
+            <Typography sx={labelStyle}>Ano</Typography>
+            <TextField
+              {...register('ano')}
+              fullWidth
+              placeholder="YYYY"
+              variant="outlined"
+              sx={inputSx}
+              error={!!errors.ano}
+              helperText={errors.ano?.message}
+              disabled={Boolean(modeloPaiSelecionado?.id)}
+            />
+          </Stack>
+        </Grid>
       </Grid>
 
       {/* PARTE INFERIOR: DESCRIÇÃO */}
@@ -167,7 +172,7 @@ const DadosGerais = ({ register, setValue, errors, watch, modeloPaiSelecionado, 
           Cancelar
         </Button>
         <Button
-          type="submit"
+          type="button"
           variant="contained"
           onClick={onNext}
           sx={{

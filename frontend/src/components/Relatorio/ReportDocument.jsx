@@ -6,7 +6,7 @@ import { usePecas } from '../../context/PecasContext';
 import { useEffect, useMemo, useState } from 'react';
 import ReportImageUploader from './ReportImageUploader';
 
-const ReportDocument = ({ data, isEditing, onFieldChange }) => {
+const ReportDocument = ({ data, isEditing, onFieldChange, imagemFile }) => {
   const { pecas, adicionarPeca } = usePecas();
 
   const [pecasSelecionadas, setPecasSelecionadas] = useState([]);
@@ -256,27 +256,25 @@ const ReportDocument = ({ data, isEditing, onFieldChange }) => {
 
       <ReportSection number="5" title="Evidências (Fotos)">
         <Grid container spacing={2}>
-          <Grid item xs={6}>
-            <ReportImageUploader
-              arquivo={data.foto}
-              onFileSelect={(file) => onFieldChange({ target: { name: 'foto', value: file } })}
-            />
-
-            {/*Tem que coisar o backend pra suportar múltiplas fotos*/}
-            <Button
-              variant="outlined"
-              size="small"
-              startIcon={<Add />}
-              sx={{
-                mt: 1,
-                borderRadius: '10px',
-                fontWeight: 700,
-                textTransform: 'none',
-                borderColor: '#0f172a',
-                color: '#0f172a',
-                '&:hover': { borderColor: '#111827', color: '#111827' },
-              }}
-            > Adicionar mais imagens </Button>
+          <Grid item xs={12} sm={6}>
+            {isEditing ? (
+              <ReportImageUploader
+                arquivo={imagemFile || (data.imagem_path ? `http://localhost:8000/${data.imagem_path}` : null)}
+                onFileSelect={(file) => onFieldChange({ target: { name: 'foto', value: file } })}
+              />
+            ) : data.imagem_path ? (
+              <Box sx={{ borderRadius: '12px', overflow: 'hidden', border: '1px solid #e0e0e0', maxHeight: 350 }}>
+                <img
+                  src={`http://localhost:8000/${data.imagem_path}`}
+                  alt="Evidência do relatório"
+                  style={{ width: '100%', maxHeight: 350, objectFit: 'contain', display: 'block' }}
+                />
+              </Box>
+            ) : (
+              <Typography variant="body2" color="text.secondary">
+                Nenhuma imagem anexada
+              </Typography>
+            )}
           </Grid>
         </Grid>
       </ReportSection>
