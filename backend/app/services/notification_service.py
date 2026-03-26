@@ -59,8 +59,16 @@ class NotificationService:
 
         return db_notification
     
-    def listar_notificacoes(self, limite: int = 50, nao_lido: bool = False) -> list[Notification]:
+    def listar_notificacoes(self, user, limite: int = 50, nao_lido: bool = False) -> list[Notification]:
         query = select(Notification).order_by(Notification.criado_em.desc())
+        
+        # Filtro de acesso
+        query = query.filter(
+            ((Notification.user_id == None) & (Notification.perfil_destino == None)) |
+            (Notification.user_id == user.id) |
+            (Notification.perfil_destino == user.funcao)
+        )
+
         if nao_lido:
             query = query.where(Notification.lido.is_(False))
 
@@ -81,12 +89,16 @@ class NotificationService:
 
         return notificacao
 
-    # Marca todas as notificacoes nao lidas como lidas
-    def marcar_todas_lidas(self) -> int:
+    def marcar_todas_lidas(self, user) -> int:
         try:
             stmt = (
                 update(Notification)
                 .where(Notification.lido.is_(False))
+                .where(
+                    ((Notification.user_id == None) & (Notification.perfil_destino == None)) |
+                    (Notification.user_id == user.id) |
+                    (Notification.perfil_destino == user.funcao)
+                )
                 .values(lido=True)
             )
             
@@ -110,6 +122,7 @@ class NotificationService:
                 atividade=action,
                 titulo=f"Moto {action}",
                 mensagem=f"A moto {moto_marca} {moto_modelo} foi {action}.",
+                perfil_destino="gerente",
             )
         )
 
@@ -121,6 +134,7 @@ class NotificationService:
                 atividade=action,
                 titulo=f"Usuário {action}",
                 mensagem=f"O usuário {user_nome} foi {action}.",
+                perfil_destino="gerente",
             )
         )
 
@@ -130,6 +144,7 @@ class NotificationService:
         moto_marca: str,
         moto_modelo: str,
         mecanico_nome: str,
+        mecanico_id: int,
     ) -> Notification:
         return self.criar_notificacao(
             NotificationCreate(
@@ -138,5 +153,6 @@ class NotificationService:
                 atividade="atribuida",
                 titulo="Moto atribuída",
                 mensagem=f"A moto {moto_marca} {moto_modelo} foi atribuída para {mecanico_nome}.",
+                user_id=mecanico_id,
             )
         )

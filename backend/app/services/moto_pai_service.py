@@ -64,6 +64,7 @@ class Moto_pai_service:
             moto_marca=getattr(modelo, "marca", "Moto"),
             moto_modelo=getattr(modelo, "modelo", str(moto.id)),
             mecanico_nome=mecanico.nome,
+            mecanico_id=mecanico.id,
         )
 
         return moto

@@ -1,5 +1,6 @@
 import { createContext, useCallback, useState } from 'react';
 import React from 'react';
+import { getAuthHeaders } from './LoginContext';
 
 export const NotificacaoContext = createContext();
 
@@ -14,7 +15,8 @@ export const NotificacaoProvider = ({ children }) => {
     setLoading(true);
     setErro(null);
     try {
-      const response = await fetch(`${BASE_URL}/notificacoes/listar`);
+      const headers = getAuthHeaders();
+      const response = await fetch(`${BASE_URL}/notificacoes/listar`, { headers });
 
       if (!response.ok) {
         throw new Error('Erro ao buscar notificações');
@@ -36,7 +38,10 @@ export const NotificacaoProvider = ({ children }) => {
     try {
       const response = await fetch(`${BASE_URL}/notificacoes/${id}/marcar_como_lida`, {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+            'Content-Type': 'application/json',
+            ...getAuthHeaders()
+        },
       });
 
       if (!response.ok) throw new Error('Erro ao atualizar no backend');
@@ -55,7 +60,10 @@ export const NotificacaoProvider = ({ children }) => {
     try {
       const response = await fetch(`${BASE_URL}/notificacoes/marcar_todas_lidas`, {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+            'Content-Type': 'application/json',
+            ...getAuthHeaders() 
+        },
       });
 
       if (!response.ok) throw new Error('Erro ao atualizar todas no backend');
