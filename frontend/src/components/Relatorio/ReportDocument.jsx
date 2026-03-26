@@ -117,22 +117,10 @@ const ReportDocument = ({ data, isEditing, onFieldChange, imagemFile }) => {
 
       <Divider sx={{ my: 4, borderStyle: 'dashed' }} />
 
-      {/* 3. OBJETIVO DO RELATÓRIO (dps deva tirar isso, n sei) */}
 
-      <ReportSection number="3" title="Objetivo do Relatório">
-        <Grid container spacing={2}>
-          <Grid item xs={6}>
-            <Typography variant="caption" color="textSecondary">
-              Dps se tiver colocar o objetivo do relatório, ou tira essa parte n sei, mas talvez
-              fique mt curto
-            </Typography>
-          </Grid>
-        </Grid>
-      </ReportSection>
-
-      {/* 4. ATIVIDADES */}
-      <ReportSection number="4" title="Descrição das Atividades">
-        <SectionTitle title="4.1 SITUAÇÃO ENCONTRADA (DIAGNÓSTICO)" />
+      {/* 3. ATIVIDADES */}
+      <ReportSection number="3" title="Descrição das Atividades">
+        <SectionTitle title="3.1 SITUAÇÃO ENCONTRADA (DIAGNÓSTICO)" />
         {isEditing ? (
           <TextField
             fullWidth
@@ -152,7 +140,7 @@ const ReportDocument = ({ data, isEditing, onFieldChange, imagemFile }) => {
           </Typography>
         )}
 
-        <SectionTitle title="4.2 SERVIÇOS REALIZADOS" />
+        <SectionTitle title="3.2 SERVIÇOS REALIZADOS" />
         {isEditing ? (
           <TextField
             fullWidth
@@ -167,7 +155,7 @@ const ReportDocument = ({ data, isEditing, onFieldChange, imagemFile }) => {
           <Typography variant="body2">{data.atividades}</Typography>
         )}
 
-        <SectionTitle title="4.3 PEÇAS DEFEITUOSAS" />
+        <SectionTitle title="3.3 PEÇAS DEFEITUOSAS" />
 
         {isEditing ? (
           <>
@@ -252,9 +240,9 @@ const ReportDocument = ({ data, isEditing, onFieldChange, imagemFile }) => {
         )}
       </ReportSection>
 
-      {/* 5. EVIDÊNCIAS (FOTOS) */}
+      {/* 4. EVIDÊNCIAS (FOTOS) */}
 
-      <ReportSection number="5" title="Evidências (Fotos)">
+      <ReportSection number="4" title="Evidências (Fotos)">
         <Grid container spacing={2}>
           <Grid item xs={12} sm={6}>
             {isEditing ? (
@@ -279,8 +267,8 @@ const ReportDocument = ({ data, isEditing, onFieldChange, imagemFile }) => {
         </Grid>
       </ReportSection>
 
-      {/* 6. CONCLUSÃO */}
-      <ReportSection number="6" title="Conclusão e Recomendações">
+      {/* 5. CONCLUSÃO */}
+      <ReportSection number="5" title="Conclusão e Recomendações">
         {isEditing ? (
           <TextField
             fullWidth
