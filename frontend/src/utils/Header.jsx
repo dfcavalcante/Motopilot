@@ -1,4 +1,4 @@
-import { Box, Typography, Button, IconButton } from '@mui/material';
+import { Box, Typography, Button, IconButton, Avatar } from '@mui/material';
 import React, { useContext, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { NotificacaoContext } from '../context/NotificacoesContext.jsx';
@@ -8,8 +8,6 @@ import { getUserInitials, getAvatarColor } from '../utils/avatarUtils';
 
 // Pequena Header em cima do Chatbot, tem os ícones, nome e novo chat
 const Header = ({ onNovoChat }) => {
-  
-
   const navigate = useNavigate();
   const location = useLocation();
   const { notificacoes, listarNotificacoes } = useContext(NotificacaoContext);
@@ -52,13 +50,13 @@ const Header = ({ onNovoChat }) => {
             width: 180,
             height: '40px',
             whiteSpace: 'nowrap',
-            backgroundColor: '#780101',
-            borderColor: '#780101',
+            backgroundColor: '#F30000',
+            borderColor: '#F30000',
             color: 'white',
             borderRadius: '10px',
             textTransform: 'none',
             fontSize: '18px',
-            '&:hover': { borderColor: '#780101', backgroundColor: '#5f0000', color: 'white' },
+            '&:hover': { borderColor: '#F30000', backgroundColor: '#F30000', color: 'white' },
           }}
         >
           Novo chat
@@ -122,13 +120,13 @@ const Header = ({ onNovoChat }) => {
             width: 250,
             height: '40px',
             whiteSpace: 'nowrap',
-            backgroundColor: '#780101',
-            borderColor: '#780101',
+            backgroundColor: '#F30000',
+            borderColor: '#F30000',
             borderRadius: '10px',
             color: 'white',
             textTransform: 'none',
             fontSize: '18px',
-            '&:hover': { borderColor: '#780101', backgroundColor: '#5f0000', color: 'white' },
+            '&:hover': { borderColor: '#F30000', backgroundColor: '#F30000', color: 'white' },
           }}
         >
           Adicionar moto
@@ -144,13 +142,13 @@ const Header = ({ onNovoChat }) => {
             width: 250,
             height: '40px',
             whiteSpace: 'nowrap',
-            backgroundColor: '#780101',
-            borderColor: '#780101',
+            backgroundColor: '#F30000',
+            borderColor: '#F30000',
             borderRadius: '10px',
             color: 'white',
             textTransform: 'none',
             fontSize: '18px',
-            '&:hover': { borderColor: '#780101', backgroundColor: '#5f0000', color: 'white' },
+            '&:hover': { borderColor: '#F30000', backgroundColor: '#F30000', color: 'white' },
           }}
         >
           Adicionar usuário
@@ -180,17 +178,15 @@ const Header = ({ onNovoChat }) => {
       {/* Perfil, nome e sobrenome */}
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-          <Box
+          <Avatar
             sx={{
-              border: '1px solid black',
-              display: 'inline-flex',
-              p: 1.5,
-              borderRadius: '8px',
               backgroundColor: corAvatar,
+              border: '1 px corAvatar solid',
+              color: 'white', 
             }}
           >
             {iniciais}
-          </Box>
+          </Avatar>
 
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
             <Typography>{nomeExibicao}</Typography>
@@ -213,7 +209,7 @@ const Header = ({ onNovoChat }) => {
 
         <Box
           sx={{
-            border: '1px solid black',
+            boxShadow: 1,
             display: 'inline-flex',
             borderRadius: '10px',
             width: 40,

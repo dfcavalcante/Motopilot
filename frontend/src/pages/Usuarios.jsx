@@ -73,8 +73,8 @@ const Usuarios = () => {
             : {
                 display: 'flex',
                 flexDirection: 'column',
-                alignItems: 'center',
-                paddingLeft: { xs: 1, sm: 2, md: 3 },
+                alignItems: 'stretch',
+                paddingLeft: { xs: 2, sm: 3, md: 5 },
                 paddingRight: { xs: 1, sm: 2, md: 3 },
                 gap: 1,
               }),

@@ -9,7 +9,7 @@ const UserRow = ({ usuario, onEdit, onDelete, setAtualizando, atualizando }) => 
   const funcao =
     usuario.funcao === 'administrador' || usuario.funcao === 'ADMIN'
       ? 'Administrador'
-      : usuario.funcao === 'tecnico' || usuario.funcao === 'MECANICO'
+      : usuario.funcao === 'Tecnico' || usuario.funcao === 'MECANICO'
         ? 'Técnico de Manutenção'
         : usuario.funcao === 'GERENTE'
           ? 'Gerente'
@@ -18,11 +18,10 @@ const UserRow = ({ usuario, onEdit, onDelete, setAtualizando, atualizando }) => 
     <Box
       sx={{
         display: 'grid',
-        gridTemplateColumns: '2.2fr 2.2fr 1.5fr 1fr auto',
-        columnGap: 2,
+        gridTemplateColumns: '2fr 2.3fr 1.5fr 0.8fr auto',
+        columnGap: 1,
         alignItems: 'center',
         width: '100%',
-        maxWidth: '1200px',
         borderRadius: 4,
         borderBottom: '1px solid #ffffff',
         bgcolor: 'transparent',
@@ -31,8 +30,8 @@ const UserRow = ({ usuario, onEdit, onDelete, setAtualizando, atualizando }) => 
           cursor: 'pointer',
         },
         transition: 'background-color 0.2s',
-        boxShadow: 2,
-        px: { xs: 1.5, sm: 2 },
+        boxShadow: 1,
+        px: { xs: 2, sm: 3 },
         py: 2,
       }}
     >
@@ -67,8 +66,8 @@ const UserRow = ({ usuario, onEdit, onDelete, setAtualizando, atualizando }) => 
       </Box>
 
       {/* COLUNA 2: EMAIL (25%)*/}
-      <Box sx={{ display: 'flex', justifyContent: 'center', minWidth: 0 }}>
-        <Typography variant="body2" color="black" noWrap fontSize={16} textAlign="center">
+      <Box sx={{ display: 'flex', justifyContent: 'flex-start', minWidth: 0 }}>
+        <Typography variant="body2" color="black" noWrap fontSize={16} textAlign="left">
           {usuario.email}
         </Typography>
       </Box>

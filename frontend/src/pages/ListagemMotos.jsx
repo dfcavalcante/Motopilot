@@ -79,7 +79,6 @@ const ListagemMotos = () => {
 
       {/* Grid de Motos */}
       <Box
-        backgroundColor="#DBDBDB"
         sx={{
           flexGrow: 100,
           width: '100%',

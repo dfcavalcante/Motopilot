@@ -8,7 +8,8 @@ const InformacoesUsuario = ({ usuario, onEdit, onDelete, atualizando, setAtualiz
 
   return (
     <Box
-      backgroundColor="#B2B2B2"
+      backgroundColor="#ffffff"
+      boxShadow={3}
       width="100%"
       maxWidth={600}
       height={130}
