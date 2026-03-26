@@ -142,6 +142,18 @@ const InformacoesMoto = ({ moto, onBack}) => {
                 </IconButton>
 
                 {/*Botão de deletar*/}
+                <IconButton
+                  onClick={handleExcluir}
+                  sx={{
+                    color: '#000000',
+                    borderRadius: 2,
+                    backgroundColor: '#FEDCDB',
+                    width: 40,
+                    height: 40,
+                  }}
+                >
+                  <img src="/images/lixeira.png" width={15} height={15} />
+                </IconButton>
 
               </Box>
 

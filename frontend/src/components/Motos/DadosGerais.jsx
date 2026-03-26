@@ -54,16 +54,6 @@ const DadosGerais = ({ register, setValue, errors, watch, modeloPaiSelecionado, 
               readOnly={Boolean(modeloPaiSelecionado?.id)}
             />
 
-            {modeloPaiSelecionado?.id && (
-              <Typography
-                variant="caption"
-                sx={{ mt: 1, textAlign: 'center', color: '#4a4a4a', fontSize: '0.82rem' }}
-              >
-                Foto herdada do modelo pai {modeloPaiSelecionado?.marca}{' '}
-                {modeloPaiSelecionado?.modelo}
-              </Typography>
-            )}
-
             {errors.foto && (
               <Typography
                 variant="caption"
@@ -152,7 +142,7 @@ const DadosGerais = ({ register, setValue, errors, watch, modeloPaiSelecionado, 
       </Box>
 
       {/* RODAPÉ: BOTÕES */}
-      <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 4, gap: 2 }}>
+      <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2, gap: 2 }}>
         <Button
           onClick={onBack}
           variant="outlined"
@@ -175,7 +165,7 @@ const DadosGerais = ({ register, setValue, errors, watch, modeloPaiSelecionado, 
             color: 'white',
             borderRadius: '8px',
             textTransform: 'none',
-            px: 4,
+            width: "180px",
             '&:hover': { backgroundColor: '#F30000' },
           }}
         >
