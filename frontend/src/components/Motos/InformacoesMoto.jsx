@@ -1,15 +1,18 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Box, Stack, Divider, Typography, IconButton, Button, Chip } from '@mui/material';
 import Header from '../../utils/Header.jsx';
 import SideBar from '../../utils/SideBar.jsx';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import HistoryIcon from '@mui/icons-material/History';
 import { useNavigate } from 'react-router-dom';
 import { ChatContext } from '../../context/ChatContext.jsx';
 import AtribuicaoMotoCard from './AtribuicaoMotoCard';
+import HistoricoConversasMoto from './HistoricoConversasMoto';
 
 const InformacoesMoto = ({ moto, onBack }) => {
   const navigate = useNavigate();
   const { iniciarNovoChat } = React.useContext(ChatContext);
+  const [showHistorico, setShowHistorico] = useState(false);
   const fallbackSrc = '/images/Motopilot.jpeg';
   const estadoAtualMoto = String(moto?.estado || '')
     .trim()
@@ -64,13 +67,14 @@ const InformacoesMoto = ({ moto, onBack }) => {
         bgcolor: '#989898',
         p: '16px',
         boxSizing: 'border-box',
+        overflow: 'hidden',
       }}
     >
       <SideBar />
       <Box
-        sx={{ display: 'flex', flexDirection: 'column', flexGrow: 1, ml: '20px', height: '100%' }}
+        sx={{ display: 'flex', flexDirection: 'column', flexGrow: 1, ml: '20px', height: '100%', minHeight: 0, overflow: 'hidden' }}
       >
-        <Stack spacing="8px" sx={{ height: '100%' }}>
+        <Stack spacing="8px" sx={{ flex: 1, minHeight: 0, overflow: 'hidden' }}>
           <Box sx={{ flexShrink: 0 }}>
             <Header />
           </Box>
@@ -78,17 +82,28 @@ const InformacoesMoto = ({ moto, onBack }) => {
           {/* BOX BRANCA PRINCIPAL */}
           <Box
             sx={{
-              flexGrow: 1,
+              flex: 1,
+              minHeight: 0,
               bgcolor: 'white',
               borderRadius: '16px',
               display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              p: 2,
+              flexDirection: 'row',
               overflow: 'hidden',
-              position: 'relative',
             }}
           >
+            {/* Conteúdo principal (scrollável) */}
+            <Box
+              sx={{
+                flex: 1,
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                p: 2,
+                overflowY: 'auto',
+                minWidth: 0,
+                position: 'relative',
+              }}
+            >
             {/* Cabeçalho Interno */}
             <Box
               sx={{
@@ -153,16 +168,17 @@ const InformacoesMoto = ({ moto, onBack }) => {
               {/*Botão de histórico de conversas*/}
               <Box sx={{ justifySelf: 'end' }}>
                 <IconButton
+                  onClick={() => setShowHistorico((prev) => !prev)}
                   sx={{
-                    color: 'black',
+                    color: '#fff',
                     borderRadius: 2,
                     width: 40,
                     height: 40,
-                    backgroundColor: '#F30000',
-                    '&:hover': { backgroundColor: 'rgba(0, 0, 0, 0.2)' },
+                    backgroundColor: showHistorico ? '#a00' : '#F30000',
+                    '&:hover': { backgroundColor: '#D90000' },
                   }}
                 >
-                  <img src="/images/estrela.png" alt="Estrelinha" width={18} />
+                  <HistoryIcon sx={{ fontSize: 20 }} />
                 </IconButton>
               </Box>
             </Box>
@@ -344,6 +360,39 @@ const InformacoesMoto = ({ moto, onBack }) => {
                     {moto.descricao || 'Sem descrição disponível.'}
                   </Typography>
                 </Box>
+              </Box>
+            </Box>
+            </Box>
+
+            {/* Histórico de conversas */}
+            {showHistorico && (
+              <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                <Divider orientation="vertical" flexItem />
+              </Box>
+            )}
+
+            {/* Painel lateral de histórico com animação */}
+            <Box
+              sx={{
+                width: showHistorico ? 278 : 0,
+                opacity: showHistorico ? 1 : 0,
+                transform: showHistorico ? 'translateX(0)' : 'translateX(16px)',
+                overflow: 'hidden',
+                flexShrink: 0,
+                pointerEvents: showHistorico ? 'auto' : 'none',
+                transition: 'width 280ms ease, opacity 220ms ease, transform 280ms ease',
+                display: 'flex',
+                flexDirection: 'column',
+                borderLeft: showHistorico ? '1px solid #e0e0e0' : 'none',
+                ml: showHistorico ? 2 : 0,
+              }}
+            >
+              <Typography variant="subtitle1" sx={{ px: 2, pt: 1, pb: 1, fontWeight: 600, flexShrink: 0 }}>
+                Histórico
+              </Typography>
+              <Divider />
+              <Box sx={{ flex: 1, overflowY: 'auto' }}>
+                <HistoricoConversasMoto motoId={moto.id} />
               </Box>
             </Box>
           </Box>

@@ -142,7 +142,7 @@ def migrar_motos_para_modelo_moto_id(db: Session):
 
         # 4. Buscar apenas motos que ainda não têm FK preenchida
         motos_result = db.execute(
-            text("SELECT id, marca, modelo FROM motos WHERE modelo_moto_id IS NULL")
+            text("SELECT id, marca, modelo, ano FROM motos WHERE modelo_moto_id IS NULL")
         )
         motos = motos_result.fetchall()
 
@@ -150,11 +150,14 @@ def migrar_motos_para_modelo_moto_id(db: Session):
             print("ℹ️ Nenhuma moto pendente para migração")
             return
 
-        for moto_id, marca, modelo in motos:
+        for moto_id, marca, modelo, ano in motos:
+            # Usar ano 0 como fallback caso seja NULL
+            ano_valor = ano if ano is not None else 0
+
             # Verificar se ModeloMoto já existe
             modelo_moto_existente = db.execute(
-                text("SELECT id FROM modelo_motos WHERE marca = :marca AND modelo = :modelo"),
-                {"marca": marca, "modelo": modelo}
+                text("SELECT id FROM modelo_motos WHERE marca = :marca AND modelo = :modelo AND ano = :ano"),
+                {"marca": marca, "modelo": modelo, "ano": ano_valor}
             ).first()
 
             if modelo_moto_existente:
@@ -162,12 +165,12 @@ def migrar_motos_para_modelo_moto_id(db: Session):
             else:
                 # Criar novo modelo e recuperar o id
                 db.execute(
-                    text("INSERT INTO modelo_motos (marca, modelo) VALUES (:marca, :modelo)"),
-                    {"marca": marca, "modelo": modelo}
+                    text("INSERT INTO modelo_motos (marca, modelo, ano) VALUES (:marca, :modelo, :ano)"),
+                    {"marca": marca, "modelo": modelo, "ano": ano_valor}
                 )
                 resultado = db.execute(
-                    text("SELECT id FROM modelo_motos WHERE marca = :marca AND modelo = :modelo"),
-                    {"marca": marca, "modelo": modelo}
+                    text("SELECT id FROM modelo_motos WHERE marca = :marca AND modelo = :modelo AND ano = :ano"),
+                    {"marca": marca, "modelo": modelo, "ano": ano_valor}
                 ).first()
                 modelo_moto_id = resultado[0]
 

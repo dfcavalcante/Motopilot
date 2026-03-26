@@ -1,0 +1,34 @@
+﻿diff --git a/backend/app/services/report_service.py b/backend/app/services/report_service.py
+index 8e1f787..dee3426 100644
+--- a/backend/app/services/report_service.py
++++ b/backend/app/services/report_service.py
+@@ -1,5 +1,5 @@
+ from collections import Counter
+-from sqlalchemy.orm import Session
++from sqlalchemy.orm import Session, joinedload
+ from sqlalchemy import select, func
+ from app.schemas.report_schema import ReportBase, ReportFilter, ReportResponse, ReportUpdate
+ from app.models.report_model import Report
+@@ -26,11 +26,11 @@ class ReportService():
+ 
+     @staticmethod
+     def buscar_relatorio_por_id(db: Session, report_id: int):
+-        return db.scalars(select(Report).where(Report.id == report_id)).first()
++        return db.scalars(select(Report).options(joinedload(Report.moto)).where(Report.id == report_id)).first()
+ 
+     @staticmethod
+     def listar_relatorios(db: Session, filtros: ReportFilter):
+-        query = select(Report)
++        query = select(Report).options(joinedload(Report.moto))
+ 
+         if filtros.moto_id:
+             query = query.where(Report.moto_id == filtros.moto_id)
+@@ -51,7 +51,7 @@ class ReportService():
+ 
+     @staticmethod
+     def deletar_relatorio(db: Session, report_id: int):
+-        db_relatorio = db.scalars(select(Report).where(Report.id == report_id)).first()
++        db_relatorio = db.scalars(select(Report).options(joinedload(Report.moto)).where(Report.id == report_id)).first()
+         if not db_relatorio:
+             return None
+         db.delete(db_relatorio)
