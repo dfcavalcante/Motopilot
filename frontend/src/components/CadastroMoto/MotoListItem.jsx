@@ -3,7 +3,6 @@ import { Box, Typography, IconButton, Avatar } from '@mui/material';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 
 const MotoListItem = ({ moto, onClick, onInfoClick }) => {
-
   const numeroSerie = moto.numero_serie || moto.modelo || 'HNFDAF323243';
   const status = moto.status || moto.estado || 'Manutenção';
   const colaborador = moto.colaborador_nome || '';
@@ -12,12 +11,27 @@ const MotoListItem = ({ moto, onClick, onInfoClick }) => {
     switch (statusName.toLowerCase()) {
       case 'concluído':
       case 'concluido':
-        return { color: '#28A745', border: '1px solid #28A745' };
-      case 'manutenção':
-      case 'manutencao':
-        return { color: '#FFC107', border: '1px solid #FFC107' };
+        return {
+          color: '#29C406',
+          border: '1px solid #29C406',
+          backgroundColor: '#E5FFDF',
+          fontWeight: 700,
+        };
+      case 'em manutenção':
+      case 'em manutencao':
+        return {
+          color: '#cec108',
+          border: '1px solid #cfc209',
+          backgroundColor: '#FFFDDF',
+          fontWeight: 700,
+        };
       default:
-        return { color: '#6C757D', border: '1px solid #6C757D' };
+        return {
+          color: '#6C757D',
+          border: '1px solid #6C757D',
+          backgroundColor: '#b2bac1',
+          fontWeight: 700,
+        };
     }
   };
 
@@ -50,21 +64,22 @@ const MotoListItem = ({ moto, onClick, onInfoClick }) => {
       }}
     >
       {/* Coluna 1: Moto / Série */}
-      <Box sx={{ flex: 1 }}>
-        <Typography sx={{ color: '#333', fontWeight: 500 }}>Nº Série: {numeroSerie}</Typography>
+      <Box sx={{ flex: 1, justifyContent: 'center', display: 'FLEX' }}>
+        <Typography sx={{ color: '#333', fontWeight: 500, justifyContent: 'center', fontSize: 20 }}>
+          Nº Série: {numeroSerie}
+        </Typography>
       </Box>
 
       {/* Coluna 2: Status */}
       <Box sx={{ flex: 1, display: 'flex', justifyContent: 'center' }}>
         <Box
           sx={{
-            ...getStatusStyles(status),
+           ...getStatusStyles(status) ,
             padding: '4px 16px',
             borderRadius: '16px',
-            fontSize: '0.8rem',
+            fontSize: '1rem',
             fontWeight: 600,
             textTransform: 'capitalize',
-            backgroundColor: '#FFF',
           }}
         >
           {status}
@@ -72,7 +87,7 @@ const MotoListItem = ({ moto, onClick, onInfoClick }) => {
       </Box>
 
       {/* Coluna 3: Colaborador */}
-      <Box sx={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'flex-start' }}>
+      <Box sx={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         {colaborador && (
           <>
             <Avatar
