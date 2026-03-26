@@ -14,7 +14,7 @@ const BoxDashboard = ({ icone, titulo, descricao, numero }) => {
       alignItems="flex-start"
       justifyContent="center"
       boxSizing="border-box"
-      border={'1.3px solid #E0E0E0'}
+      boxShadow={1}
     >
       <Box sx={{ flex: 1, minWidth: 0, marginLeft: 2 }}>
         {/*Icone e número um do lado do outro*/}

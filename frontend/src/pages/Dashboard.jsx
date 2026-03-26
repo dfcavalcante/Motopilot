@@ -52,7 +52,7 @@ const Dashboard = () => {
           gap: 3,
           width: '100%',
           height: '100%',
-          overflow: 'hidden', // proibi scroll
+          overflow: 'hidden',
         }}
       >
         {/* ================= LADO ESQUERDO ================= */}
@@ -69,7 +69,7 @@ const Dashboard = () => {
           <Box
             sx={{
               display: 'grid',
-              gridTemplateColumns: 'repeat(2, 1fr)', 
+              gridTemplateColumns: 'repeat(2, 1fr)',
               gap: 2,
             }}
           >
@@ -105,16 +105,12 @@ const Dashboard = () => {
         <Box sx={{ flex: 1, minWidth: 0, height: '100%' }}>
           <Paper sx={cardStyle}>
             <Box
-              sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}
+              sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', mb: 2 }}
             >
-              <Typography variant="h6" sx={{ fontWeight: 700 }}>
-                Peças quebradas com mais frequência
-              </Typography>
-              <Typography variant="body2" sx={{ color: '#999' }}>
-                Total acumulado
+              <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                Frequência de Peças Quebradas
               </Typography>
             </Box>
-            <Divider sx={{ mb: 2 }} />
 
             {/* O Gráfico se ajusta a qualquer espaço que o Paper liberar */}
             <Box sx={{ flex: 1, minHeight: 0, position: 'relative' }}>

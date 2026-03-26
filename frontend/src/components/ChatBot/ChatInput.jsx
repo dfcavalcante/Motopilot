@@ -42,7 +42,7 @@ const ChatInput = ({ input, setInput, onSend, disabled = false }) => {
             backgroundColor: 'rgba(255, 219, 219, 0.48)',
           },
           '& .MuiInputBase-input::placeholder': {
-            color: '#000000',
+            color: '#6a6a6a',
             opacity: 1, 
           },
         }}
