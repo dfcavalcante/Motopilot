@@ -1,4 +1,4 @@
-import { createContext, useEffect, useState } from 'react';
+import { createContext, useCallback, useEffect, useRef, useState } from 'react';
 import React from 'react';
 import { getAuthHeaders } from './LoginContext';
 
@@ -6,8 +6,11 @@ export const MotoContext = createContext();
 
 export const MotoProvider = ({ children }) => {
   const [motos, setMotos] = useState([]);
+  const [modelosMoto, setModelosMoto] = useState([]);
   const [loading, setLoading] = useState(false);
   const [erro, setErro] = useState(null);
+  const hasLoadedMotosRef = useRef(false);
+  const hasLoadedModelosRef = useRef(false);
 
   const BASE_URL = 'http://localhost:8000';
 
@@ -35,21 +38,82 @@ export const MotoProvider = ({ children }) => {
     }
   }, [motoSelecionada]);
 
-  const listarMotos = async () => {
+  const [modeloPaiSelecionado, setModeloPaiSelecionado] = useState(() => {
     try {
-      const response = await fetch(`${BASE_URL}/motos/listar`);
+      const stored = localStorage.getItem('modeloPaiSelecionado');
+      return stored ? JSON.parse(stored) : null;
+    } catch (error) {
+      console.error('Erro ao carregar modeloPaiSelecionado:', error);
+      return null;
+    }
+  });
 
-      if (!response.ok) {
-        throw new Error('Erro ao buscar motos');
+  useEffect(() => {
+    try {
+      if (modeloPaiSelecionado) {
+        localStorage.setItem('modeloPaiSelecionado', JSON.stringify(modeloPaiSelecionado));
+      } else {
+        localStorage.removeItem('modeloPaiSelecionado');
+      }
+    } catch (error) {
+      console.error('Erro ao salvar modeloPaiSelecionado:', error);
+    }
+  }, [modeloPaiSelecionado]);
+
+  // ------- LISTAR MOTOS ----------
+  const listarMotos = useCallback(
+    async (force = false) => {
+      if (!force && hasLoadedMotosRef.current) {
+        return motos;
       }
 
-      const data = await response.json();
-      setMotos(data);
-    } catch (error) {
-      console.error('Erro no listarMotos:', error);
-    }
-  };
+      try {
+        const response = await fetch(`${BASE_URL}/motos/listar`);
 
+        if (!response.ok) {
+          throw new Error('Erro ao buscar motos');
+        }
+
+        const data = await response.json();
+        setMotos(data);
+        hasLoadedMotosRef.current = true;
+        return data;
+      } catch (error) {
+        console.error('Erro no listarMotos:', error);
+        return [];
+      }
+    },
+    [BASE_URL, motos]
+  );
+
+  // ------- LISTAR MODELOS (MOTO PAI) ----------
+  const listarModelosMoto = useCallback(
+    async (force = false) => {
+      if (!force && hasLoadedModelosRef.current) {
+        return modelosMoto;
+      }
+
+      try {
+        const response = await fetch(`${BASE_URL}/motos/modeloMoto/listar`);
+
+        if (!response.ok) {
+          throw new Error('Erro ao buscar modelos de motos');
+        }
+
+        const data = await response.json();
+        setModelosMoto(Array.isArray(data) ? data : []);
+        hasLoadedModelosRef.current = true;
+        return Array.isArray(data) ? data : [];
+      } catch (error) {
+        console.error('Erro no listarModelosMoto:', error);
+        setErro(error.message);
+        return [];
+      }
+    },
+    [BASE_URL, modelosMoto]
+  );
+
+  // ------- ATUALIZAR MOTOS ----------
   const atualizarMoto = async (id, dadosAtualizados) => {
     setLoading(true);
     setErro(null);
@@ -78,6 +142,7 @@ export const MotoProvider = ({ children }) => {
     }
   };
 
+  // =------ EXCLUIR MOTOS ----------
   const excluirMoto = async (id) => {
     setLoading(true);
     setErro(null);
@@ -113,6 +178,7 @@ export const MotoProvider = ({ children }) => {
     }
   };
 
+  // ------- CADASTRO DAS MOTOS ----------
   const cadastrarMoto = async (dados) => {
     setLoading(true);
     setErro(null);
@@ -151,19 +217,94 @@ export const MotoProvider = ({ children }) => {
     }
   };
 
+  // ------- CADASTRO DO MODELO DE MOTO (MOTO PAI) ----------
+  const criarMotoPai = async (dados) => {
+    setLoading(true);
+    setErro(null);
+
+    try {
+      const formData = new FormData();
+      formData.append('marca', dados.marca || '');
+      formData.append('modelo', dados.modelo || '');
+      if (dados.imagem_moto instanceof File) {
+        formData.append('imagem_moto', dados.imagem_moto);
+      }
+
+      const response = await fetch(`${BASE_URL}/motos/modeloMoto/criar`, {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        const msg = errorData.detail || 'Erro ao cadastrar modelo de moto';
+        throw new Error(msg);
+      }
+
+      const novoModeloMoto = await response.json();
+      setModelosMoto((prev) => {
+        const existe = prev.some((modelo) => modelo.id === novoModeloMoto.id);
+        return existe ? prev : [...prev, novoModeloMoto];
+      });
+      return novoModeloMoto;
+    } catch (error) {
+      console.error(error);
+      setErro(error.message);
+      return null;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // ---- Gerente atribuição de moto a mecânico ----
+  const atribuirMoto = async (motoId, mecanicoId) => {
+    setLoading(true);
+    setErro(null);
+    try {
+      const response = await fetch(`${BASE_URL}/motos/${motoId}/atribuir`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ mecanicoId: mecanicoId }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.detail || 'Erro ao atribuir moto');
+      }
+
+      const motoAtualizada = await response.json();
+      setMotos((prev) => prev.map((moto) => (moto.id === motoId ? motoAtualizada : moto)));
+      return true;
+    } catch (error) {
+      console.error(error);
+      setErro(error.message);
+      return false;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <MotoContext.Provider
       value={{
         motos,
+        modelosMoto,
         cadastrarMoto,
         listarMotos,
+        listarModelosMoto,
         loading,
         erro,
         excluirMoto,
         atualizarMoto,
         motoSelecionada,
         setMotoSelecionada,
+        modeloPaiSelecionado,
+        setModeloPaiSelecionado,
         verificarNumeroSerie,
+        atribuirMoto,
+        criarMotoPai,
       }}
     >
       {children}

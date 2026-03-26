@@ -82,3 +82,105 @@ def garantir_coluna_status_relatorio(db: Session):
 
     db.commit()
     print("✅ Migração aplicada: coluna relatorios.status criada")
+
+
+def garantir_coluna_imagem_modelo_motos(db: Session):
+    """Garante que a coluna `imagem_moto` exista na tabela `modelo_motos` em bancos já criados."""
+    bind = db.get_bind()
+    inspector = inspect(bind)
+
+    if "modelo_motos" not in inspector.get_table_names():
+        return
+
+    colunas = {coluna["name"] for coluna in inspector.get_columns("modelo_motos")}
+    if "imagem_moto" in colunas:
+        return
+
+    db.execute(text("ALTER TABLE modelo_motos ADD COLUMN imagem_moto VARCHAR(255)"))
+    db.commit()
+    print("✅ Migração aplicada: coluna modelo_motos.imagem_moto criada")
+
+
+def migrar_motos_para_modelo_moto_id(db: Session):
+    """
+    Migra o relacionamento de Moto de usar marca/modelo diretos para usar modelo_moto_id.
+    Isso é necessário para suportar motos "pai" (templates).
+    """
+    bind = db.get_bind()
+    inspector = inspect(bind)
+    
+    # Verificar se a tabela motos existe
+    if "motos" not in inspector.get_table_names():
+        print("ℹ️ Tabela motos ainda não existe, nada a migrar")
+        return
+    
+    colunas = {coluna["name"] for coluna in inspector.get_columns("motos")}
+    print("🔄 Verificando migração de motos para modelo_moto_id...")
+    
+    try:
+        # 1. Garante que a coluna exista (modo compatível para bancos antigos)
+        if "modelo_moto_id" not in colunas:
+            db.execute(text("ALTER TABLE motos ADD COLUMN modelo_moto_id INTEGER"))
+            colunas.add("modelo_moto_id")
+            db.commit()
+            print("✅ Coluna modelo_moto_id adicionada")
+
+        # 2. Se não há linhas nulas, já está consistente
+        null_count = db.execute(
+            text("SELECT COUNT(*) FROM motos WHERE modelo_moto_id IS NULL")
+        ).scalar_one()
+        if null_count == 0:
+            print("ℹ️ Migração já realizada: nenhum registro com modelo_moto_id nulo")
+            return
+
+        # 3. Só dá para reconstruir o relacionamento automaticamente se marca/modelo existem
+        if "marca" not in colunas or "modelo" not in colunas:
+            print(
+                "⚠️ Existem motos com modelo_moto_id nulo, mas não há colunas marca/modelo para backfill automático"
+            )
+            return
+
+        # 4. Buscar apenas motos que ainda não têm FK preenchida
+        motos_result = db.execute(
+            text("SELECT id, marca, modelo FROM motos WHERE modelo_moto_id IS NULL")
+        )
+        motos = motos_result.fetchall()
+
+        if not motos:
+            print("ℹ️ Nenhuma moto pendente para migração")
+            return
+
+        for moto_id, marca, modelo in motos:
+            # Verificar se ModeloMoto já existe
+            modelo_moto_existente = db.execute(
+                text("SELECT id FROM modelo_motos WHERE marca = :marca AND modelo = :modelo"),
+                {"marca": marca, "modelo": modelo}
+            ).first()
+
+            if modelo_moto_existente:
+                modelo_moto_id = modelo_moto_existente[0]
+            else:
+                # Criar novo modelo e recuperar o id
+                db.execute(
+                    text("INSERT INTO modelo_motos (marca, modelo) VALUES (:marca, :modelo)"),
+                    {"marca": marca, "modelo": modelo}
+                )
+                resultado = db.execute(
+                    text("SELECT id FROM modelo_motos WHERE marca = :marca AND modelo = :modelo"),
+                    {"marca": marca, "modelo": modelo}
+                ).first()
+                modelo_moto_id = resultado[0]
+
+            # Atualizar a moto que estava sem FK
+            db.execute(
+                text("UPDATE motos SET modelo_moto_id = :modelo_moto_id WHERE id = :moto_id"),
+                {"modelo_moto_id": modelo_moto_id, "moto_id": moto_id}
+            )
+
+        db.commit()
+        print(f"✅ Migração concluída: {len(motos)} motos associadas a ModeloMoto")
+            
+    except Exception as e:
+        db.rollback()
+        print(f"❌ Erro durante migração: {str(e)}")
+        raise

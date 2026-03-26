@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, ForeignKey, Text, DateTime
+from sqlalchemy import Column, Integer, ForeignKey, Text, DateTime, String
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from app.database import Base
@@ -20,9 +20,10 @@ class Report(Base):
     pecas = Column(Text, nullable=True)
 
     # Auditoria
-    status = Column(Text, default="Aguardando Revisão", nullable=False) # Novo campo de status
+    status = Column(Text, default="pendente", nullable=False) # Novo campo de status default "pendente"
     created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    
 
     # --- CORREÇÃO AQUI ---
     # 1. Mudamos de "Cliente" para "User" (pois é o nome da sua classe de usuários).
@@ -32,3 +33,5 @@ class Report(Base):
     moto = relationship("Moto", back_populates="relatorios")
 
     # TODO: fotos e assinatura digital
+    imagem_path = Column(String(255), nullable=True)
+    assinatura_path = Column(String(255), nullable=True)

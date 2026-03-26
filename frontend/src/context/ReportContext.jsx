@@ -56,9 +56,7 @@ export const ReportProvider = ({ children }) => {
         params.append('page', filtros.page || 1);
         params.append('per_page', filtros.per_page || 10);
 
-        const response = await fetch(`${BASE_URL}/relatorio/?${params.toString()}`, {
-          headers: { ...getAuthHeaders() },
-        });
+        const response = await fetch(`${BASE_URL}/relatorio/listar`);
 
         if (!response.ok) {
           throw new Error('Erro ao buscar relatórios.');
@@ -170,6 +168,35 @@ export const ReportProvider = ({ children }) => {
     [BASE_URL, relatorioAtual?.id]
   );
 
+  // Concluir relatório (quando o gerente falar q ta tudo certo)
+  const concluirRelatorio = useCallback(
+    async (reportId) => {
+      setLoading(true);
+      setErro(null);
+      try {
+        const response = await fetch(`${BASE_URL}/relatorio/${reportId}/concluir`, {
+          method: 'PATCH',
+        });
+        if (!response.ok) {
+          throw new Error('Erro ao concluir relatório.');
+        }
+        const relatorioConcluido = await response.json();
+        setRelatorios((prev) => prev.map((r) => (r.id === reportId ? relatorioConcluido : r)));
+        if (relatorioAtual?.id === reportId) {
+          setRelatorioAtual(relatorioConcluido);
+        }
+        return relatorioConcluido;
+      } catch (error) {
+        setErro(error.message);
+        console.error('Erro ao concluir relatório:', error);
+        return null;
+      } finally {
+        setLoading(false);
+      }
+    },
+    [BASE_URL, relatorioAtual?.id]
+  );
+
   return (
     <ReportContext.Provider
       value={{
@@ -182,6 +209,7 @@ export const ReportProvider = ({ children }) => {
         buscarRelatorio,
         atualizarRelatorio,
         deletarRelatorio,
+        concluirRelatorio,
         setRelatorioAtual,
         watch
       }}

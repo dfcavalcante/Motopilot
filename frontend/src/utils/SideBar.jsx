@@ -22,22 +22,7 @@ const SideBar = ({ historico = [] }) => {
     {
       name: 'Motos',
       link: '/listagemMotos',
-      icon: <img src="/images/cube.png" alt="Logo" width="20" />,
-    },
-    {
-      name: 'Nao sei',
-      link: '/naosei',
-      icon: <img src="/images/setas.png" alt="Logo" width="17" />,
-    },
-    {
-      name: 'Nao sei',
-      link: '/naosei2',
-      icon: <img src="/images/shoppingCart.png" alt="Logo" width="20" />,
-    },
-    {
-      name: 'Gráficos',
-      link: '/graficos',
-      icon: <img src="/images/grafico.png" alt="Logo" width="20" />,
+      icon: <img src="/images/Folder.svg" alt="Logo" width="20" />,
     },
     {
       name: 'Relatórios',
@@ -52,9 +37,6 @@ const SideBar = ({ historico = [] }) => {
     },
   ];
 
-  {
-    /*AViso: Tirei o histórico de conversas pq o Fernando nao aprovou */
-  }
   {
     open && (
       <Box sx={{ mb: 2 }}>
@@ -140,7 +122,7 @@ const SideBar = ({ historico = [] }) => {
         }}
       >
         <img
-          src={open ? 'images/leftAbrir.png' : 'images/rightFechar.png'}
+          src={open ? '/images/leftAbrir.png' : '/images/rightFechar.png'}
           alt={open ? 'Fechar' : 'Abrir'}
           style={{
             width: '8px',
@@ -161,7 +143,7 @@ const SideBar = ({ historico = [] }) => {
             minHeight: '40px',
           }}
         >
-          {!open && <img src="/images/Motopilot Logo-modified.png" alt="Logo" width="30" />}
+          {!open && <img src="/images/LogoNova.png" alt="Logo" width="30" />}
           {open && (
             <img
               src="/images/Motopilot Logo.png"

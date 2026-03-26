@@ -123,3 +123,20 @@ class NotificationService:
                 mensagem=f"O usuário {user_nome} foi {action}.",
             )
         )
+
+    def notificar_atribuicao_mecanico(
+        self,
+        moto_id: int,
+        moto_marca: str,
+        moto_modelo: str,
+        mecanico_nome: str,
+    ) -> Notification:
+        return self.criar_notificacao(
+            NotificationCreate(
+                tipo_entidade="moto",
+                id_entidade=moto_id,
+                atividade="atribuida",
+                titulo="Moto atribuída",
+                mensagem=f"A moto {moto_marca} {moto_modelo} foi atribuída para {mecanico_nome}.",
+            )
+        )

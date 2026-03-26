@@ -2,7 +2,7 @@ import { useState, useContext, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { toast } from 'react-toastify'; 
+import { toast } from 'react-toastify';
 import { MotoContext } from '../context/MotoContext.jsx';
 
 // Molde do formulário e regras de validação usando Zod
@@ -12,48 +12,83 @@ const motoSchema = z.object({
   ano: z.string().min(4, 'O ano deve ter 4 dígitos.'),
   numeroSerie: z.string().min(1, 'O número de série é obrigatório.'),
   descricao: z.string().optional(),
-  foto: z.any().refine((file) => file, 'A foto da moto é obrigatória.'),
+  foto: z.any().optional(),
   manual_pdf_path: z.any().optional(), // Validado no segundo passo
 });
 
 export const HookCadastroMoto = () => {
-  const { cadastrarMoto, erro: erroContexto, motos, listarMotos, verificarNumeroSerie } = useContext(MotoContext);
-  
+  const {
+    cadastrarMoto,
+    erro: erroContexto,
+    motos,
+    listarMotos,
+    verificarNumeroSerie,
+    modeloPaiSelecionado,
+  } = useContext(MotoContext);
+
   const [etapaAtual, setEtapaAtual] = useState(1);
   const [loading, setLoading] = useState(false);
 
   const {
-    register,       
-    handleSubmit, 
-    trigger,       
-    setError,       
-    setValue,      
-    watch,          
-    formState: { errors } 
+    register,
+    handleSubmit,
+    trigger,
+    setError,
+    setValue,
+    watch,
+    formState: { errors },
   } = useForm({
     resolver: zodResolver(motoSchema),
     defaultValues: {
-      modelo: '', marca: '', ano: '', numeroSerie: '', descricao: ''
-    }
+      modelo: '',
+      marca: '',
+      ano: '',
+      numeroSerie: '',
+      descricao: '',
+    },
   });
 
   useEffect(() => {
     listarMotos();
   }, []);
 
+  useEffect(() => {
+    if (modeloPaiSelecionado) {
+      setValue('marca', modeloPaiSelecionado.marca || '');
+      setValue('modelo', modeloPaiSelecionado.modelo || '');
+      setValue(
+        'foto',
+        modeloPaiSelecionado.imagemMoto || modeloPaiSelecionado.imagem_moto || null,
+        { shouldValidate: true }
+      );
+    }
+  }, [modeloPaiSelecionado, setValue]);
+
   const handleProximo = async () => {
     // Validação da etapa 1: campos obrigatórios
-    const camposValidos = await trigger(['modelo', 'marca', 'ano', 'numeroSerie', 'foto']);
+    const camposValidos = await trigger(['modelo', 'marca', 'ano', 'numeroSerie']);
     if (!camposValidos) {
       toast.warning('Preencha os campos obrigatórios.'); // <-- Notificação visual
+      return;
+    }
+
+    if (!modeloPaiSelecionado?.id) {
+      toast.warning('Selecione um modelo de moto pai antes de continuar.');
       return;
     }
 
     const numeroSerieAtual = watch('numeroSerie');
 
     // Validação de Duplicidade no State
-    if (motos.some((moto) => moto.numero_serie === numeroSerieAtual)) {
-      setError('numeroSerie', { type: 'manual', message: 'Este número de série já está registrado.' });
+    if (
+      motos.some(
+        (moto) => moto.numero_serie === numeroSerieAtual || moto.numeroSerie === numeroSerieAtual
+      )
+    ) {
+      setError('numeroSerie', {
+        type: 'manual',
+        message: 'Este número de série já está registrado.',
+      });
       return;
     }
 
@@ -61,7 +96,10 @@ export const HookCadastroMoto = () => {
     if (verificarNumeroSerie) {
       const exists = await verificarNumeroSerie(numeroSerieAtual);
       if (exists) {
-        setError('numeroSerie', { type: 'manual', message: 'Este número de série já está registrado.' });
+        setError('numeroSerie', {
+          type: 'manual',
+          message: 'Este número de série já está registrado.',
+        });
         return;
       }
     }
@@ -73,6 +111,7 @@ export const HookCadastroMoto = () => {
     setEtapaAtual((prev) => (prev > 1 ? prev - 1 : prev));
   };
 
+  // Submit Form da moto "filha" (com manual)
   const onSubmitForm = async (data) => {
     if (!data.manual_pdf_path) {
       setError('manual_pdf_path', { type: 'manual', message: 'O manual (PDF) é obrigatório.' });
@@ -82,13 +121,15 @@ export const HookCadastroMoto = () => {
 
     setLoading(true);
 
+    const marcaFinal = modeloPaiSelecionado?.marca || data.marca;
+    const modeloFinal = modeloPaiSelecionado?.modelo || data.modelo;
+
     const formData = new FormData();
-    formData.append('marca', data.marca);
-    formData.append('modelo', data.modelo);
+    formData.append('marca', marcaFinal);
+    formData.append('modelo', modeloFinal);
     formData.append('ano', data.ano);
     formData.append('numeroSerie', data.numeroSerie);
     formData.append('descricao', data.descricao || '');
-    formData.append('imagem_moto', data.foto[0] || data.foto); 
     formData.append('documento_pdf', data.manual_pdf_path);
 
     try {
@@ -111,13 +152,14 @@ export const HookCadastroMoto = () => {
     etapaAtual,
     loading,
     errors,
-    register,        
-    setValue,        
-    handleSubmit,    
-    onSubmitForm,      
+    register,
+    setValue,
+    handleSubmit,
+    onSubmitForm,
     handleProximo,
     handleVoltar,
     watch,
+    modeloPaiSelecionado,
   };
 };
 

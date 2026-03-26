@@ -26,7 +26,7 @@ const Login = () => {
       await login(email, password);
 
       setError(false);
-      navigate('/chatbot');
+      navigate('/dashboard');
     } catch (err) {
       console.error(err);
       setError(true);
@@ -38,32 +38,24 @@ const Login = () => {
       container
       sx={{
         minHeight: '100vh',
-        bgcolor: '#D9D9D9',
-        pl: { xs: 2, md: 40 },
+        background: 'linear-gradient( #E71010,#990000)',
+        pl: { xs: 2, md: 15 },
         pr: { xs: 2, md: 4 },
         py: 4,
+        color: '#faeeee',
       }}
       alignItems="center"
       justifyContent="space-between"
     >
       {/* Lado Esquerdo: Logo Principal */}
-      <Grid
-        item
-        xs={12}
-        md={4}
-        sx={{
-          display: 'flex',
-          justifyContent: { xs: 'center', md: 'flex-start' },
-          mb: { xs: 4, md: 0 },
-        }}
-      >
+      <Grid>
         <img
-          src="/images/Motopilot Logo.png"
+          src="/images/LogoNovaGrande.png"
           alt="Motopilot Logo"
           style={{
-            maxWidth: '80%',
-            height: '300px',
-            width: '550px',
+            maxWidth: '100%',
+            height: '90px',
+            width: '700px',
           }}
         />
       </Grid>
@@ -72,7 +64,7 @@ const Login = () => {
       <Grid item xs={12} md={8} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
         <Box
           sx={{
-            backgroundColor: 'white',
+            backgroundColor: '#FFFFFF',
             borderRadius: 4,
             width: { xs: '100%', md: '700px' }, //aq q muda a altura
             minHeight: { xs: 'auto', md: 800 },
@@ -83,7 +75,7 @@ const Login = () => {
           }}
         >
           <Stack spacing={4} alignItems="center">
-            <img src="/images/Motopilot Logo-modified.png" alt="Motopilot Logo" width="90" />
+            <img src="/images/LogoNova.png" alt="Motopilot Logo" width="90" />
 
             <form onSubmit={handleSubmit} style={{ width: '100%' }}>
               <InputLabel sx={{ color: 'black', fontSize: 16, mb: 1 }}>Email</InputLabel>
@@ -92,11 +84,12 @@ const Login = () => {
                   '& .MuiOutlinedInput-root': {
                     borderRadius: '12px',
                     backgroundColor: '#fff',
-                    '& fieldset': { borderColor: '#e0e0e0' },
+                    '& fieldset': { borderColor: '#969696' },
                   },
                   '& input:-webkit-autofill': {
                     WebkitBoxShadow: '0 0 0 1000px white inset',
                   },
+                  
                 }}
                 fullWidth
                 placeholder="Insira seu e-mail"
@@ -120,7 +113,7 @@ const Login = () => {
                   '& .MuiOutlinedInput-root': {
                     borderRadius: '12px',
                     backgroundColor: '#fff',
-                    '& fieldset': { borderColor: '#e0e0e0' },
+                    '& fieldset': { borderColor: '#969696' },
                   },
                   '& input:-webkit-autofill': {
                     WebkitBoxShadow: '0 0 0 1000px white inset',
@@ -152,14 +145,13 @@ const Login = () => {
 
               <Button
                 sx={{
-                  backgroundColor: '#676767',
+                  backgroundColor: '#F30000',
                   width: '100%',
                   mt: 3,
                   height: 50,
                   borderRadius: 3,
                   fontSize: 18,
                   textTransform: 'none',
-                  '&:hover': { backgroundColor: '#444' },
                 }}
                 type="submit"
                 variant="contained"

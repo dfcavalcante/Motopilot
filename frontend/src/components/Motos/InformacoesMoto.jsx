@@ -10,6 +10,10 @@ const InformacoesMoto = ({ moto, onBack }) => {
   const navigate = useNavigate();
   const { iniciarNovoChat } = React.useContext(ChatContext);
   const fallbackSrc = '/images/Motopilot.jpeg';
+  const estadoAtualMoto = String(moto?.estado || '')
+    .trim()
+    .toLowerCase();
+  const motoConcluida = estadoAtualMoto === 'concluida' || estadoAtualMoto === 'concluída';
 
   const getImageUrl = (caminhoDoBanco) => {
     if (!caminhoDoBanco) return fallbackSrc;
@@ -122,10 +126,16 @@ const InformacoesMoto = ({ moto, onBack }) => {
             >
               <Button
                 onClick={() => {
+                  if (motoConcluida) {
+                    alert('Esta moto já foi concluída e não pode mais acessar o chat.');
+                    return;
+                  }
+
                   iniciarNovoChat(moto);
                   navigate('/chatbot');
                 }}
                 variant="contained"
+                disabled={motoConcluida}
                 sx={{
                   backgroundColor: '#B5B5B5',
                   color: 'black',
@@ -136,6 +146,10 @@ const InformacoesMoto = ({ moto, onBack }) => {
                   padding: '8px 16px',
                   width: '200px',
                   '&:hover': { backgroundColor: '#A5A5A5' },
+                  '&:disabled': {
+                    backgroundColor: '#9A9A9A',
+                    color: '#444',
+                  },
                 }}
               >
                 <img src="/images/estrela.png" alt="Estrelinha" width={18} />

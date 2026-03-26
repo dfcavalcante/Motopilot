@@ -6,7 +6,14 @@ import { getAuthHeaders } from './LoginContext';
 export const ChatContext = createContext();
 
 export const ChatProvider = ({ children }) => {
-  const { motos, motoSelecionada, setMotoSelecionada } = useContext(MotoContext);
+  const { motos, motoSelecionada, setMotoSelecionada, listarMotos } = useContext(MotoContext);
+
+  const motoEstaConcluida = useCallback((moto) => {
+    const estado = String(moto?.estado || '')
+      .trim()
+      .toLowerCase();
+    return estado === 'concluida' || estado === 'concluída';
+  }, []);
 
   // Estados de Dados
   const [chat, setChat] = useState([]); // Histórico bruto
@@ -67,6 +74,11 @@ export const ChatProvider = ({ children }) => {
   const enviarMensagem = async (texto, usuarioId) => {
     if (!texto?.trim() || !motoSelecionada) return;
 
+    if (motoEstaConcluida(motoSelecionada)) {
+      alert('Esta moto já foi concluída e não aceita novas mensagens no chat.');
+      return;
+    }
+
     if (!usuarioId) {
       console.error('Tentativa de enviar mensagem sem usuário logado!');
       alert('Você precisa estar logado para enviar mensagens.');
@@ -98,12 +110,17 @@ export const ChatProvider = ({ children }) => {
 
   const iniciarNovoChat = useCallback(
     (moto) => {
+      if (motoEstaConcluida(moto)) {
+        alert('Esta moto já foi concluída e não pode mais usar o chat.');
+        return;
+      }
+
       setChatSelecionada(null);
       setMotoSelecionada(moto);
       setMessages([]);
       localStorage.removeItem('historico_ativo');
     },
-    [setMotoSelecionada]
+    [motoEstaConcluida, setMotoSelecionada]
   );
 
   const trocarMoto = useCallback(() => {
@@ -224,6 +241,10 @@ export const ChatProvider = ({ children }) => {
 
       setLoading(true);
       try {
+        if (motoEstaConcluida(motoSelecionada)) {
+          throw new Error('Esta moto já foi concluída e não aceita novas mensagens no chat.');
+        }
+
         // 1. Finaliza o chat e obtém o resumo
         const resumo = await finalizarConversa({ usuarioId, motoId: motoIdFinal });
 
@@ -253,6 +274,16 @@ export const ChatProvider = ({ children }) => {
         }
 
         const relatorio = await responseRelatorio.json();
+
+        // Atualiza a lista e a moto selecionada para refletir estado concluído.
+        const motosAtualizadas = await listarMotos(true);
+        const motoAtualizada = (motosAtualizadas || []).find(
+          (m) => Number(m.id) === Number(motoIdFinal)
+        );
+        if (motoAtualizada) {
+          setMotoSelecionada(motoAtualizada);
+        }
+
         return relatorio;
       } catch (error) {
         console.error('Erro ao finalizar com relatório:', error);
@@ -262,7 +293,14 @@ export const ChatProvider = ({ children }) => {
         setLoading(false);
       }
     },
-    [BASE_URL, motoSelecionada?.id, finalizarConversa]
+    [
+      BASE_URL,
+      motoSelecionada,
+      finalizarConversa,
+      listarMotos,
+      motoEstaConcluida,
+      setMotoSelecionada,
+    ]
   );
 
   const limparChat = async (usuarioId) => {

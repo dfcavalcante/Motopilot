@@ -1,15 +1,20 @@
 import React from 'react';
 import { Box, Typography, IconButton } from '@mui/material';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
+import { getUserInitials, getAvatarColor } from '../../utils/avatarUtils';
 
 const UserRow = ({ usuario, onEdit, onDelete, setAtualizando, atualizando }) => {
+  const iniciais = getUserInitials(usuario?.nome, usuario?.email);
+  const corAvatar = getAvatarColor(usuario?.nome, usuario?.email);
+
   return (
     <Box
       sx={{
-        display: 'flex', 
-        alignItems: 'center', 
-        width: '100%', 
+        display: 'grid',
+        gridTemplateColumns: '2.2fr 2.2fr 1.5fr 1fr auto',
+        columnGap: 2,
+        alignItems: 'center',
+        width: '100%',
+        px: 2,
         py: 0.5,
         borderBottom: '1px solid #E0E0E0',
         bgcolor: 'transparent',
@@ -21,48 +26,62 @@ const UserRow = ({ usuario, onEdit, onDelete, setAtualizando, atualizando }) => 
       }}
     >
       {/* COLUNA 1: NOME (25%)*/}
-      <Box sx={{ width: '25%', display: 'flex', alignItems: 'center', gap: 2 }}>
+      <Box
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 2,
+          minWidth: 0,
+        }}
+      >
         <Box
           sx={{
             width: 32,
             height: 32,
             borderRadius: '50%',
-            bgcolor: 'white',
+            bgcolor: corAvatar,
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',
             border: '1px solid #eee',
           }}
         >
-          <img src="/images/userIcon.png" alt="User" style={{ width: '14px', height: '18px' }} />
+          <Typography fontSize={12} fontWeight={700} color="white">
+            {iniciais}
+          </Typography>
         </Box>
-        <Typography variant="body2"  color="black" noWrap fontSize={16}>
+        <Typography variant="body2" color="black" noWrap fontSize={16}>
           {usuario.nome}
         </Typography>
       </Box>
 
       {/* COLUNA 2: EMAIL (25%)*/}
-      <Box sx={{ width: '25%' }}>
-        <Typography variant="body2" color="black" noWrap fontSize={16}>
+      <Box sx={{ display: 'flex', minWidth: 0 }}>
+        <Typography variant="body2" color="black" noWrap fontSize={16} textAlign="left">
           {usuario.email}
         </Typography>
       </Box>
 
       {/*COLUNA 3: FUNÇÃO (15%)*/}
-      <Box sx={{ width: '20%' }}>
-        <Typography  color="black" noWrap fontSize={16}>
+      <Box sx={{ display: 'flex', minWidth: 0 }}>
+        <Typography color="black" noWrap fontSize={16} textAlign="left">
           {usuario.funcao}
         </Typography>
       </Box>
 
       {/*COLUNA 4: STATUS (20%) - Centralizado*/}
-      <Box sx={{ width: '20%', display: 'flex', justifyContent: 'center' }}>
+      <Box sx={{ display: 'flex', justifyContent: 'flex-start' }}>
         <Box sx={{ width: 10, height: 10, borderRadius: '50%', bgcolor: '#C5C5C5' }} />
       </Box>
 
       {/* AÇÕES (10%) - Alinhado à direita */}
-      <Box sx={{ width: '5', display: 'flex', justifyContent: 'flex-end', gap: 1 }}>
-        <IconButton size="small" onClick={() => { setAtualizando(usuario); }}>
+      <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1 }}>
+        <IconButton
+          size="small"
+          onClick={() => {
+            setAtualizando(usuario);
+          }}
+        >
           <img src="/images/lapis.png" alt="Editar" style={{ width: '15px', height: '15px' }} />
         </IconButton>
         <IconButton size="small" onClick={() => onDelete(usuario.id)}>

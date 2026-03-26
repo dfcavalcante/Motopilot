@@ -19,8 +19,11 @@ class ReportBase(BaseModel):
     pecas: Optional[list[str]] = Field(None, example=["motor", "pedal", "buzina"])
     observacoes: Optional[str] = Field(None, example="Foi observado que a moto é de um modelo especial que saiu de linha por possuir defeitos de fábrica")
 
-    #TODO: falta o campo de anexação de fotos que ainda não sei como adicionar que será Optional
-    #TODO: falta tbm o campo da assinatura digital que será Optional
+    #Status do relatório, se é pendente ou concluído
+    status: Optional[str] = Field("pendente", example="pendente")  # Ex: "pendente", "concluido", "arquivado"
+    
+    imagem_path: Optional[str] = Field(None)
+    assinatura_path: Optional[str] = Field(None)
     
 class ReportUpdate(BaseModel):
     '''
@@ -36,10 +39,9 @@ class ReportUpdate(BaseModel):
     pecas: Optional[list[str]] = None
     observacoes: Optional[str] = None
     status: Optional[str] = None
-
-
-    #TODO: falta o campo de anexação de fotos que ainda não sei como adicionar que será Optional
-    #TODO: falta tbm o campo da assinatura digital que será Optional
+    
+    imagem_path: Optional[str] = None
+    assinatura_path: Optional[str] = None
 
 class ReportFilter(BaseModel):
     '''
@@ -81,5 +83,10 @@ class ReportResponse(ReportBase):
         if isinstance(v, str):
             return [p.strip() for p in v.split(",") if p.strip()]
         return v
+    
+    @field_validator("status", mode="before")
+    @classmethod
+    def default_status(cls, v):
+        return v or "pendente"
 
 

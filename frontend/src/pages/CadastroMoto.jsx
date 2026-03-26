@@ -20,6 +20,7 @@ const CadastroDeMoto = () => {
     onSubmitForm,
     handleProximo,
     handleVoltar,
+    modeloPaiSelecionado,
   } = HookCadastroMoto();
 
   return (
@@ -45,16 +46,17 @@ const CadastroDeMoto = () => {
           {etapaAtual === 1 && (
             <DadosGerais
               register={register}
-              setValue={setValue} 
-              errors={errors} 
+              setValue={setValue}
+              errors={errors}
               onNext={handleProximo}
               watch={watch}
+              modeloPaiSelecionado={modeloPaiSelecionado}
             />
           )}
 
           {etapaAtual === 2 && (
             <ManualMoto
-              setValue={setValue} 
+              setValue={setValue}
               errors={errors}
               onBack={handleVoltar}
               loading={loading}

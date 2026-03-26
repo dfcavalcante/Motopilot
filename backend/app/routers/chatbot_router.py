@@ -15,7 +15,10 @@ router = APIRouter(prefix="/chatbot", tags=["Chatbot"])
 @router.post("/perguntar")
 def conversar(request: ChatRequest, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     service = ChatService(db)
-    return service.gerar_resposta(request.pergunta, request.usuario_id, request.moto_id)
+    try:
+        return service.gerar_resposta(request.pergunta, request.usuario_id, request.moto_id)
+    except ValueError as e:
+        raise HTTPException(status_code=403, detail=str(e))
 
 @router.post("/finalizar", response_model=FinalizarChatResponse)
 def finalizar_conversa(request: FinalizarChatRequest, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
@@ -24,7 +27,10 @@ def finalizar_conversa(request: FinalizarChatRequest, db: Session = Depends(get_
     para o relatório de manutenção usando LLM.
     """
     service = ChatService(db)
-    return service.finalizar_chat(request.usuario_id, request.moto_id)
+    try:
+        return service.finalizar_chat(request.usuario_id, request.moto_id)
+    except ValueError as e:
+        raise HTTPException(status_code=403, detail=str(e))
 
 # ---- HISTÓRICO ----
 

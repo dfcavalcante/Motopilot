@@ -1,6 +1,8 @@
 import React from 'react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
+import { Box, Typography } from '@mui/material';
 
+//Componente esqueleto para mostrar dados sobre os relatórios concluídos, pendentes e totais
 const DonutChart = ({ data, title }) => {
   const chartData = Array.isArray(data) ? data : [];
 
@@ -8,13 +10,18 @@ const DonutChart = ({ data, title }) => {
   const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8'];
 
   return (
-    <div>
-      {title && <h2 className="text-xl font-bold mb-4 text-gray-700">{title}</h2>}
-
+    <Box
+      sx={{
+        width: '100%',
+        height: '100%',
+      }}
+    >
+      <Typography variant="h6" align="center" gutterBottom>
+        {title}
+      </Typography>
       {chartData.length === 0 && (
         <p className="text-sm text-gray-500">Nenhum dado de relatorio para exibir.</p>
       )}
-
       <ResponsiveContainer width="100%" height="100%">
         <PieChart>
           <Pie
@@ -40,7 +47,7 @@ const DonutChart = ({ data, title }) => {
           <Legend verticalAlign="bottom" height={36} />
         </PieChart>
       </ResponsiveContainer>
-    </div>
+    </Box>
   );
 };
 

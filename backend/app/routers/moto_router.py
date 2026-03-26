@@ -12,17 +12,23 @@ from llm.services.vector_store import vector_store
 # --- AQUI ESTÁ A MUDANÇA: Usamos o processador inteligente ---
 from llm.data.pdf_processor import processar_manual_unico
 
-# Imports internos
-from app.schemas.moto_schema import (MotoBase, MotoUpdate, MotoResponse, ConcluirManutencaoRequest)
+# Imports Motos 
+from app.schemas.moto_schema import (MotoBase, MotoUpdate, MotoResponse, ConcluirManutencaoRequest, AtribuirMecanicoRequest)
 from app.services.moto_service import Moto_service
 from app.database import get_db
 from app.services.jwt_service import get_current_user
 from app.models.user_model import User
 
+# Imports ModeloMoto
+from app.schemas.moto_schema import ModeloMotoBase, ModeloMotoResponse
+from app.models.moto_model import ModeloMoto
+from app.services.moto_pai_service import Moto_pai_service
+
 router = APIRouter(prefix='/motos', tags=["Motos"])
 
 # Instância única do serviço
 moto_service = Moto_service()
+moto_pai_service = Moto_pai_service()
 
 UPLOAD_DIR = "manuals"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
@@ -52,6 +58,31 @@ def processar_manual_background(file_path: str, moto_id: int, modelo: str, ano: 
         print(f"❌ [IA] Erro na task de background: {e}")
 
 # --- ROTAS ---
+@router.post("/modeloMoto/criar", response_model=ModeloMotoResponse, status_code=status.HTTP_201_CREATED)
+def criar_modelo_moto_endpoint(
+    marca: str = Form(...),
+    modelo: str = Form(...),
+    imagem_moto: UploadFile = File(...),
+    db: Session = Depends(get_db),
+):
+
+    modelo_existente = moto_pai_service.buscar_moto_pai_moto(db, marca, modelo)
+    if modelo_existente:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=f"Modelo '{marca} {modelo}' já está registrado no sistema."
+        )
+    
+    caminho_imagem = salvar_arquivo(imagem_moto, sub_pasta="imagens")
+    novo_modelo = ModeloMotoBase(marca=marca, modelo=modelo, imagem_moto=caminho_imagem)
+    novo_modelo_moto = moto_pai_service.criar_modelo_moto(db, novo_modelo)
+    return novo_modelo_moto
+
+
+@router.get("/modeloMoto/listar", response_model=List[ModeloMotoResponse])
+def listar_modelos_moto_endpoint(db: Session = Depends(get_db)):
+    return moto_pai_service.listar_motos_pai_motos(db)
+
 
 @router.post("/", response_model=MotoResponse, status_code=status.HTTP_201_CREATED)
 def criar_moto_endpoint(
@@ -73,30 +104,56 @@ def criar_moto_endpoint(
             detail=f"Número de série '{numeroSerie}' já está registrado no sistema."
         )
 
-    # 1. Salvar arquivos
-    caminho_pdf = salvar_arquivo(documento_pdf, sub_pasta="manuais")
-    caminho_imagem = salvar_arquivo(imagem_moto, sub_pasta="imagens")
+    # 1. Buscar ou criar o ModeloMoto (moto "pai") por marca/modelo
+    modelo_moto = moto_pai_service.buscar_moto_pai_moto(db, marca, modelo)
+    if not modelo_moto:
+        print(f"🔍 Modelo '{marca} {modelo}' não encontrado. Crie o modelo")
+    if not modelo_moto:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Modelo '{marca} {modelo}' não encontrado. Cadastre a moto pai primeiro."
+        )
 
-    # 2. Criar o Schema de Dados
-    # Nota: Mapeamos o 'numeroSerie' (do form) para 'numero_serie' (do banco/schema)
+    # 2. Salvar arquivos
+    caminho_pdf = salvar_arquivo(documento_pdf, sub_pasta="manuais")
+
+    # A moto filha herda exatamente a imagem da moto pai.
+    caminho_imagem = modelo_moto.imagem_moto
+
+    # Compatibilidade para modelos antigos sem imagem cadastrada.
+    if not caminho_imagem and imagem_moto:
+        caminho_imagem = salvar_arquivo(imagem_moto, sub_pasta="imagens")
+        modelo_moto.imagem_moto = caminho_imagem
+        db.add(modelo_moto)
+        db.commit()
+
+    # 3. Criar o Schema de Dados
+    # Nota: Agora usamos o modelo_moto_id ao invés de marca/modelo
     moto_data = MotoBase(
         marca=marca,
         modelo=modelo,
         ano=ano,
-        numero_serie=numeroSerie, # <--- Atenção aqui: O Schema espera snake_case
+        numero_serie=numeroSerie,
         estado='Ativa',
         descricao=descricao,
         manual_pdf_path=caminho_pdf,
-        imagem_path=caminho_imagem
+        imagem_path=caminho_imagem,
+        modelo_moto_id=modelo_moto.id  # <--- FK para a moto "pai"
     )
     
-    # 3. Criar no Banco
-    nova_moto = moto_service.criar_moto(db, moto_data)
+    # 4. Criar no Banco
+    try:
+        nova_moto = moto_service.criar_moto(db, moto_data)
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e)
+        )
 
-    # 4. Disparar Ingestão da IA (Correção da variável)
+    # 5. Disparar Ingestão da IA
     background_tasks.add_task(
         processar_manual_background, 
-        file_path=caminho_pdf, # <--- CORREÇÃO: Usar a variável correta 'caminho_pdf'
+        file_path=caminho_pdf,
         moto_id=nova_moto.id, 
         modelo=modelo, 
         ano=str(ano)
@@ -109,11 +166,22 @@ def criar_moto_endpoint(
 def listar_motos_endpoint(db: Session = Depends(get_db)):
     return moto_service.listar_motos(db)
 
-
 # --- ATUALIZAR ---
 @router.patch('/{moto_id}/atualizar', response_model=MotoResponse)
 def atualizar_moto_endpoint(moto_id: int, moto_data: MotoUpdate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     moto_atualizada = moto_service.atualizar_moto(db, moto_id, moto_data)
+    if not moto_atualizada:
+        raise HTTPException(status_code=404, detail="Moto não encontrada")
+    return moto_atualizada
+
+@router.patch('/{moto_id}/atribuir', response_model=MotoResponse)
+def atribuir_mecanico_endpoint(moto_id: int, dados: AtribuirMecanicoRequest, db: Session = Depends(get_db)):
+    """Atribui a moto a um mecânico específico e altera o status para 'Em Manutenção'"""
+    try:
+        moto_atualizada = moto_pai_service.atribuir_mecanico(db, moto_id, dados.mecanico_id)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
     if not moto_atualizada:
         raise HTTPException(status_code=404, detail="Moto não encontrada")
     return moto_atualizada
@@ -221,3 +289,9 @@ def verificar_numero_serie_endpoint(numero_serie: str, db: Session = Depends(get
     """Retorna `{{"exists": true}}` se o número de série já estiver no banco."""
     exists = moto_service.verificar_numero_serie_existente(db, numero_serie)
     return {"exists": exists}
+
+# --- GRÁFICOS ---
+@router.get("/graficos/motos")
+def graficos_motos_endpoint(db: Session = Depends(get_db)):
+    graficos_motos = moto_service.graficos_motos(db)
+    return graficos_motos

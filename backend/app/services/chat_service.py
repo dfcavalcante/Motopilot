@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Session
 from llm.services.rag_orchestrator import rag_orchestrator
 from app.models.chat_model import ChatLog
+from app.models.moto_model import Moto
 import json
 
 class ChatService:
@@ -10,7 +11,18 @@ class ChatService:
         # Usamos a instância global que já carrega o Chroma e o LLM uma vez só
         self.rag = rag_orchestrator 
 
+    def _moto_concluida(self, moto_id: int) -> bool:
+        moto = self.db.get(Moto, moto_id)
+        if not moto or not moto.estado:
+            return False
+
+        estado_normalizado = str(moto.estado).strip().lower()
+        return estado_normalizado in {"concluida", "concluída"}
+
     def gerar_resposta(self, pergunta: str, usuario_id: int, moto_id: int):
+        if self._moto_concluida(moto_id):
+            raise ValueError("Esta moto já foi concluída e não aceita novas mensagens no chat.")
+
         print(f"🔄 ChatService: Iniciando RAG para Moto ID {moto_id}...")
         
         try:
@@ -48,6 +60,9 @@ class ChatService:
             }
 
     def finalizar_chat(self, usuario_id: int, moto_id: int) -> dict:
+        if self._moto_concluida(moto_id):
+            raise ValueError("Esta moto já foi concluída e não pode mais ser finalizada no chat.")
+
         print(f"🔄 ChatService: Finalizando conversa Moto ID {moto_id}...")
         
         # 1. Recupera histórico

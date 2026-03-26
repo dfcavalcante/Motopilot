@@ -25,6 +25,11 @@ const Header = ({ onNovoChat }) => {
     navigate('/cadastroMoto');
   };
 
+  const handleCadastroMotoPai = (e) => {
+    e.preventDefault();
+    navigate('/cadastroMotoAtribuir');
+  };
+
   const handleCadastroUsuario = async (e) => {
     e.preventDefault();
     navigate('/cadastro');
@@ -34,41 +39,89 @@ const Header = ({ onNovoChat }) => {
     if (location.pathname === '/chatbot') {
       return (
         <Button
-          variant="outlined"
-          startIcon={<img src="/images/add.png" alt="Add" width="20" />}
+          startIcon={<img src="/images/add.png" alt="Add" width="20" color="white" />}
           onClick={onNovoChat}
           sx={{
             width: 180,
             height: '40px',
             whiteSpace: 'nowrap',
-            color: 'black',
-            borderColor: 'black',
+            backgroundColor: '#780101',
+            borderColor: '#780101',
+            color: 'white',
             borderRadius: '10px',
             textTransform: 'none',
             fontSize: '18px',
-            '&:hover': { borderColor: 'black', backgroundColor: 'transparent' },
+            '&:hover': { borderColor: '#780101', backgroundColor: '#5f0000', color: 'white' },
           }}
         >
           Novo chat
         </Button>
       );
     }
-    if (location.pathname === '/listagemMotos' || location.pathname === '/cadastroMoto') {
+    if (location.pathname === '/listagemMotos') {
       return (
         <Button
-          variant="outlined"
+          startIcon={<img src="/images/add.png" alt="Add" width="20" />}
+          onClick={handleCadastroMotoPai}
+          sx={{
+            width: 250,
+            height: '40px',
+            whiteSpace: 'nowrap',
+            backgroundColor: '#780101',
+            borderColor: '#780101',
+            color: 'white',
+            borderRadius: '10px',
+            textTransform: 'none',
+            fontSize: '18px',
+            '&:hover': { borderColor: '#780101', backgroundColor: '#5f0000', color: 'white' },
+          }}
+        >
+          Adicionar moto
+        </Button>
+      );
+    }
+
+    if (
+      location.pathname === '/cadastroMoto' ||
+      /^\/modeloMoto\/\d+\/motos$/.test(location.pathname)
+    ) {
+      return (
+        <Button
           startIcon={<img src="/images/add.png" alt="Add" width="20" />}
           onClick={handleCadastroMoto}
           sx={{
             width: 250,
             height: '40px',
             whiteSpace: 'nowrap',
-            color: 'black',
-            borderColor: 'black',
+            backgroundColor: '#780101',
+            borderColor: '#780101',
+            color: 'white',
             borderRadius: '10px',
             textTransform: 'none',
             fontSize: '18px',
-            '&:hover': { borderColor: 'black', backgroundColor: 'transparent' },
+            '&:hover': { borderColor: '#780101', backgroundColor: '#5f0000', color: 'white' },
+          }}
+        >
+          Adicionar moto
+        </Button>
+      );
+    }
+    if (location.pathname === '/motos-atribuir' || location.pathname === '/cadastro-atribuir') {
+      return (
+        <Button
+          startIcon={<img src="/images/add.png" alt="Add" width="20" />}
+          onClick={handleCadastroMoto}
+          sx={{
+            width: 250,
+            height: '40px',
+            whiteSpace: 'nowrap',
+            backgroundColor: '#780101',
+            borderColor: '#780101',
+            borderRadius: '10px',
+            color: 'white',
+            textTransform: 'none',
+            fontSize: '18px',
+            '&:hover': { borderColor: '#780101', backgroundColor: '#5f0000', color: 'white' },
           }}
         >
           Adicionar moto
@@ -78,19 +131,19 @@ const Header = ({ onNovoChat }) => {
     if (location.pathname === '/usuarios' || location.pathname === '/cadastro') {
       return (
         <Button
-          variant="outlined"
           startIcon={<img src="/images/add.png" alt="Add" width="20" />}
           onClick={handleCadastroUsuario}
           sx={{
             width: 250,
             height: '40px',
             whiteSpace: 'nowrap',
-            color: 'black',
-            borderColor: 'black',
+            backgroundColor: '#780101',
+            borderColor: '#780101',
             borderRadius: '10px',
+            color: 'white',
             textTransform: 'none',
             fontSize: '18px',
-            '&:hover': { borderColor: 'black', backgroundColor: 'transparent' },
+            '&:hover': { borderColor: '#780101', backgroundColor: '#5f0000', color: 'white' },
           }}
         >
           Adicionar usuário

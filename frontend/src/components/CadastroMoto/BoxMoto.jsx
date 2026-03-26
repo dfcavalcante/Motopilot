@@ -1,7 +1,7 @@
 import { Box, Button, Typography } from '@mui/material';
 import React from 'react';
 
-const BoxMoto = ({ moto, onEnter }) => {
+const BoxMoto = ({ moto, onEnter, tipo = 'filha', mecanicoNome }) => {
   const fallbackSrc = '/images/Motopilot.jpeg';
 
   const getImageUrl = (caminhoDoBanco) => {
@@ -17,6 +17,14 @@ const BoxMoto = ({ moto, onEnter }) => {
 
     return `http://localhost:8000/${pathFinal}`;
   };
+
+  const numeroSerie = moto.numeroSerie || moto.numero_serie;
+  const titulo = moto.modelo || 'Modelo sem nome';
+  const subtitulo =
+    tipo === 'pai' ? `Marca: ${moto.marca || '-'}` : `Nº Série: ${numeroSerie || '-'}`;
+  const estado = tipo === 'pai' ? 'Modelo' : moto.estado;
+
+  const imagemMoto = moto.imagemPath || moto.imagem_moto || moto.imagemMoto;
 
   return (
     <Box
@@ -34,7 +42,7 @@ const BoxMoto = ({ moto, onEnter }) => {
     >
       {/* Imagem de Fundo */}
       <img
-        src={getImageUrl(moto.imagemPath)}
+        src={getImageUrl(imagemMoto)}
         alt="Logo Motopilot"
         onError={(event) => {
           if (event.currentTarget.src !== fallbackSrc) {
@@ -52,9 +60,9 @@ const BoxMoto = ({ moto, onEnter }) => {
           right: '12px',
           bgcolor: '#D9D9D9',
           borderRadius: '16px',
-          px: 2,
-          height: '15px',
-          width: '75px',
+          px: 1.5,
+          minHeight: '24px',
+          minWidth: '118px',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -64,10 +72,12 @@ const BoxMoto = ({ moto, onEnter }) => {
           variant="caption"
           sx={{
             color: 'black',
-            fontSize: '13px',
+            fontSize: '12px',
+            lineHeight: 1,
+            whiteSpace: 'nowrap',
           }}
         >
-          {moto.estado}
+          {estado}
         </Typography>
       </Box>
 
@@ -78,23 +88,29 @@ const BoxMoto = ({ moto, onEnter }) => {
           flexGrow: 1,
           display: 'flex',
           flexDirection: 'column',
-          justifyContent: 'space-between',
+          justifyContent: 'flex-start',
         }}
       >
-        <Box>
+        <Box sx={{ mb: 2 }}>
           <Typography variant="h6" fontWeight="bold" noWrap>
-            {moto.modelo}
+            {titulo}
           </Typography>
-          <Typography variant="body2" color="#484848" mt={1}>
-            Nº Série: {moto.numeroSerie}
+          <Typography variant="body2" color="#484848">
+            {subtitulo}
           </Typography>
+          {tipo !== 'pai' && (
+            <Typography variant="body2" color="#484848" noWrap sx={{ maxWidth: '100%' }}>
+              Mecânico: {mecanicoNome || 'Não atribuído'}
+            </Typography>
+          )}
         </Box>
 
         <Button
           variant="contained"
           onClick={() => onEnter(moto)}
           sx={{
-            bgcolor: '#D9D9D9',
+            mt: 'auto',
+            bgcolor: '#780101',
             color: 'black',
             width: '80%',
             borderRadius: '16px',
