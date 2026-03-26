@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box } from '@mui/material';
 import BaseFront from '../utils/BaseFront.jsx';
-import EtapasMoto from '../components/Motos/EtapasMoto.jsx';
+import EtapasMotoIndividual from '../components/Motos/EtapaMotoIndividual.jsx';
 import HookCadastroMoto from '../hooks/HookCadastroMoto.jsx';
 
 import DadosGerais from '../components/Motos/DadosGerais.jsx';
@@ -23,7 +23,8 @@ const CadastroDeMoto = () => {
   } = HookCadastroMoto();
 
   return (
-    <BaseFront nome="Cadastro de moto">
+    <BaseFront nome="Adicionar moto">
+      <EtapasMotoIndividual etapaAtual={etapaAtual} />
       <Box
         sx={{
           flexGrow: 1,
@@ -38,7 +39,7 @@ const CadastroDeMoto = () => {
         <Box
           component="form"
           onSubmit={handleSubmit(onSubmitForm)}
-          sx={{ width: '100%', flex: 1, mt: 2 }}
+          sx={{ width: '100%', flex: 1}}
         >
           {etapaAtual === 1 && (
             <DadosGerais
@@ -47,6 +48,8 @@ const CadastroDeMoto = () => {
               errors={errors}
               watch={watch}
               modeloPaiSelecionado={modeloPaiSelecionado}
+              onNext={handleProximo}
+              onBack={handleVoltar}
             />
           )}
 

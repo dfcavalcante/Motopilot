@@ -20,6 +20,7 @@ const Concluido = () => {
         gap: 1,
         minHeight: '300px',
         mt: 6,
+        boxShadow: 3,
       }}
     >
       {/* Header com Ícone e Título */}

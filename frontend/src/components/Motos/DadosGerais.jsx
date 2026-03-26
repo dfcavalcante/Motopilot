@@ -2,7 +2,7 @@ import React from 'react';
 import { Box, Typography, TextField, Grid, Button, Stack } from '@mui/material';
 import ImageUploader from '../Motos/ImageUploader.jsx';
 
-const DadosGerais = ({ register, setValue, errors, watch, modeloPaiSelecionado }) => {
+const DadosGerais = ({ register, setValue, errors, watch, modeloPaiSelecionado, onNext, onBack }) => {
   const labelStyle = {
     color: '#000000',
     fontSize: '15px',
@@ -27,7 +27,7 @@ const DadosGerais = ({ register, setValue, errors, watch, modeloPaiSelecionado }
   return (
     <Box
       sx={{
-        backgroundColor: '#E0E0E0',
+        boxShadow: 3,
         pl: 16,
         pr: 16,
         pt: 4,
@@ -154,6 +154,7 @@ const DadosGerais = ({ register, setValue, errors, watch, modeloPaiSelecionado }
       {/* RODAPÉ: BOTÕES */}
       <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 4, gap: 2 }}>
         <Button
+          onClick={onBack}
           variant="outlined"
           sx={{
             color: '#333',
@@ -168,16 +169,17 @@ const DadosGerais = ({ register, setValue, errors, watch, modeloPaiSelecionado }
         <Button
           type="submit"
           variant="contained"
+          onClick={onNext}
           sx={{
-            backgroundColor: '#666',
+            backgroundColor: '#F30000',
             color: 'white',
             borderRadius: '8px',
             textTransform: 'none',
             px: 4,
-            '&:hover': { backgroundColor: '#444' },
+            '&:hover': { backgroundColor: '#F30000' },
           }}
         >
-          Cadastrar Moto
+          Próximo
         </Button>
       </Box>
     </Box>
