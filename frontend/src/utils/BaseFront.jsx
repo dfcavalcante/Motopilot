@@ -3,16 +3,9 @@ import { Box, Stack, Typography, Divider } from '@mui/material';
 import SideBar from './SideBar';
 import Header from './Header.jsx';
 
-const BaseFront = ({ nome, icone, height, width, children, headerAction }) => {
+const BaseFront = ({ nome, icone, height, width, children, headerAction, headerRightAction }) => {
   return (
-    <Box
-      sx={{
-        display: 'flex',
-        height: '100vh',
-        p: '16px',
-        boxSizing: 'border-box',
-      }}
-    >
+    <Box sx={{ display: 'flex', height: '100vh', p: '16px', boxSizing: 'border-box' }}>
       <SideBar />
 
       <Box
@@ -46,13 +39,22 @@ const BaseFront = ({ nome, icone, height, width, children, headerAction }) => {
                 position: 'relative',
               }}
             >
+              {/* LADO ESQUERDO */}
               {headerAction && (
                 <Box sx={{ position: 'absolute', left: 0, display: 'flex', alignItems: 'center' }}>
                   {headerAction}
                 </Box>
               )}
-              <img src={icone} width={width} height={height} />
+
+              <img src={icone} width={width} height={height} alt="" />
               <Typography fontSize={30}> {nome} </Typography>
+
+              {/* LADO DIREITO */}
+              {headerRightAction && (
+                <Box sx={{ position: 'absolute', right: 0, display: 'flex', alignItems: 'center' }}>
+                  {headerRightAction}
+                </Box>
+              )}
             </Box>
             <Divider sx={{ width: '90%', bgcolor: 'grey.700', height: '0.4px', mb: 2 }} />
             <Box
@@ -62,7 +64,6 @@ const BaseFront = ({ nome, icone, height, width, children, headerAction }) => {
                 display: 'flex',
                 flexDirection: 'column',
                 overflow: 'hidden',
-                
               }}
             >
               {children}

@@ -142,7 +142,7 @@ const SideBar = ({ historico = [] }) => {
             alignItems: 'center',
             justifyContent: open ? 'flex-start' : 'center',
             gap: 18,
-            minHeight: '40px',
+            minHeight: '60px',
             '&:hover': {
               transform: 'none',
               backgroundColor: 'transparent',

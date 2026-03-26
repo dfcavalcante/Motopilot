@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
 import { MotoContext } from '../context/MotoContext.jsx';
 import { useNavigate } from 'react-router-dom';
 
@@ -24,7 +25,9 @@ export const HookCadastroMoto = () => {
     listarMotos,
     verificarNumeroSerie,
     modeloPaiSelecionado,
+    setModeloPaiSelecionado,
   } = useContext(MotoContext);
+  const navigate = useNavigate();
 
   const navigate = useNavigate();
   const [etapaAtual, setEtapaAtual] = useState(1);
@@ -37,6 +40,7 @@ export const HookCadastroMoto = () => {
     setError,
     setValue,
     watch,
+    reset,
     formState: { errors },
   } = useForm({
     resolver: zodResolver(motoSchema),
@@ -122,6 +126,20 @@ export const HookCadastroMoto = () => {
     navigate(-1);
   };
 
+  const handleVoltar = () => {
+    reset({
+      modelo: '',
+      marca: '',
+      ano: '',
+      numeroSerie: '',
+      descricao: '',
+      foto: null,
+    });
+    setEtapaAtual(1);
+    setModeloPaiSelecionado(null);
+    navigate('/listagemMotos');
+  };
+
   // Submit Form da moto "filha" (sem manual, já foi pro pai)
   const onSubmitForm = async (data) => {
     setLoading(true);
@@ -167,6 +185,8 @@ export const HookCadastroMoto = () => {
     handleProximo,
     handleVoltar,
     modeloPaiSelecionado,
+    handleProximo,
+    handleVoltar,
   };
 };
 

@@ -27,10 +27,14 @@ export const DashboardProvider = ({ children }) => {
     setLoading(true);
     setErro(null);
     try {
-      const headers = getAuthHeaders();
-      const response = await fetch(`${BASE_URL}/dashboard/gerente`, { headers });
+      const response = await fetch(`${BASE_URL}/dashboard/gerente`, {
+        headers: { ...getAuthHeaders() },
+      });
 
       if (!response.ok) {
+        if (response.status === 401) {
+          throw new Error('Sessao expirada. Faca login novamente.');
+        }
         throw new Error('Erro ao buscar dados do dashboard do gerente');
       }
 
