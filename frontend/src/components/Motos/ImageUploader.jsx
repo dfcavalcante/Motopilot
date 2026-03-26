@@ -61,7 +61,7 @@ const ImageUploader = ({ onFileSelect, arquivo, error, readOnly = false }) => {
       <Box
         {...getRootProps()}
         sx={{
-          border: '1px solid #A0A0A0',
+          border: '1px solid #fd616190',
           borderRadius: '12px',
           height: 200,
           maxHeight: 350,
@@ -75,7 +75,6 @@ const ImageUploader = ({ onFileSelect, arquivo, error, readOnly = false }) => {
           justifyContent: 'center',
           textAlign: 'center',
           cursor: 'pointer',
-          backgroundColor: 'rgba(0, 0, 0, 0.03)',
           position: 'relative',
           transition: 'all .2s ease-in-out',
           '&:hover': {
@@ -156,7 +155,7 @@ const ImageUploader = ({ onFileSelect, arquivo, error, readOnly = false }) => {
             {!readOnly && (
               <Box
                 sx={{
-                  backgroundColor: '#666',
+                  backgroundColor: '#8F0303',
                   color: 'white',
                   padding: '8px 24px',
                   borderRadius: '50px',

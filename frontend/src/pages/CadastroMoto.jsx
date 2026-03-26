@@ -5,7 +5,6 @@ import EtapasMoto from '../components/Motos/EtapasMoto.jsx';
 import HookCadastroMoto from '../hooks/HookCadastroMoto.jsx';
 
 import DadosGerais from '../components/Motos/DadosGerais.jsx';
-import ManualMoto from '../components/Motos/DadosManual.jsx';
 import Concluido from '../components/Motos/Concluido.jsx';
 
 const CadastroDeMoto = () => {

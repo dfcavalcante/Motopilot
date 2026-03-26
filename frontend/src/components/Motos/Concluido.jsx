@@ -9,12 +9,11 @@ const Concluido = () => {
   return (
     <Box
       sx={{
-        backgroundColor: '#D9D9D9',
-        p: 7,
+        p: 2,
         borderRadius: '12px',
         width: '100%',
         maxWidth: '800px',
-        margin: '20px auto',
+        margin: '10px auto',
         fontFamily: 'Roboto, sans-serif',
         display: 'flex',
         flexDirection: 'column',
@@ -25,7 +24,7 @@ const Concluido = () => {
     >
       {/* Header com Ícone e Título */}
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
-        <CheckCircleIcon sx={{ fontSize: 40, color: '#A0A0A0' }} />
+        <CheckCircleIcon sx={{ fontSize: 40, color: '#216A13' }} />
         <Typography variant="h5" sx={{ color: '#000', fontWeight: 500 }}>
           Moto salva
         </Typography>
@@ -34,7 +33,7 @@ const Concluido = () => {
       {/* Texto de Descrição */}
       <Typography variant="body2" sx={{ color: '#000', mb: 5, fontSize: '20px' }}>
         Cadastro realizado com sucesso!
-        <br />A moto foi cadastrada e já está disponível para gerenciamento.
+        <br /> O modelo da moto foi cadastrado e já está disponível para gerenciamento.
       </Typography>
 
       {/* Botão Centralizado */}
@@ -42,7 +41,7 @@ const Concluido = () => {
         <Button
           variant="contained"
           sx={{
-            backgroundColor: '#666',
+            backgroundColor: '#F30000',
             color: '#FFF',
             textTransform: 'none',
             height: '48px',
@@ -50,7 +49,7 @@ const Concluido = () => {
             borderRadius: '8px',
             fontWeight: 'bold',
             '&:hover': {
-              backgroundColor: '#444',
+              backgroundColor: '#F30000',
             },
           }}
           onClick={() => navigate('/listagemMotos')}

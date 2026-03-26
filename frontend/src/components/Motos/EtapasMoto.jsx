@@ -28,7 +28,7 @@ const EtapasMoto = ({ etapa }) => {
         <CheckCircleIcon
           sx={{
             fontSize: 18, // Tamanho próximo ao das bolinhas
-            color: "#a0a0a0",
+            color: "#216A13",
             mr: 1,
           }}
         />

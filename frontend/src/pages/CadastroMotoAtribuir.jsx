@@ -7,6 +7,7 @@ import BaseFront from '../utils/BaseFront.jsx';
 import { MotoContext } from '../context/MotoContext.jsx';
 import ImageUploader from './../components/Motos/ImageUploader';
 import EtapasMoto from '../components/Motos/EtapasMoto.jsx';
+import DadosGeraisModelo from '../components/Motos/DadosGeraisModelo.jsx';
 import ManualMoto from '../components/Motos/DadosManual.jsx';
 import Concluido from '../components/Motos/Concluido.jsx';
 
@@ -77,137 +78,48 @@ const CadastroMotoAtribuir = () => {
   };
 
   return (
-    <BaseFront nome="Cadastro de Modelo">
+    <BaseFront nome="Adicionar Modelo">
+      <EtapasMoto etapa={etapaAtual} />
+
       <Box
         sx={{
-          backgroundColor: '#E0E0E0',
-          pl: 16,
-          pr: 16,
-          pt: 4,
-          pb: 4,
+          boxShadow: 3,
+          p: { xs: 2, md: 4 },
           borderRadius: '16px',
           width: '100%',
-          maxWidth: '1300px',
+          maxWidth: '1000px',
+          minHeight: 400,
           margin: '0 auto',
           fontFamily: 'Roboto, sans-serif',
           overflow: 'visible',
+          marginTop: 8,
         }}
       >
-        <EtapasMoto etapa={etapaAtual} />
-
         <Box component="form" onSubmit={handleSubmit(onSubmit)} sx={{ width: '100%', mt: 2 }}>
-          
           {etapaAtual === 1 && (
-            <>
-              <Typography variant="h5" align="center" sx={{ mb: 4, color: '#000000', fontWeight: 400 }}>
-                Dados Gerais
-              </Typography>
-
-        <Grid container spacing={4}>
-          {/* LADO ESQUERDO: FOTO */}
-          <Grid>
-            <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-              <ImageUploader
-                arquivo={watch('imagem_moto')}
-                onFileSelect={(file) => setValue('imagem_moto', file, { shouldValidate: true })}
-              />
-
-              {errors.imagem_moto && (
-                <Typography
-                  variant="caption"
-                  color="error"
-                  sx={{ mt: 1, textAlign: 'center', fontSize: '0.9rem' }}
-                >
-                  {errors.imagem_moto.message}
-                </Typography>
-              )}
-            </Box>
-          </Grid>
-
-          {/* LADO DIREITO: INPUTS */}
-          <Stack spacing={1} sx={{ height: '100%', width: '25%', ml: 5 }}>
-            <Typography sx={labelStyle}>Modelo</Typography>
-            <TextField
-              {...register('modelo')}
-              fullWidth
-              placeholder="Inserir nome"
-              variant="outlined"
-              sx={inputSx}
-              error={!!errors.modelo}
-              helperText={errors.modelo?.message}
+            <DadosGeraisModelo
+              register={register}
+              setValue={setValue}
+              errors={errors}
+              watch={watch}
+              onNext={handleProximo}
+              onCancel={() => navigate(-1)}
+              modeloPaiSelecionado={null}
             />
-          </Stack>
+          )}
 
-          <Stack spacing={1} sx={{ height: '100%', width: '25%', ml: 5 }}>
-            <Typography sx={labelStyle}>Marca</Typography>
-            <TextField
-              {...register('marca')}
-              fullWidth
-              placeholder="Inserir Marca"
-              variant="outlined"
-              sx={inputSx}
-              error={!!errors.marca}
-              helperText={errors.marca?.message}
+          {etapaAtual === 2 && (
+            <ManualMoto
+              setValue={setValue}
+              watch={watch}
+              onBack={() => setEtapaAtual(1)}
+              onNext={handleProximo}
+              loading={loading}
             />
+          )}
 
-            <Typography sx={labelStyle}>Ano</Typography>
-            <TextField
-              {...register('ano')}
-              fullWidth
-              placeholder="YYYY"
-              variant="outlined"
-              sx={inputSx}
-              error={!!errors.ano}
-              helperText={errors.ano?.message}
-            />
-          </Stack>
-        </Grid>
-
-        {/* RODAPÉ: BOTÕES */}
-        <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 4, gap: 2 }}>
-          <Button
-            onClick={() =>navigate('/listagemMotos')}
-            variant="outlined"
-            sx={{
-              color: '#333',
-              borderColor: '#999',
-              borderRadius: '8px',
-              textTransform: 'none',
-              px: 4,
-            }}
-          >
-            Cancelar
-          </Button>
-          <Button
-            onClick={handleProximo}
-            variant="contained"
-            sx={{
-              backgroundColor: '#666',
-              color: 'white',
-              borderRadius: '8px',
-              textTransform: 'none',
-              px: 4,
-              '&:hover': { backgroundColor: '#444' },
-            }}
-          >
-            Próximo
-          </Button>
+          {etapaAtual === 3 && <Concluido />}
         </Box>
-        </>
-      )}
-
-      {etapaAtual === 2 && (
-        <ManualMoto
-          setValue={setValue}
-          watch={watch}
-          onBack={() => setEtapaAtual(1)}
-          loading={loading}
-        />
-      )}
-
-      {etapaAtual === 3 && <Concluido />}
-      
-      </Box>
       </Box>
     </BaseFront>
   );
