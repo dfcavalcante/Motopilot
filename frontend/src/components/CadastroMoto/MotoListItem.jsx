@@ -3,7 +3,7 @@ import { Box, Typography, IconButton, Avatar } from '@mui/material';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 
 const MotoListItem = ({ moto, onClick, onInfoClick }) => {
-  const numeroSerie = moto.numero_serie || moto.modelo || 'HNFDAF323243';
+  const numeroSerie = moto.numeroSerie
   const status = moto.status || moto.estado || 'Manutenção';
   const colaborador = moto.colaborador_nome || '';
 

@@ -1,15 +1,16 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import { Box, Stack, Divider, Typography, IconButton, Button, Chip } from '@mui/material';
 import Header from '../../utils/Header.jsx';
 import SideBar from '../../utils/SideBar.jsx';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { useNavigate } from 'react-router-dom';
 import { ChatContext } from '../../context/ChatContext.jsx';
-import AtribuicaoMotoCard from './AtribuicaoMotoCard';
+import { MotoContext } from '../../context/MotoContext.jsx';
 
-const InformacoesMoto = ({ moto, onBack }) => {
+const InformacoesMoto = ({ moto, onBack}) => {
   const navigate = useNavigate();
   const { iniciarNovoChat } = React.useContext(ChatContext);
+  const { excluirMoto, atualizarMoto} = React.useContext(MotoContext);
   const fallbackSrc = '/images/Motopilot.jpeg';
   const estadoAtualMoto = String(moto?.estado || '')
     .trim()
@@ -55,6 +56,18 @@ const InformacoesMoto = ({ moto, onBack }) => {
         };
     }
   };
+
+  const handleEditar = () => {
+    atualizarMoto(moto.id);
+
+  };
+
+  const handleExcluir = () => {
+    if (window.confirm('Tem certeza que deseja excluir esta moto? Esta ação não pode ser desfeita.')) {
+      excluirMoto(moto.id);
+      navigate('/listagemMotos');
+    }
+  }
 
   return (
     <Box
@@ -109,7 +122,6 @@ const InformacoesMoto = ({ moto, onBack }) => {
                     backgroundColor: '#FEDCDB',
                     width: 40,
                     height: 40,
-                    '&:hover': { backgroundColor: 'rgba(0, 0, 0, 0.2)' },
                   }}
                 >
                   <ArrowBackIcon />
@@ -117,33 +129,20 @@ const InformacoesMoto = ({ moto, onBack }) => {
 
                 {/*Botão de editar*/}
                 <IconButton
-                  onClick={onBack}
+                  onClick={handleEditar()}
                   sx={{
                     color: '#000000',
                     borderRadius: 2,
                     backgroundColor: '#FEDCDB',
                     width: 40,
                     height: 40,
-                    '&:hover': { backgroundColor: 'rgba(0, 0, 0, 0.2)' },
                   }}
                 >
                   <img src="/images/lapis.png" width={15} height={15} />
                 </IconButton>
 
                 {/*Botão de deletar*/}
-                <IconButton
-                  onClick={onBack}
-                  sx={{
-                    color: '#000000',
-                    borderRadius: 2,
-                    backgroundColor: '#FEDCDB',
-                    width: 40,
-                    height: 40,
-                    '&:hover': { backgroundColor: 'rgba(0, 0, 0, 0.2)' },
-                  }}
-                >
-                  <img src="/images/lixeira.png" width={15} height={15} />
-                </IconButton>
+
               </Box>
 
               <Typography sx={{ fontSize: 30, fontWeight: 500, textAlign: 'center' }}>

@@ -1,14 +1,16 @@
 import React, { useState } from 'react';
-import { Box, Typography } from '@mui/material';
+import { Box, Typography, IconButton } from '@mui/material';
 import BaseFront from '../utils/BaseFront';
 import { HookListagemMotosModelo } from '../hooks/HookListagemMotosModelo';
 import InformacoesMoto from '../components/Motos/InformacoesMoto';
-
+import { useNavigate } from 'react-router-dom';
 import ListToolbar from '../components/CadastroMoto/ListToolBar';
 import MotoListItem from '../components/CadastroMoto/MotoListItem';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 const ListagemMotos = () => {
   const [motoEmDetalhe, setMotoEmDetalhe] = useState(null);
+  const navigate = useNavigate();
 
   const {
     input,
@@ -28,6 +30,19 @@ const ListagemMotos = () => {
 
   return (
     <BaseFront icone={null} width={null} height={null} nome={'Motos'}>
+      <IconButton
+        onClick={() => navigate('/listagemMotos')}
+        sx={{
+          color: '#000000',
+          borderRadius: 2,
+          backgroundColor: '#FEDCDB',
+          width: 40,
+          height: 40,
+        }}
+      >
+        <ArrowBackIcon />
+      </IconButton>
+      
       <Box sx={{ width: '100%', margin: '0 auto', p: 3 }}>
         {/* Toolbar Superior (Busca e Ordenação) */}
         <ListToolbar
