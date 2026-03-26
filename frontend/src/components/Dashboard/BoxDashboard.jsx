@@ -1,6 +1,7 @@
 import React from 'react';
 import { Box, Stack, Typography } from '@mui/material';
 
+{/* Componente de caixa para o dashboard, usado para mostrar os números principais das motos(andamento, totais, concluidas, etc) */}
 const BoxDashboard = ({ icone, titulo, descricao, numero }) => {
   return (
     <Box
@@ -19,7 +20,7 @@ const BoxDashboard = ({ icone, titulo, descricao, numero }) => {
         {/*Icone e número um do lado do outro*/}
         <Stack direction="row" alignItems="center" justifyContent="space-between" gap={2}>
           <Box
-            bgcolor="#D9D9D9"
+            boxShadow={1}
             height={40}
             width={40}
             padding={3}

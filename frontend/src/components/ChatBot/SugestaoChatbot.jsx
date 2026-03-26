@@ -7,9 +7,9 @@ const SugestaoChatbot = ({ sugestao, onClick }) => {
         <Box 
             onClick={() => onClick && onClick(sugestao)}
             sx={{
-                backgroundColor: "#D9D9D9",
+                boxShadow:1,
                 borderRadius: "16px",
-                width: '352px', 
+                width: '350px', 
                 height: 40,   
                 display: "flex",
                 justifyContent: "center",

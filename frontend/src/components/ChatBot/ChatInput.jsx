@@ -41,6 +41,10 @@ const ChatInput = ({ input, setInput, onSend, disabled = false }) => {
             alignItems: 'flex-end',
             backgroundColor: 'rgba(255, 219, 219, 0.48)',
           },
+          '& .MuiInputBase-input::placeholder': {
+            color: '#000000',
+            opacity: 1, 
+          },
         }}
         InputProps={{
           endAdornment: (
