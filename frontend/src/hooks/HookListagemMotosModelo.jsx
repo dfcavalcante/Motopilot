@@ -30,7 +30,7 @@ export const HookListagemMotosModelo = () => {
   const [mecanicoSelecionado, setMecanicoSelecionado] = useState({});
 
   const role = String(user?.funcao || '').toLowerCase();
-  const isGerente = role === 'gerente' || role === 'administrador';
+  const isGerente = role === 'gerente' || role === 'administrador' || role === 'admin';
   const isTecnico = role === 'tecnico' || role === 'técnico';
 
   useEffect(() => {
@@ -130,10 +130,10 @@ export const HookListagemMotosModelo = () => {
 
   const getNomeMecanico = (moto) => {
     const mecanicoId = moto?.mecanicoId ?? moto?.mecanico_id;
-    if (!mecanicoId) return 'Não atribuído';
+    if (!mecanicoId) return '';
 
     const mecanico = usuarios.find((u) => Number(u.id) === Number(mecanicoId));
-    return mecanico?.nome || `ID ${mecanicoId}`;
+    return mecanico?.nome || '';
   };
 
   return {

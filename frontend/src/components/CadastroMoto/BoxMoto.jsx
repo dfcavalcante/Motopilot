@@ -29,15 +29,14 @@ const BoxMoto = ({ moto, onEnter, tipo = 'filha', mecanicoNome }) => {
   return (
     <Box
       sx={{
-        border: '2px solid #AEAEAE',
         borderRadius: '16px',
         height: '340px',
         width: '336px',
-        backgroundColor: '#AEAEAE',
         overflow: 'hidden',
         display: 'flex',
         flexDirection: 'column',
         position: 'relative',
+        boxShadow: 3
       }}
     >
       {/* Imagem de Fundo */}
@@ -52,34 +51,6 @@ const BoxMoto = ({ moto, onEnter, tipo = 'filha', mecanicoNome }) => {
         style={{ width: '100%', height: '189px', objectFit: 'cover', display: 'block' }}
       />
 
-      {/* Badge de ativo ou n ativo */}
-      <Box
-        sx={{
-          position: 'absolute',
-          top: '12px',
-          right: '12px',
-          bgcolor: '#D9D9D9',
-          borderRadius: '16px',
-          px: 1.5,
-          minHeight: '24px',
-          minWidth: '118px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}
-      >
-        <Typography
-          variant="caption"
-          sx={{
-            color: 'black',
-            fontSize: '12px',
-            lineHeight: 1,
-            whiteSpace: 'nowrap',
-          }}
-        >
-          {estado}
-        </Typography>
-      </Box>
 
       {/* Conteúdo inferior */}
       <Box
@@ -96,13 +67,8 @@ const BoxMoto = ({ moto, onEnter, tipo = 'filha', mecanicoNome }) => {
             {titulo}
           </Typography>
           <Typography variant="body2" color="#484848">
-            {subtitulo}
+            Aq tem q adicionar a quantidade de motos que tem desse modelo, ver no backend
           </Typography>
-          {tipo !== 'pai' && (
-            <Typography variant="body2" color="#484848" noWrap sx={{ maxWidth: '100%' }}>
-              Mecânico: {mecanicoNome || 'Não atribuído'}
-            </Typography>
-          )}
         </Box>
 
         <Button
@@ -110,14 +76,12 @@ const BoxMoto = ({ moto, onEnter, tipo = 'filha', mecanicoNome }) => {
           onClick={() => onEnter(moto)}
           sx={{
             mt: 'auto',
-            bgcolor: '#780101',
-            color: 'black',
+            bgcolor: '#F30000',
+            color: 'white',
             width: '80%',
             borderRadius: '16px',
             textTransform: 'none',
             alignSelf: 'center',
-            fontWeight: 'bold',
-            '&:hover': { bgcolor: '#c4c4c4' },
           }}
         >
           Entrar

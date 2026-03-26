@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Text, ForeignKey
+from sqlalchemy import Column, Integer, String, Text, ForeignKey, UniqueConstraint
 from app.database import Base
 from sqlalchemy.orm import relationship
 
@@ -7,11 +7,14 @@ class ModeloMoto(Base):
     __tablename__ = "modelo_motos"
 
     id = Column(Integer, primary_key=True, index=True)
-    #Os dois tem que ser únicos
-    marca = Column(String(50), nullable=False, unique=True)
-    modelo = Column(String(100), nullable=False, unique=True)
+    marca = Column(String(50), nullable=False)
+    modelo = Column(String(100), nullable=False)
+    ano = Column(Integer, nullable=False)
     
     imagem_moto= Column(String(255), nullable=True)
+    manual_pdf_path = Column(String(255), nullable=True)
+
+    __table_args__ = (UniqueConstraint('marca', 'modelo', 'ano', name='uq_marca_modelo_ano'),)
 
 
 class Moto(Base):

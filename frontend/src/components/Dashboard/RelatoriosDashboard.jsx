@@ -4,7 +4,7 @@ import { Box, Stack, Typography } from '@mui/material';
 const BoxRelatorio = ({ icone, numero, nome, descricao }) => {
   return (
     <Box
-      minWidth={200}
+      flex={1} 
       height={'100%'}
       backgroundColor={'#ffffff'}
       borderRadius={4}
@@ -12,10 +12,9 @@ const BoxRelatorio = ({ icone, numero, nome, descricao }) => {
       display="flex"
       flexDirection="column"
       alignItems="center"
-      justifyContent="space-between"
-      gap={4}
+      justifyContent="space-between" 
     >
-      {/* Container do Ícone com fundo cinza */}
+      {/*Dps vai ter q mudar a cor desse container */}
       <Box
         backgroundColor="#E4E4E4"
         padding={1.5}
@@ -29,7 +28,6 @@ const BoxRelatorio = ({ icone, numero, nome, descricao }) => {
         {icone}
       </Box>
 
-      {/* Número com bastante destaque */}
       <Typography fontSize={50} fontWeight="600" color="#000000" lineHeight={1}>
         {numero}
       </Typography>
@@ -115,9 +113,9 @@ const RelatoriosDashboards = ({
       display={'flex'}
       flexDirection={'column'}
       borderRadius={4}
-      padding={1}
+      padding={2}
     >
-      <Box justifyContent={'center'} display={'flex'} flexDirection={'row'} gap={2}>
+      <Box flex={1} width="100%" display={'flex'} flexDirection={'row'} gap={2}>
         {relatorios.map((relatorio, index) => (
           <BoxRelatorio
             key={index}

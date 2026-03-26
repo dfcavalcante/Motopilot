@@ -1,14 +1,18 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, File, UploadFile
 from app.services.report_service import ReportService
 from app.schemas.report_schema import ReportBase, ReportFilter, ReportResponse, ReportUpdate
 from app.database import get_db
 from app.services.jwt_service import get_current_user
 from app.models.user_model import User
 from sqlalchemy.orm import Session
+import os, uuid, shutil
 
 router = APIRouter(prefix="/relatorio", tags=['Relatório'])
 
 report_service = ReportService()
+
+UPLOAD_DIR_RELATORIOS = os.path.join("manuals", "relatorios")
+os.makedirs(UPLOAD_DIR_RELATORIOS, exist_ok=True)
 
 @router.post("/", response_model=ReportResponse)
 def criar_relatorio_endpoint(relatorio: ReportBase, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
@@ -78,3 +82,22 @@ def graficos_relatorio_endpoint(db: Session = Depends(get_db)):
 @router.get("/graficos/pecas")
 def graficos_pecas_endpoint(db: Session = Depends(get_db)):
     return report_service.graficos_pecas(db)
+
+# --- Upload de imagem para relatório ---
+@router.patch("/{report_id}/imagem", response_model=ReportResponse)
+def upload_imagem_relatorio_endpoint(
+    report_id: int,
+    imagem: UploadFile = File(...),
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    safe_name = imagem.filename.replace(" ", "_")
+    filename = f"{uuid.uuid4()}_{safe_name}"
+    file_path = os.path.join(UPLOAD_DIR_RELATORIOS, filename)
+    with open(file_path, "wb") as buffer:
+        shutil.copyfileobj(imagem.file, buffer)
+
+    resultado = report_service.atualizar_imagem(db, report_id, file_path)
+    if not resultado:
+        raise HTTPException(status_code=404, detail="Relatório não encontrado")
+    return resultado

@@ -41,38 +41,39 @@ class Moto_service:
 
     def buscar_moto_por_id(self, db: Session, id: int) -> Optional[Moto]:
         return db.scalars(select(Moto).where(Moto.id == id)).first()
+    
+    def _buscar_modelo_moto(self, db: Session, modelo_moto_id: int) -> Optional[ModeloMoto]:
+        return db.scalars(
+            select(ModeloMoto).where(ModeloMoto.id == modelo_moto_id)
+        ).first()
 
     #Deleta a moto e seu manual associado
     def deletar_moto(self, db: Session, id: int) -> bool:
         db_moto = db.scalars(select(Moto).where(Moto.id == id)).first()
-
         if not db_moto:
             return False
-        
+
+        # Captura dados antes de deletar
+        modelo_moto = self._buscar_modelo_moto(db, db_moto.modelo_moto_id)
+
         nome_arquivo = db_moto.manual_pdf_path
         caminho_arquivo = os.path.join(os.getcwd(), nome_arquivo) if nome_arquivo else None
-
         if nome_arquivo and caminho_arquivo and os.path.exists(caminho_arquivo):
             os.remove(caminho_arquivo)
-        
+
         db.delete(db_moto)
         db.commit()
-        
-        # Obter dados do modelo para notificação
-        modelo_moto = self.buscar_moto_por_id(db, db_moto.moto_id)
+
         if modelo_moto:
             NotificationService(db).notificar_moto("deletada", id, modelo_moto.marca, modelo_moto.modelo)
         return True
 
     def atualizar_moto(self, db: Session, id: int, moto_data: MotoUpdate) -> Optional[MotoResponse]:
         db_moto = db.scalars(select(Moto).where(Moto.id == id)).first()
-
         if not db_moto:
             return None
 
         moto_dict = moto_data.model_dump(exclude_unset=True)
-
-        # `marca` e `modelo` pertencem ao ModeloMoto; evita erro de property sem setter em Moto.
         moto_dict.pop("marca", None)
         moto_dict.pop("modelo", None)
 
@@ -82,9 +83,8 @@ class Moto_service:
         db.add(db_moto)
         db.commit()
         db.refresh(db_moto)
-        
-        # Obter dados do modelo para notificação
-        modelo_moto = self.buscar_moto_por_id(db, db_moto.moto_id)
+
+        modelo_moto = self._buscar_modelo_moto(db, db_moto.modelo_moto_id)
         if modelo_moto:
             NotificationService(db).notificar_moto("atualizada", db_moto.id, modelo_moto.marca, modelo_moto.modelo)
         return db_moto

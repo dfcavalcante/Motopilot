@@ -15,7 +15,22 @@ const BarraPesquisa = ({ input, setInput, onSend }) => {
           height: '36px',
           '& .MuiOutlinedInput-root': {
             borderRadius: '16px',
-            '& fieldset': { borderRadius: '16px' },
+            boxShadow: '3',
+            '& fieldset': {
+              borderRadius: '16px',
+              borderColor: 'transparent !important',
+            },
+            '&:hover fieldset': {
+              borderColor: 'transparent',
+            },
+            '&.Mui-focused fieldset': {
+              borderColor: 'transparent',
+            },
+            backgroundColor: 'rgba(255, 219, 219, 0.48)',
+          },
+          '& .MuiInputBase-input::placeholder': {
+            color: '#6a6a6a',
+            opacity: 1,
           },
         }}
         InputProps={{

@@ -53,14 +53,14 @@ const Usuarios = () => {
 
       {/* --- Área da Listagem --- */}
       <Box
-        backgroundColor="#DBDBDB"
+        backgroundColor="#ffffff"
         sx={{
           flexGrow: 100,
           width: '100%',
           borderRadius: '16px',
           boxSizing: 'border-box',
           overflowY: 'auto',
-          mt: 2, 
+          mt: 2,
           ...(viewMode === 'grid'
             ? {
                 display: 'grid',
@@ -73,8 +73,10 @@ const Usuarios = () => {
             : {
                 display: 'flex',
                 flexDirection: 'column',
-                paddingLeft: 4,
-                paddingRight: 4,
+                alignItems: 'stretch',
+                paddingLeft: { xs: 2, sm: 3, md: 5 },
+                paddingRight: { xs: 1, sm: 2, md: 3 },
+                gap: 1,
               }),
         }}
       >

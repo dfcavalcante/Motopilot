@@ -1,10 +1,30 @@
 import { jsPDF } from 'jspdf';
 
 /**
+ * Carrega uma imagem de URL e retorna como base64 data URL.
+ */
+function loadImageAsDataUrl(url) {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = img.naturalWidth;
+      canvas.height = img.naturalHeight;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0);
+      resolve({ dataUrl: canvas.toDataURL('image/jpeg', 0.85), w: img.naturalWidth, h: img.naturalHeight });
+    };
+    img.onerror = () => resolve(null);
+    img.src = url;
+  });
+}
+
+/**
  * Gera e baixa o PDF de um relatório de manutenção.
  * @param {object} report - O objeto completo do relatório (ReportResponse).
  */
-export default function generateReportPdf(report) {
+export default async function generateReportPdf(report) {
   const doc = new jsPDF({ unit: 'mm', format: 'a4' });
   const pageWidth = doc.internal.pageSize.getWidth();
   const marginLeft = 20;
@@ -80,11 +100,11 @@ export default function generateReportPdf(report) {
 
   function drawStatusBadge(status){
     const statusColors = {
-      'concluído': [76, 175, 80], // Verde
-      'pendente': [255, 193, 7],   // Amarelo
+      'concluído': [76, 175, 80],
+      'pendente': [255, 193, 7],
     }
 
-    const color = statusColors[status] || [158, 158, 158]; // Cinza para status desconhecido
+    const color = statusColors[status] || [158, 158, 158];
     
     doc.setFillColor(...color);
     const badgeWidth = doc.getTextWidth(status) + 6;
@@ -175,7 +195,7 @@ export default function generateReportPdf(report) {
       : [];
 
   if (pecasLista.length > 0) {
-    pecasLista.forEach((peca, i) => {
+    pecasLista.forEach((peca) => {
       drawValue(`• ${peca}`, { indent: 4 });
     });
   } else {
@@ -196,7 +216,32 @@ export default function generateReportPdf(report) {
   //  5. ANEXOS (Evidências Fotográficas)
   // ═══════════════════════════════════════════════════
   drawSectionTitle('5', 'Anexos');
-  drawValue(report.fotos|| 'Nenhuma evidência fotográfica anexada.');
+
+  if (report.imagem_path) {
+    try {
+      const imgUrl = `http://localhost:8000/${report.imagem_path}`;
+      const result = await loadImageAsDataUrl(imgUrl);
+      if (result) {
+        const maxW = 120;
+        const maxH = 80;
+        let imgW = maxW;
+        let imgH = (result.h / result.w) * maxW;
+        if (imgH > maxH) {
+          imgH = maxH;
+          imgW = (result.w / result.h) * maxH;
+        }
+        checkPageBreak(imgH + 4);
+        doc.addImage(result.dataUrl, 'JPEG', marginLeft, y, imgW, imgH);
+        y += imgH + 4;
+      } else {
+        drawValue('Imagem anexada (não foi possível carregar para o PDF).');
+      }
+    } catch {
+      drawValue('Imagem anexada (erro ao carregar).');
+    }
+  } else {
+    drawValue('Nenhuma evidência fotográfica anexada.');
+  }
 
   drawDivider();
 

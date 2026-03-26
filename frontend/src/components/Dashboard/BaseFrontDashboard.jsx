@@ -10,7 +10,6 @@ const BaseFrontDashboard = ({ children }) => {
       sx={{
         display: 'flex',
         height: '100vh',
-        bgcolor: '#989898',
         p: '16px',
         boxSizing: 'border-box',
       }}
@@ -32,8 +31,8 @@ const BaseFrontDashboard = ({ children }) => {
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',
-              p: 2, //mudei o padding da original para caber as boxes do dashboard
-              overflow: 'hidden',
+              p: 2,
+              boxShadow: '6',
             }}
           >
             <Box

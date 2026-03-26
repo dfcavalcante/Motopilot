@@ -2,7 +2,9 @@ import React from 'react';
 import { Box, Typography, IconButton, Menu, MenuItem } from '@mui/material';
 import BarraPesquisa from '../CadastroMoto/BarraPesquisa';
 
-{  /* Componente de toolbar para a página de usuários, contendo os controles de visualização, ordenação e barra de pesquisa */}
+{
+  /* Componente de toolbar para a página de usuários, contendo os controles de visualização, ordenação e barra de pesquisa */
+}
 
 export const Toolbar = ({
   viewMode,
@@ -22,13 +24,27 @@ export const Toolbar = ({
         <Box display="flex" alignItems="center" gap={1}>
           <IconButton
             onClick={() => setViewMode('grid')}
-            sx={{ border: viewMode === 'grid' ? '1px solid #666' : '1px solid #E0E0E0', borderRadius: '4px', width: '24px', height: '24px' }}
+            sx={{
+              border: viewMode === 'grid' ? '1px solid #B70000' : '1px solid #F30000',
+              borderRadius: '4px',
+              width: '24px',
+              height: '24px',
+              backgroundColor: viewMode === 'grid' ? '#F30000' : '#FFEAEA',
+              '&:hover': { backgroundColor: '#FFD8D8' },
+            }}
           >
             <img src="/images/Organizar1.png" alt="Grid" height={14} />
           </IconButton>
           <IconButton
             onClick={() => setViewMode('list')}
-            sx={{ border: viewMode === 'list' ? '1px solid #666' : '1px solid #a5a5a5', borderRadius: '4px', width: '24px', height: '24px' }}
+            sx={{
+              border: viewMode === 'list' ? '1px solid #B70000' : '1px solid #F30000',
+              borderRadius: '4px',
+              width: '24px',
+              height: '24px',
+              backgroundColor: viewMode === 'list' ? '#F30000' : '#FFEAEA',
+              '&:hover': { backgroundColor: '#FFD8D8' },
+            }}
           >
             <img src="/images/Organizar2.png" alt="List" height={14} />
           </IconButton>
@@ -37,8 +53,18 @@ export const Toolbar = ({
 
       <Box display="flex" alignItems="center" gap={1}>
         <Typography sx={{ fontWeight: '500', color: 'grey.900' }}>Ordenar</Typography>
-        <IconButton onClick={handleClickOrdernar} sx={{ width: 20, height: 20, borderRadius: '4px', border: '1px solid #E0E0E0', backgroundColor: 'white' }}>
-          <img src="/images/linhaPraBaixo.png" alt="Ordenar" style={{ width: '10px' }} />
+        <IconButton
+          onClick={handleClickOrdernar}
+          sx={{
+            width: 20,
+            height: 20,
+            borderRadius: '4px',
+            border: '1px solid #F30000',
+            backgroundColor: '#FFEAEA',
+            '&:hover': { backgroundColor: '#FFD8D8' },
+          }}
+        >
+          <img src="/images/setaChat.png" alt="Ordenar" style={{ width: '10px' }} />
         </IconButton>
         <Menu anchorEl={anchorEl} open={openMenu} onClose={handleCloseMenu}>
           <MenuItem onClick={() => handleSelectOrder('AZ')}>Ordenar A - Z</MenuItem>

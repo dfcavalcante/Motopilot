@@ -5,10 +5,16 @@ import { getUserInitials, getAvatarColor } from '../../utils/avatarUtils';
 const InformacoesUsuario = ({ usuario, onEdit, onDelete, atualizando, setAtualizando }) => {
   const iniciais = getUserInitials(usuario?.nome, usuario?.email);
   const corAvatar = getAvatarColor(usuario?.nome, usuario?.email);
+  const statusNormalizado = String(usuario?.status ?? '')
+    .trim()
+    .toLowerCase();
+  const usuarioAtivo =
+    usuario?.ativo === true || statusNormalizado === 'ativo' || statusNormalizado === 'active';
 
   return (
     <Box
-      backgroundColor="#B2B2B2"
+      backgroundColor="#ffffff"
+      boxShadow={3}
       width="100%"
       maxWidth={600}
       height={130}
@@ -17,7 +23,22 @@ const InformacoesUsuario = ({ usuario, onEdit, onDelete, atualizando, setAtualiz
       display="flex"
       alignItems="center"
       gap={2}
+      position="relative"
     >
+      {/* Indicador de status no canto superior direito */}
+      <Box
+        sx={{
+          position: 'absolute',
+          top: 25,
+          right: 25,
+          width: 24,
+          height: 24,
+          borderRadius: '50%',
+          backgroundColor: '#22B14C',
+          border: '2px solid #fff',
+        }}
+      />
+
       {/* Ícone à esquerda */}
       <Box
         sx={{

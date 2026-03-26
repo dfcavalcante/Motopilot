@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Stack, Typography, Checkbox } from '@mui/material';
+import { Box, Stack, Typography, Checkbox} from '@mui/material';
 
 const BoxNotificacao = ({ check, titulo, descricao, data, onToggleRead }) => {
 
@@ -7,7 +7,7 @@ const BoxNotificacao = ({ check, titulo, descricao, data, onToggleRead }) => {
     <Box
       width={1450}
       height={100}
-      bgcolor={check ? '#F3F3F3' : 'white'}
+      bgcolor={check ? '#ffffff' : '#FFE4E4'}
       borderRadius={3}
       p={4}
       display="flex"
@@ -18,6 +18,7 @@ const BoxNotificacao = ({ check, titulo, descricao, data, onToggleRead }) => {
       boxSizing="border-box"
       marginLeft={4}
       marginBottom={2}
+      boxShadow={2}
     >
       <Checkbox
         checked={check} 

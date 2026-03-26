@@ -1,4 +1,4 @@
-from sqlalchemy import Boolean, Column, DateTime, Integer, String, Text
+from sqlalchemy import Boolean, Column, DateTime, Integer, String, Text, ForeignKey
 from sqlalchemy.sql import func
 
 from app.database import Base
@@ -15,3 +15,5 @@ class Notification(Base):
     mensagem = Column(Text, nullable=False)
     lido = Column(Boolean, nullable=False, default=False, server_default="0", index=True)
     criado_em = Column(DateTime(timezone=True), server_default=func.now(), nullable=False, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=True, index=True)
+    perfil_destino = Column(String(30), nullable=True, index=True)

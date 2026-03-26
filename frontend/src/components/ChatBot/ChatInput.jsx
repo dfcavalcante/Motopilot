@@ -26,11 +26,24 @@ const ChatInput = ({ input, setInput, onSend, disabled = false }) => {
         onChange={(e) => setInput(e.target.value)}
         onKeyDown={handleKeyDown}
         sx={{
-          
           '& .MuiOutlinedInput-root': {
             borderRadius: '16px',
-            '& fieldset': { borderRadius: '16px' },
+            '& fieldset': {
+              borderRadius: '16px',
+              borderColor: 'transparent !important',
+            },
+            '&:hover fieldset': {
+              borderColor: 'transparent',
+            },
+            '&.Mui-focused fieldset': {
+              borderColor: 'transparent',
+            },
             alignItems: 'flex-end',
+            backgroundColor: 'rgba(255, 219, 219, 0.48)',
+          },
+          '& .MuiInputBase-input::placeholder': {
+            color: '#6a6a6a',
+            opacity: 1, 
           },
         }}
         InputProps={{
@@ -42,7 +55,7 @@ const ChatInput = ({ input, setInput, onSend, disabled = false }) => {
                 width="20"
                 style={{
                   cursor: disabled ? 'not-allowed' : 'pointer',
-                  opacity: disabled ? 0.5 : 1,
+                  opacity: 1,
                 }}
                 onClick={() => {
                   if (!disabled) onSend();

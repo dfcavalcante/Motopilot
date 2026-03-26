@@ -2,7 +2,7 @@ import os
 import pymupdf4llm
 from langchain_text_splitters import MarkdownHeaderTextSplitter, RecursiveCharacterTextSplitter
 
-def processar_manual_unico(file_path: str, moto_id: int, modelo: str, ano: str):
+def processar_manual_unico(file_path: str, modelo_id: int, modelo: str, ano: str):
     """
     Processador com 'Memória de Contexto'.
     Ele carrega o título da seção anterior para dar significado a tabelas soltas.
@@ -115,7 +115,7 @@ def processar_manual_unico(file_path: str, moto_id: int, modelo: str, ano: str):
                 
                 meta = sub_split.metadata.copy()
                 meta["source"] = os.path.basename(file_path)
-                meta["moto_id"] = moto_id
+                meta["modelo_id"] = modelo_id
                 meta["modelo"] = modelo
                 meta["chunk_index"] = chunk_global_index
                 metadatas_finais.append(meta)
@@ -133,19 +133,19 @@ def processar_manuais(pasta_manuais: str):
     Processa todos os manuais registrados no banco de dados.
     """
     from app.database import SessionLocal
-    from app.models.moto_model import Moto
+    from app.models.moto_model import ModeloMoto
 
     db = SessionLocal()
     try:
-        motos = db.query(Moto).all()
-        print(f"🔎 Encontradas {len(motos)} motos no banco.")
+        modelos = db.query(ModeloMoto).all()
+        print(f"🔎 Encontrados {len(modelos)} modelos no banco.")
 
         todos_chunks = []
         todos_metadatas = []
 
-        for moto in motos:
+        for moto in modelos:
             if not moto.manual_pdf_path:
-                print(f"⚠️ Moto {moto.modelo} sem manual cadastrado.")
+                print(f"⚠️ Modelo {moto.modelo} sem manual cadastrado.")
                 continue
 
             # Garante que o caminho está correto (relativo ou absoluto)

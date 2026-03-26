@@ -132,7 +132,15 @@ class ChatService:
                                     break
                             break
             
-            dados_resumo["pecas"] = list(set(pecas_defeituosas))  # Remove duplicatas
+            
+            pecas_llm = dados_resumo.get("pecas", [])
+            if isinstance(pecas_llm, list):
+                pecas_defeituosas.extend(pecas_llm)
+            
+            # Remove duplicatas (ignorando maiúsculas/minúsculas)
+            pecas_finais = list({p.lower(): p for p in pecas_defeituosas}.values())
+            
+            dados_resumo["pecas"] = pecas_finais
             return dados_resumo
             
         # Fallback ultra-seguro

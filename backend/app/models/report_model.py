@@ -32,6 +32,5 @@ class Report(Base):
     cliente = relationship("User")
     moto = relationship("Moto", back_populates="relatorios")
 
-    # TODO: fotos e assinatura digital
+    # TODO: fotos
     imagem_path = Column(String(255), nullable=True)
-    assinatura_path = Column(String(255), nullable=True)

@@ -10,7 +10,7 @@ const BaseFrontChat = ({ children }) => {
       sx={{
         display: 'flex',
         height: '100vh',
-        bgcolor: '#989898',
+        boxShadow: 3,
         p: '16px',
         boxSizing: 'border-box',
         justifyItems: 'center',
@@ -35,7 +35,7 @@ const BaseFrontChat = ({ children }) => {
               flexDirection: 'column',
               alignItems: 'center',
               p: 4,
-              overflow: 'hidden',
+              boxShadow: '6',
             }}
           >
             <Box

@@ -7,20 +7,43 @@ export const LoginProvider = ({ children }) => {
   const [isAuthInitializing, setIsAuthInitializing] = useState(true);
 
   useEffect(() => {
-    try {
-      const storedUser = localStorage.getItem('@MotoPilot:user');
-      const storedToken = localStorage.getItem('@MotoPilot:token');
-      if (storedUser && storedToken) {
-        setUser(JSON.parse(storedUser));
+    const initAuth = async () => {
+      try {
+        const storedUser = localStorage.getItem('@MotoPilot:user');
+        const storedToken = localStorage.getItem('@MotoPilot:token');
+
+        if (!storedUser || !storedToken) {
+          setUser(null);
+          return;
+        }
+
+        const response = await fetch('http://localhost:8000/me', {
+          headers: {
+            Authorization: `Bearer ${storedToken}`,
+          },
+        });
+
+        if (!response.ok) {
+          localStorage.removeItem('@MotoPilot:user');
+          localStorage.removeItem('@MotoPilot:token');
+          setUser(null);
+          return;
+        }
+
+        const validatedUser = await response.json();
+        localStorage.setItem('@MotoPilot:user', JSON.stringify(validatedUser));
+        setUser(validatedUser);
+      } catch (error) {
+        console.error('Erro ao restaurar sessão do usuário:', error);
+        localStorage.removeItem('@MotoPilot:user');
+        localStorage.removeItem('@MotoPilot:token');
+        setUser(null);
+      } finally {
+        setIsAuthInitializing(false);
       }
-    } catch (error) {
-      console.error('Erro ao restaurar sessão do usuário:', error);
-      localStorage.removeItem('@MotoPilot:user');
-      localStorage.removeItem('@MotoPilot:token');
-      setUser(null);
-    } finally {
-      setIsAuthInitializing(false);
-    }
+    };
+
+    initAuth();
   }, []);
 
   const login = async (email, senha) => {

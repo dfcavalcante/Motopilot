@@ -20,7 +20,8 @@ from app.utils.init_db import (
     garantir_coluna_mecanico_id_motos,
     garantir_coluna_status_relatorio,
     garantir_coluna_imagem_modelo_motos,
-    migrar_motos_para_modelo_moto_id
+    migrar_motos_para_modelo_moto_id,
+    garantir_coluna_imagem_path_relatorios
 )
 
 # --- IMPORTS DAS ROTAS ---
@@ -47,6 +48,21 @@ app = FastAPI(
     version=Settings.API_VERSION
 )
 
+# --- CONFIGURAÇÃO DE CORS ---
+origins = [
+    "http://localhost:5173",
+    "http://localhost:3000",
+    "http://127.0.0.1:5173",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,  # Usar lista específica (não pode ser "*" com credentials=True)
+    allow_methods=["*"],
+    allow_headers=["*"],
+    allow_credentials=True
+)
+
 if os.path.exists("manuals"):
     app.mount("/manuals", StaticFiles(directory="manuals"), name="manuals")
 
@@ -63,6 +79,7 @@ def on_startup():
         garantir_coluna_lido_notificacoes(db)
         garantir_coluna_mecanico_id_motos(db)
         garantir_coluna_status_relatorio(db)
+        garantir_coluna_imagem_path_relatorios(db)
         garantir_coluna_imagem_modelo_motos(db)
         migrar_motos_para_modelo_moto_id(db)
         criar_cargos_iniciais(db)
@@ -70,21 +87,6 @@ def on_startup():
         print(f"❌ Erro ao inicializar banco: {e}")
     finally:
         db.close()
-
-# --- CONFIGURAÇÃO DE CORS ---
-origins = [
-    "http://localhost:5173",
-    "http://localhost:3000",
-    "http://127.0.0.1:5173",
-]
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=origins,  # Usar lista específica (não pode ser "*" com credentials=True)
-    allow_methods=["*"],
-    allow_headers=["*"],
-    allow_credentials=True
-)
 
 # --- ROTA DE SAÚDE ---
 @app.get("/", tags=["Status"])

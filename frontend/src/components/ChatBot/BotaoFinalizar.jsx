@@ -41,11 +41,11 @@ const BotaoFinalizar = ({ onFinalizar }) => {
         height: 40,
         minHeight: 40,
         borderRadius: '8px',
-        color: '#000000',
-        backgroundColor: '#B5B5B5',
+        color: '#fff',
+        backgroundColor: '#F30000',
         textTransform: 'none',
         '&:hover': {
-          backgroundColor: 'rgba(0, 0, 0, 0.2)',
+          backgroundColor: '#D90000',
         },
         '&:disabled': {
           backgroundColor: '#999',
