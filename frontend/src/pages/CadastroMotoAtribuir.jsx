@@ -83,7 +83,6 @@ const CadastroMotoAtribuir = () => {
 
       <Box
         sx={{
-          boxShadow: 3,
           p: { xs: 2, md: 4 },
           borderRadius: '16px',
           width: '100%',

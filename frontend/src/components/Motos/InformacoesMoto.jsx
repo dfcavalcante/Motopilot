@@ -1,14 +1,16 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import { Box, Stack, Divider, Typography, IconButton, Button, Chip } from '@mui/material';
 import Header from '../../utils/Header.jsx';
 import SideBar from '../../utils/SideBar.jsx';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { useNavigate } from 'react-router-dom';
 import { ChatContext } from '../../context/ChatContext.jsx';
+import { MotoContext } from '../../context/MotoContext.jsx';
 
-const InformacoesMoto = ({ moto, onBack }) => {
+const InformacoesMoto = ({ moto, onBack}) => {
   const navigate = useNavigate();
   const { iniciarNovoChat } = React.useContext(ChatContext);
+  const { excluirMoto, atualizarMoto} = React.useContext(MotoContext);
   const fallbackSrc = '/images/Motopilot.jpeg';
   const estadoAtualMoto = String(moto?.estado || '')
     .trim()
@@ -26,6 +28,46 @@ const InformacoesMoto = ({ moto, onBack }) => {
     const urlFinal = `http://localhost:8000/${pathFinal}`;
     return urlFinal;
   };
+
+  const getStatusStyles = (statusName) => {
+    switch (statusName.toLowerCase()) {
+      case 'concluído':
+      case 'concluido':
+        return {
+          color: '#29C406',
+          border: '1px solid #29C406',
+          backgroundColor: '#E5FFDF',
+          fontWeight: 700,
+        };
+      case 'em manutenção':
+      case 'em manutencao':
+        return {
+          color: '#cec108',
+          border: '1px solid #cfc209',
+          backgroundColor: '#FFFDDF',
+          fontWeight: 700,
+        };
+      default:
+        return {
+          color: '#6C757D',
+          border: '1px solid #6C757D',
+          backgroundColor: '#b2bac1',
+          fontWeight: 700,
+        };
+    }
+  };
+
+  const handleEditar = () => {
+    atualizarMoto(moto.id);
+
+  };
+
+  const handleExcluir = () => {
+    if (window.confirm('Tem certeza que deseja excluir esta moto? Esta ação não pode ser desfeita.')) {
+      excluirMoto(moto.id);
+      navigate('/listagemMotos');
+    }
+  }
 
   return (
     <Box
@@ -63,41 +105,77 @@ const InformacoesMoto = ({ moto, onBack }) => {
             {/* Cabeçalho Interno */}
             <Box
               sx={{
-                display: 'flex',
+                display: 'grid',
+                gridTemplateColumns: '1fr auto 1fr',
                 alignItems: 'center',
-                justifyContent: 'space-between',
                 width: '100%',
                 mb: 2,
               }}
             >
-              <IconButton
-                onClick={onBack}
-                sx={{
-                  color: '#000000',
-                  borderRadius: 2,
-                  backgroundColor: '#B5B5B5',
-                  width: 40,
-                  height: 40,
-                  '&:hover': { backgroundColor: 'rgba(0, 0, 0, 0.2)' },
-                }}
-              >
-                <ArrowBackIcon />
-              </IconButton>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, justifySelf: 'start' }}>
+                {/*Botão de voltar*/}
+                <IconButton
+                  onClick={onBack}
+                  sx={{
+                    color: '#000000',
+                    borderRadius: 2,
+                    backgroundColor: '#FEDCDB',
+                    width: 40,
+                    height: 40,
+                  }}
+                >
+                  <ArrowBackIcon />
+                </IconButton>
 
-              <Typography sx={{ fontSize: 30, fontWeight: 500 }}>{moto.modelo}</Typography>
+                {/*Botão de editar*/}
+                <IconButton
+                  onClick={handleEditar()}
+                  sx={{
+                    color: '#000000',
+                    borderRadius: 2,
+                    backgroundColor: '#FEDCDB',
+                    width: 40,
+                    height: 40,
+                  }}
+                >
+                  <img src="/images/lapis.png" width={15} height={15} />
+                </IconButton>
 
-              <IconButton
-                sx={{
-                  color: '#000000',
-                  borderRadius: 2,
-                  width: 40,
-                  height: 40,
-                  backgroundColor: '#B5B5B5',
-                  '&:hover': { backgroundColor: 'rgba(0, 0, 0, 0.2)' },
-                }}
-              >
-                <img src="/images/estrela.png" alt="Estrelinha" width={18} />
-              </IconButton>
+                {/*Botão de deletar*/}
+                <IconButton
+                  onClick={handleExcluir}
+                  sx={{
+                    color: '#000000',
+                    borderRadius: 2,
+                    backgroundColor: '#FEDCDB',
+                    width: 40,
+                    height: 40,
+                  }}
+                >
+                  <img src="/images/lixeira.png" width={15} height={15} />
+                </IconButton>
+
+              </Box>
+
+              <Typography sx={{ fontSize: 30, fontWeight: 500, textAlign: 'center' }}>
+                {moto.modelo}
+              </Typography>
+
+              {/*Botão de histórico de conversas*/}
+              <Box sx={{ justifySelf: 'end' }}>
+                <IconButton
+                  sx={{
+                    color: 'black',
+                    borderRadius: 2,
+                    width: 40,
+                    height: 40,
+                    backgroundColor: '#F30000',
+                    '&:hover': { backgroundColor: 'rgba(0, 0, 0, 0.2)' },
+                  }}
+                >
+                  <img src="/images/estrela.png" alt="Estrelinha" width={18} />
+                </IconButton>
+              </Box>
             </Box>
 
             <Divider sx={{ width: '90%', bgcolor: 'grey.700', height: '0.4px', mb: 2 }} />
@@ -109,9 +187,12 @@ const InformacoesMoto = ({ moto, onBack }) => {
                 position: 'absolute',
                 top: 120,
                 right: 100,
-                backgroundColor: '#4E4E4E',
-                color: 'white',
-                width: '100px',
+                ...getStatusStyles(moto.estado),
+                padding: '4px 16px',
+                borderRadius: '16px',
+                fontSize: '1rem',
+                fontWeight: 600,
+                textTransform: 'capitalize',
               }}
             />
 
@@ -124,6 +205,7 @@ const InformacoesMoto = ({ moto, onBack }) => {
                 mb: 1,
               }}
             >
+              {/*Botão do Chat da Moto*/}
               <Button
                 onClick={() => {
                   if (motoConcluida) {
@@ -137,8 +219,8 @@ const InformacoesMoto = ({ moto, onBack }) => {
                 variant="contained"
                 disabled={motoConcluida}
                 sx={{
-                  backgroundColor: '#B5B5B5',
-                  color: 'black',
+                  backgroundColor: '#F30000',
+                  color: 'white',
                   top: 300,
                   textTransform: 'none',
                   gap: 1,
@@ -192,7 +274,7 @@ const InformacoesMoto = ({ moto, onBack }) => {
             {/* Box das Informações (Cinza) */}
             <Box
               sx={{
-                bgcolor: '#D9D9D9',
+                boxShadow: 3,
                 borderRadius: '16px',
                 p: 4,
                 width: '95%',

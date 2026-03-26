@@ -6,6 +6,7 @@ import BoxMoto from '../components/CadastroMoto/BoxMoto';
 import { MotoContext } from '../context/MotoContext';
 import BarraPesquisa from '../components/CadastroMoto/BarraPesquisa';
 
+{/* Página de Listagem de Motos - Mostra os modelos de motos cadastrados, com busca e ordenação */}
 const ListagemMotos = () => {
   const navigate = useNavigate();
   const { listarModelosMoto, modelosMoto, setModeloPaiSelecionado } = useContext(MotoContext);

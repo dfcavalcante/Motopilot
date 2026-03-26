@@ -9,7 +9,7 @@ const Concluido = () => {
   return (
     <Box
       sx={{
-        p: 2,
+        p: 8,
         borderRadius: '12px',
         width: '100%',
         maxWidth: '800px',
@@ -19,7 +19,6 @@ const Concluido = () => {
         flexDirection: 'column',
         gap: 1,
         minHeight: '300px',
-        mt: 6,
         boxShadow: 3,
       }}
     >
