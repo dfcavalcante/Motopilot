@@ -45,8 +45,17 @@ notification_broadcast_manager = NotificationBroadcastManager()
 
 # Serviço de notificações
 class NotificationService:
+    # Roles administrativos que devem ver tudo que o gerente vê
+    _ROLES_ADMIN = {"admin", "administrador", "gerente"}
+
     def __init__(self, db: Session):
         self.db = db
+
+    def _perfis_visiveis(self, funcao: str) -> list[str]:
+        """Retorna a lista de perfis cujas notificações este usuário pode ver."""
+        if funcao and funcao.lower() in self._ROLES_ADMIN:
+            return list(self._ROLES_ADMIN)
+        return [funcao] if funcao else []
 
     def criar_notificacao(self, payload: NotificationCreate) -> Notification:
         db_notification = Notification(**payload.model_dump())
@@ -62,11 +71,11 @@ class NotificationService:
     def listar_notificacoes(self, user, limite: int = 50, nao_lido: bool = False) -> list[Notification]:
         query = select(Notification).order_by(Notification.criado_em.desc())
         
-        # Filtro de acesso
+        # Filtro de acesso: mostra apenas notificações destinadas ao usuário
+        perfis = self._perfis_visiveis(user.funcao)
         query = query.filter(
-            ((Notification.user_id == None) & (Notification.perfil_destino == None)) |
             (Notification.user_id == user.id) |
-            (Notification.perfil_destino == user.funcao)
+            (Notification.perfil_destino.in_(perfis))
         )
 
         if nao_lido:
@@ -95,9 +104,8 @@ class NotificationService:
                 update(Notification)
                 .where(Notification.lido.is_(False))
                 .where(
-                    ((Notification.user_id == None) & (Notification.perfil_destino == None)) |
                     (Notification.user_id == user.id) |
-                    (Notification.perfil_destino == user.funcao)
+                    (Notification.perfil_destino.in_(self._perfis_visiveis(user.funcao)))
                 )
                 .values(lido=True)
             )

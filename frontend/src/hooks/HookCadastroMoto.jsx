@@ -5,7 +5,6 @@ import { z } from 'zod';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import { MotoContext } from '../context/MotoContext.jsx';
-import { useNavigate } from 'react-router-dom';
 
 // Molde do formulário e regras de validação usando Zod
 const motoSchema = z.object({
@@ -27,8 +26,6 @@ export const HookCadastroMoto = () => {
     modeloPaiSelecionado,
     setModeloPaiSelecionado,
   } = useContext(MotoContext);
-  const navigate = useNavigate();
-
   const navigate = useNavigate();
   const [etapaAtual, setEtapaAtual] = useState(1);
   const [loading, setLoading] = useState(false);
@@ -123,10 +120,6 @@ export const HookCadastroMoto = () => {
   };
 
   const handleVoltar = () => {
-    navigate(-1);
-  };
-
-  const handleVoltar = () => {
     reset({
       modelo: '',
       marca: '',
@@ -185,8 +178,6 @@ export const HookCadastroMoto = () => {
     handleProximo,
     handleVoltar,
     modeloPaiSelecionado,
-    handleProximo,
-    handleVoltar,
   };
 };
 

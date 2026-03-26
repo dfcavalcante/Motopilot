@@ -23,6 +23,7 @@ from app.models.user_model import User
 from app.schemas.moto_schema import ModeloMotoBase, ModeloMotoResponse
 from app.models.moto_model import ModeloMoto
 from app.services.moto_pai_service import Moto_pai_service
+from app.services.notification_service import NotificationService
 
 router = APIRouter(prefix='/motos', tags=["Motos"])
 
@@ -97,6 +98,15 @@ def criar_modelo_moto_endpoint(
         ano=str(ano)
     )
 
+    # Notificar gerente sobre novo modelo criado
+    notification_service = NotificationService(db)
+    notification_service.notificar_moto(
+        action="criada",
+        moto_id=novo_modelo_moto.id,
+        moto_marca=marca,
+        moto_modelo=modelo,
+    )
+
     return novo_modelo_moto
 
 
@@ -163,6 +173,15 @@ def criar_moto_endpoint(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=str(e)
         )
+
+    # Notificar gerente sobre nova moto cadastrada
+    notification_service = NotificationService(db)
+    notification_service.notificar_moto(
+        action="criada",
+        moto_id=nova_moto.id,
+        moto_marca=marca,
+        moto_modelo=modelo,
+    )
 
     return nova_moto
 
