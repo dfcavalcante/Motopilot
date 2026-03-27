@@ -18,7 +18,7 @@ const ReportControlsBar = ({
           <IconButton
             onClick={() => setViewMode('grid')}
             sx={{
-              border: viewMode === 'grid' ? '1px solid #666' : '1px solid #E0E0E0',
+              border: viewMode === 'grid' ? '1px solid #F30000' : '1px solid #F30000',
               borderRadius: '4px',
               width: '24px',
               height: '24px',
@@ -29,7 +29,7 @@ const ReportControlsBar = ({
           <IconButton
             onClick={() => setViewMode('list')}
             sx={{
-              border: viewMode === 'list' ? '1px solid #666' : '1px solid #a5a5a5',
+              border: viewMode === 'list' ? '1px solid #F30000' : '1px solid #F30000',
               borderRadius: '4px',
               width: '24px',
               height: '24px',
@@ -48,11 +48,11 @@ const ReportControlsBar = ({
             width: 20,
             height: 20,
             borderRadius: '4px',
-            border: '1px solid #E0E0E0',
+            border: '1px solid #F30000',
             backgroundColor: 'white',
           }}
         >
-          <img src="/images/linhaPraBaixo.png" alt="Ordenar" style={{ width: '10px' }} />
+          <img src="/images/setaChat.png" alt="Ordenar" style={{ width: '10px' }} />
         </IconButton>
         <Menu anchorEl={anchorEl} open={openMenu} onClose={handleCloseMenu}>
           <MenuItem onClick={() => handleSelectOrder('recentes')}>Mais recentes</MenuItem>

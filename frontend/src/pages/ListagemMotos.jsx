@@ -57,11 +57,11 @@ const ListagemMotos = () => {
                 width: 20,
                 height: 20,
                 borderRadius: '4px',
-                border: '1px solid #E0E0E0',
+                border: '1px solid #F30000',
                 backgroundColor: 'white',
               }}
             >
-              <img src="/images/linhaPraBaixo.png" alt="Ordenar" style={{ width: '10px' }} />
+              <img src="/images/setaChat.png" alt="Ordenar" style={{ width: '10px' }} />
             </IconButton>
 
             <Menu anchorEl={anchorEl} open={openMenu} onClose={handleCloseMenu}>

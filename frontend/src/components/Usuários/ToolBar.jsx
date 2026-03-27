@@ -29,7 +29,7 @@ export const Toolbar = ({
               borderRadius: '4px',
               width: '24px',
               height: '24px',
-              backgroundColor: viewMode === 'grid' ? '#F30000' : '#FFEAEA',
+              backgroundColor: viewMode === 'grid' ? '#FFEAEA' : '#ffffff',
               '&:hover': { backgroundColor: '#FFD8D8' },
             }}
           >
@@ -42,7 +42,7 @@ export const Toolbar = ({
               borderRadius: '4px',
               width: '24px',
               height: '24px',
-              backgroundColor: viewMode === 'list' ? '#F30000' : '#FFEAEA',
+              backgroundColor: viewMode === 'list' ? '#FFEAEA' : '#ffffff',
               '&:hover': { backgroundColor: '#FFD8D8' },
             }}
           >
