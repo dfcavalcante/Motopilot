@@ -3,21 +3,94 @@ import { jsPDF } from 'jspdf';
 /**
  * Carrega uma imagem de URL e retorna como base64 data URL.
  */
-function loadImageAsDataUrl(url) {
+function blobToDataUrl(blob) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(blob);
+  });
+}
+
+function getImageDimensions(src) {
   return new Promise((resolve) => {
     const img = new Image();
-    img.crossOrigin = 'anonymous';
-    img.onload = () => {
-      const canvas = document.createElement('canvas');
-      canvas.width = img.naturalWidth;
-      canvas.height = img.naturalHeight;
-      const ctx = canvas.getContext('2d');
-      ctx.drawImage(img, 0, 0);
-      resolve({ dataUrl: canvas.toDataURL('image/jpeg', 0.85), w: img.naturalWidth, h: img.naturalHeight });
-    };
+    img.onload = () => resolve({ w: img.naturalWidth, h: img.naturalHeight });
     img.onerror = () => resolve(null);
-    img.src = url;
+    img.src = src;
   });
+}
+
+function resolveImageUrl(path) {
+  if (!path) return null;
+
+  const raw = String(path).trim();
+  if (/^(https?:|data:|blob:)/i.test(raw)) return raw;
+
+  const normalized = raw.replace(/\\/g, '/').replace(/^\/+/, '');
+  const host = typeof window !== 'undefined' ? window.location.hostname : 'localhost';
+  const protocol = typeof window !== 'undefined' ? window.location.protocol : 'http:';
+
+  return `${protocol}//${host}:8000/${normalized}`;
+}
+
+async function loadImageAsDataUrl(url) {
+  try {
+    const response = await fetch(url, { mode: 'cors' });
+    if (!response.ok) return null;
+
+    const blob = await response.blob();
+    const dataUrl = await blobToDataUrl(blob);
+    const dimensions = await getImageDimensions(dataUrl);
+
+    if (!dimensions) return null;
+
+    return {
+      dataUrl,
+      w: dimensions.w,
+      h: dimensions.h,
+      format: blob.type.includes('png') ? 'PNG' : 'JPEG',
+    };
+  } catch {
+    return null;
+  }
+}
+
+function normalizeStatus(value) {
+  return String(value || '')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .trim();
+}
+
+function getStatusBadgeMeta(status) {
+  const normalized = normalizeStatus(status);
+
+  if (normalized === 'concluido' || normalized === 'concluida') {
+    return {
+      label: 'Concluído',
+      fill: [232, 245, 233],
+      stroke: [200, 230, 201],
+      text: [27, 94, 32],
+    };
+  }
+
+  if (normalized === 'pendente') {
+    return {
+      label: 'Pendente',
+      fill: [255, 248, 225],
+      stroke: [255, 236, 179],
+      text: [141, 110, 0],
+    };
+  }
+
+  return {
+    label: String(status || 'Sem status'),
+    fill: [244, 244, 245],
+    stroke: [228, 228, 231],
+    text: [82, 82, 91],
+  };
 }
 
 /**
@@ -37,8 +110,8 @@ export default async function generateReportPdf(report) {
     : '—';
 
   // ─── Cores ───
-  const accent = [33, 33, 33];       // #212121
-  const gray = [117, 117, 117];      // #757575
+  const accent = [33, 33, 33]; // #212121
+  const gray = [117, 117, 117]; // #757575
   const lightGray = [224, 224, 224]; // #e0e0e0
 
   // ─── Helpers ───
@@ -98,24 +171,25 @@ export default async function generateReportPdf(report) {
     y += 6;
   }
 
-  function drawStatusBadge(status){
-    const statusColors = {
-      'concluído': [76, 175, 80],
-      'pendente': [255, 193, 7],
-    }
+  function drawStatusBadge(status) {
+    const meta = getStatusBadgeMeta(status);
+    const chipLabel = meta.label;
+    const badgeHeight = 10;
+    const badgeWidth = Math.max(56, doc.getTextWidth(chipLabel) + 10);
+    const badgeX = marginLeft + (contentWidth - badgeWidth) / 2;
 
-    const color = statusColors[status] || [158, 158, 158];
-    
-    doc.setFillColor(...color);
-    const badgeWidth = doc.getTextWidth(status) + 6;
-    const badgeHeight = 8;
-    checkPageBreak(badgeHeight + 2);
-    doc.roundedRect(pageWidth - marginRight - badgeWidth, y, badgeWidth, badgeHeight, 1.5, 1.5, 'F');
+    checkPageBreak(badgeHeight + 3);
+
+    doc.setDrawColor(...meta.stroke);
+    doc.setFillColor(...meta.fill);
+    doc.roundedRect(badgeX, y, badgeWidth, badgeHeight, 2, 2, 'FD');
+
     doc.setFont('helvetica', 'bold');
-    doc.setFontSize(7);
-    doc.setTextColor(255, 255, 255);
-    doc.text(status, pageWidth - marginRight - badgeWidth / 2, y + badgeHeight - 2, { align: 'center' });
-    y += badgeHeight + 4;
+    doc.setFontSize(8);
+    doc.setTextColor(...meta.text);
+    doc.text(chipLabel, badgeX + badgeWidth / 2, y + 6.8, { align: 'center' });
+
+    y += badgeHeight + 5;
   }
 
   // ═══════════════════════════════════════════════════
@@ -219,7 +293,7 @@ export default async function generateReportPdf(report) {
 
   if (report.imagem_path) {
     try {
-      const imgUrl = `http://localhost:8000/${report.imagem_path}`;
+      const imgUrl = resolveImageUrl(report.imagem_path);
       const result = await loadImageAsDataUrl(imgUrl);
       if (result) {
         const maxW = 120;
@@ -231,7 +305,7 @@ export default async function generateReportPdf(report) {
           imgW = (result.w / result.h) * maxH;
         }
         checkPageBreak(imgH + 4);
-        doc.addImage(result.dataUrl, 'JPEG', marginLeft, y, imgW, imgH);
+        doc.addImage(result.dataUrl, result.format, marginLeft, y, imgW, imgH);
         y += imgH + 4;
       } else {
         drawValue('Imagem anexada (não foi possível carregar para o PDF).');
@@ -252,7 +326,7 @@ export default async function generateReportPdf(report) {
   drawStatusBadge(report.status);
 
   drawDivider();
-  
+
   // ═══════════════════════════════════════════════════
   //  ASSINATURA
   // ═══════════════════════════════════════════════════

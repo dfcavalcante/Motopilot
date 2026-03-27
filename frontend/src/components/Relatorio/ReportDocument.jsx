@@ -1,13 +1,67 @@
 import React from 'react';
 import { Box, Grid, Typography, Divider, TextField, Chip, Button } from '@mui/material';
-import { Add, CheckCircleOutline } from '@mui/icons-material';
+import { Add, CheckCircleOutline, PendingActionsOutlined, InfoOutlined } from '@mui/icons-material';
 import { ReportSection, SectionTitle } from './ReportSections';
 import { usePecas } from '../../context/PecasContext';
 import { useEffect, useMemo, useState } from 'react';
 import ReportImageUploader from './ReportImageUploader';
 
+const normalizeStatus = (value) =>
+  String(value || '')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .trim();
+
+const getStatusMeta = (status) => {
+  const normalized = normalizeStatus(status);
+
+  if (normalized === 'concluido' || normalized === 'concluida') {
+    return {
+      label: 'Concluído',
+      icon: <CheckCircleOutline />,
+      bg: '#e8f5e9',
+      color: '#1b5e20',
+      border: '#c8e6c9',
+    };
+  }
+
+  if (normalized === 'pendente') {
+    return {
+      label: 'Pendente',
+      icon: <PendingActionsOutlined />,
+      bg: '#fff8e1',
+      color: '#8d6e00',
+      border: '#ffecb3',
+    };
+  }
+
+  return {
+    label: status || 'Sem status',
+    icon: <InfoOutlined />,
+    bg: '#F4F4F5',
+    color: '#52525B',
+    border: '#E4E4E7',
+  };
+};
+
+const resolveImageUrl = (path) => {
+  if (!path) return null;
+
+  const raw = String(path).trim();
+  if (/^(https?:|data:|blob:)/i.test(raw)) return raw;
+
+  const normalized = raw.replace(/\\/g, '/').replace(/^\/+/, '');
+  const host = typeof window !== 'undefined' ? window.location.hostname : 'localhost';
+  const protocol = typeof window !== 'undefined' ? window.location.protocol : 'http:';
+
+  return `${protocol}//${host}:8000/${normalized}`;
+};
+
 const ReportDocument = ({ data, isEditing, onFieldChange, imagemFile }) => {
   const { pecas, adicionarPeca } = usePecas();
+  const statusMeta = getStatusMeta(data?.status);
+  const imagemUrl = resolveImageUrl(data?.imagem_path);
 
   const [pecasSelecionadas, setPecasSelecionadas] = useState([]);
   const [novaPeca, setNovaPeca] = useState('');
@@ -284,13 +338,20 @@ const ReportDocument = ({ data, isEditing, onFieldChange, imagemFile }) => {
           <Grid item xs={12} sm={6}>
             {isEditing ? (
               <ReportImageUploader
-                arquivo={imagemFile || (data.imagem_path ? `http://localhost:8000/${data.imagem_path}` : null)}
+                arquivo={imagemFile || imagemUrl}
                 onFileSelect={(file) => onFieldChange({ target: { name: 'foto', value: file } })}
               />
-            ) : data.imagem_path ? (
-              <Box sx={{ borderRadius: '12px', overflow: 'hidden', border: '1px solid #e0e0e0', maxHeight: 350 }}>
+            ) : imagemUrl ? (
+              <Box
+                sx={{
+                  borderRadius: '12px',
+                  overflow: 'hidden',
+                  border: '1px solid #e0e0e0',
+                  maxHeight: 350,
+                }}
+              >
                 <img
-                  src={`http://localhost:8000/${data.imagem_path}`}
+                  src={imagemUrl}
                   alt="Evidência do relatório"
                   style={{ width: '100%', maxHeight: 350, objectFit: 'contain', display: 'block' }}
                 />
@@ -324,16 +385,23 @@ const ReportDocument = ({ data, isEditing, onFieldChange, imagemFile }) => {
         )}
       </ReportSection>
 
-      <Grid item xs={6}>
+      <Grid item xs={12}>
         <Typography variant="caption" color="textSecondary">
           STATUS FINAL
         </Typography>
-        <Box sx={{ mt: 0.5 }}>
+        <Box sx={{ mt: 0.75, display: 'flex', justifyContent: 'center' }}>
           <Chip
-            label="OPERACIONAL"
-            icon={<CheckCircleOutline />}
-            size="small"
-            sx={{ bgcolor: '#F30000', color: '#fff', '& .MuiChip-icon': { color: '#fff' } }}
+            label={statusMeta.label}
+            icon={statusMeta.icon}
+            size="medium"
+            sx={{
+              bgcolor: statusMeta.bg,
+              color: statusMeta.color,
+              border: `1px solid ${statusMeta.border}`,
+              fontWeight: 700,
+              height: 32,
+              '& .MuiChip-icon': { color: statusMeta.color },
+            }}
           />
         </Box>
       </Grid>
