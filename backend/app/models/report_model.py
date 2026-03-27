@@ -25,12 +25,9 @@ class Report(Base):
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
     
 
-    # --- CORREÇÃO AQUI ---
-    # 1. Mudamos de "Cliente" para "User" (pois é o nome da sua classe de usuários).
-    # 2. Removemos 'back_populates' por enquanto para evitar erro se as outras 
-    #    classes (User e Moto) ainda não tiverem o campo 'relatorios' criado.
+    # Relacionamentos
     cliente = relationship("User")
     moto = relationship("Moto", back_populates="relatorios")
 
-    # TODO: fotos
+    # Evidências
     imagem_path = Column(String(255), nullable=True)

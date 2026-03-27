@@ -7,8 +7,6 @@ from app.models.moto_model import Moto
 from app.utils.text_utils import gerar_id_manual
 from app.config import settings
 from llm.services.vector_store import vector_store
-
-# Importação da biblioteca de Re-ranking
 from flashrank import Ranker, RerankRequest
 
 class RagOrchestrator:
@@ -23,7 +21,7 @@ class RagOrchestrator:
         )
         
         # Inicializa o modelo de Re-ranking (Nano/Small)
-        # Ele é leve (~40MB) e roda localmente na CPU muito rápido.
+        
         print("🧠 Carregando modelo de Re-ranking (FlashRank)...")
         self.ranker = Ranker(model_name="ms-marco-MiniLM-L-12-v2")
 
@@ -55,8 +53,8 @@ class RagOrchestrator:
             return "Erro: Esta moto não possui um modelo associado para consulta de manual."
 
         # 2. Recuperação Inicial (Retrieval)
-        # IMPORTANTE: Certifique-se de que K_NEIGHBORS no config.py esteja ALTO (ex: 50).
-        # Precisamos pegar uma "rede larga" para trazer a tabela técnica que está escondida.
+        
+        # rede larga para trazer a tabela técnica
         contexto_bruto = self.vector_store.buscar_similaridade(
             pergunta=pergunta_texto, 
             modelo_id=modelo_id
@@ -67,8 +65,8 @@ class RagOrchestrator:
 
         print(f"📥 Recuperados {len(contexto_bruto)} chunks brutos. Iniciando Re-ranking...")
 
-        # 3. Re-ranking (A Mágica)
-        # Transformamos a lista de strings no formato que o FlashRank entende
+        # 3. Re-ranking
+    
         passagens = [
             {"id": str(i), "text": texto} 
             for i, texto in enumerate(contexto_bruto)
@@ -79,18 +77,14 @@ class RagOrchestrator:
             passages=passagens
         )
 
-        # O modelo reordena baseado na relevância real com a pergunta
         resultados_rerank = self.ranker.rerank(requisicao_rerank)
 
-        # Pegamos apenas os TOP 5 melhores depois do re-ranking
-        # Isso descarta o "lixo" de segurança que não tem a ver com a pergunta técnica
+        # Pega apenas os TOP 5 melhores depois do re-ranking
         top_chunks = resultados_rerank[:5]
         
-        # Reconstrói a string de contexto apenas com a "nata" da informação
         contexto_refinado = [res['text'] for res in top_chunks]
         contexto_str = "\n\n".join(contexto_refinado)
 
-        # Filtro Rigoroso (Hardcoded) para blindar o LLM de ver informações indesejadas
         # Se as instruções de prompt falharem, a regex garante que não constem no texto final
         contexto_str = re.sub(r'(?i)\(?\s*página\s*\d+\s*-?\s*\d*\s*\)?', '', contexto_str)
         contexto_str = re.sub(r'(?i)consulte\s+(uma|um|a|o)?\s*concession[aá]ria[^\.\n]*[\.\n]?', '', contexto_str)
@@ -100,13 +94,13 @@ class RagOrchestrator:
 
         print("\n" + "="*40)
         print(f"💎 CONTEXTO REFINADO (Top {len(top_chunks)}):")
-        # Mostra o primeiro chunk (que agora deve ser a tabela técnica!)
+        # Mostra o primeiro chunk
         if top_chunks:
             print(f"Top 1 Score: {top_chunks[0].get('score')}")
             print(top_chunks[0]['text'][:300] + "...") 
         print("="*40 + "\n")
 
-        # 4. Prompt do Sistema (Limpo, sem filtros manuais)
+        # 4. Prompt do Sistema
         prompt_sistema = f"""
         Você é um mecânico especialista assistente chamado Motopilot.
         Você está ajudando outro mecânico profissional sobre a moto: {moto.marca} {moto.modelo} (Ano {moto.ano}).
@@ -175,7 +169,7 @@ class RagOrchestrator:
             linhas_limpas = [linha.lstrip() for linha in linhas]
             resposta_ia = '\n'.join(linhas_limpas)
             
-            # 5.2 Se o LLM alucinou e ainda assim gerou "(página X)" ou menções a concessionárias, nós deletamos à força.
+            # 5.2 Se o LLM alucinou e ainda assim gerou "(página X)" ou menções a concessionárias, deleta à força.
             resposta_ia = re.sub(r'(?i)\(?\s*página\s*\d+\s*-?\s*\d*\s*\)?', '', resposta_ia)
             resposta_ia = re.sub(r'(?i)consulte\s+(uma|um|a|o)?\s*concession[aá]ria[^\.\n]*[\.\n]?', '', resposta_ia)
             resposta_ia = re.sub(r'(?i)procure\s+(uma|um|a|o)?\s*concession[aá]ria[^\.\n]*[\.\n]?', '', resposta_ia)

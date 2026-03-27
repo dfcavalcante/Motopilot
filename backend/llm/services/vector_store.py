@@ -3,7 +3,6 @@ import os
 import chromadb
 from chromadb.utils import embedding_functions
 import uuid
-# Certifique-se que o caminho do config está certo (app.config ou app.utils.config)
 from app.config import settings 
 
 class VectorStoreService:
@@ -41,7 +40,6 @@ class VectorStoreService:
         except Exception as e:
             print(f"❌ [ChromaDB] Erro ao adicionar chunks: {e}")
 
-    # --- A MUDANÇA PRINCIPAL ESTÁ AQUI ---
     def buscar_similaridade(self, pergunta: str, modelo_id: int, k: int = settings.K_NEIGHBORS) -> list:
         """
         Busca no banco vetorial filtrando EXATAMENTE pelo ID do modelo.

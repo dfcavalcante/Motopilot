@@ -6,10 +6,8 @@ import os
 import uuid
 
 # --- IMPORT DO VECTOR STORE ---
-# Se der erro de import aqui, verifique se o caminho 'app.llm...' está correto
 from llm.services.vector_store import vector_store 
 
-# --- AQUI ESTÁ A MUDANÇA: Usamos o processador inteligente ---
 from llm.data.pdf_processor import processar_manual_unico
 
 # Imports Motos 

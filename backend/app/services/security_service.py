@@ -1,8 +1,7 @@
 from passlib.context import CryptContext
 from passlib.exc import UnknownHashError
 
-# O CryptContext define as configurações e os algoritmos que usaremos.
-# Usamos bcrypt como padrão.
+# Configurações de hash de senha (bcrypt)
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 # Função para gerar o hash da senha

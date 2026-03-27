@@ -7,8 +7,7 @@ import json
 class ChatService:
     def __init__(self, db: Session):
         self.db = db
-        # Não precisamos fazer self.rag = RagOrchestrator()
-        # Usamos a instância global que já carrega o Chroma e o LLM uma vez só
+        # Instância global que já carrega o Chroma e o LLM uma vez só
         self.rag = rag_orchestrator 
 
     def _moto_concluida(self, moto_id: int) -> bool:
@@ -89,8 +88,7 @@ class ChatService:
         # 3. Chamar LLM para resumo
         dados_resumo = self.rag.resumir_manutencao(historico_str)
         
-        # Como o método `resumir_manutencao` agora constrói e retorna um dicionário 
-        # python final fazendo perguntas atômicas, nós só precisamos repassar.
+        # O método resumir_manutencao retorna um dicionário python pronto.
         
         # Limpar o histórico de chat desta moto para que não sangre para os próximos serviços
         self.limpar_historico_moto(moto_id)

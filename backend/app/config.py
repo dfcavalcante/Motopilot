@@ -19,7 +19,7 @@ class Settings(BaseSettings):
     # =================================================================
     # Valores padrão (fallback) caso o .env falhe ou não exista
     POSTGRES_USER: str = "postgres"
-    POSTGRES_PASSWORD: str = "12345" # Lembre-se: O ideal é vir do .env
+    POSTGRES_PASSWORD: str = "12345"
     POSTGRES_DB: str = "motopilot_db"
     POSTGRES_HOST: str = "localhost"
     POSTGRES_PORT: int = 5432

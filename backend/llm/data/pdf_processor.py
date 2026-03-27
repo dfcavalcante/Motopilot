@@ -14,9 +14,7 @@ def processar_manual_unico(file_path: str, modelo_id: int, modelo: str, ano: str
         # 1. Converte PDF para Markdown
         md_text = pymupdf4llm.to_markdown(file_path)
         
-        # --- CORREÇÃO DE ESTRUTURA ---
-        # O manual muitas vezes não tem headers (#) explícitos, o que quebra o splitter.
-        # Vamos injetar headers manuais para seções críticas.
+        # Injeta headers markdown para seções críticas que não possuem headers explícitos
         import re
         SECOES_IMPORTANTES = [
             "ESPECIFICAÇÕES TÉCNICAS", "DADOS TÉCNICOS", "FICHA TÉCNICA", 

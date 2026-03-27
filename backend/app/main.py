@@ -5,7 +5,6 @@ from fastapi.staticfiles import StaticFiles
 import os
 
 # --- IMPORTS DO BANCO DE DADOS ---
-# Certifique-se que seu arquivo database.py está em app/config/database.py
 from app.database import engine, Base, get_db
 
 # --- IMPORTS DOS MODELS (CRUCIAL) ---
