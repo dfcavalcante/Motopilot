@@ -8,7 +8,6 @@ import {
   TextField,
   InputAdornment,
 } from '@mui/material';
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 
 const ListToolbar = ({ input, setInput, anchorEl, onOpenMenu, onCloseMenu, onSelectOrder }) => {
   return (
@@ -23,10 +22,12 @@ const ListToolbar = ({ input, setInput, anchorEl, onOpenMenu, onCloseMenu, onSel
         <Typography sx={{ fontSize: '14px', color: '#555' }}>Ordenar</Typography>
         <IconButton
           onClick={onOpenMenu}
-          size="small"
-          sx={{ border: '1px solid #CCC', borderRadius: '4px', padding: '2px' }}
+          width={14}
+          height={14}
+          padding={1}
+          sx={{ border: '1px solid #F30000', borderRadius: '4px'}}
         >
-          <KeyboardArrowDownIcon fontSize="small" />
+          <img src="/images/setaChat.png" alt="Sort" width="10" />
         </IconButton>
         <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={onCloseMenu}>
           <MenuItem onClick={() => onSelectOrder('AZ')}>Modelo A - Z</MenuItem>

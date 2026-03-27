@@ -32,6 +32,7 @@ const ListagemMotos = () => {
     motosProcessadas,
     getNomeMecanico,
     setMotoSelecionada,
+    isGerente,
     handleExcluirModelo,
   } = HookListagemMotosModelo();
 
@@ -54,12 +55,14 @@ const ListagemMotos = () => {
         </IconButton>
       }
       headerRightAction={
-        <IconButton
-          onClick={() => setOpenConfirmDelete(true)}
-          sx={{ color: '#000', bgcolor: '#FEDCDB', width: 40, height: 40, borderRadius: 2 }}
-        >
-          <img src="/images/lixeira.png" width={15} height={15} alt="Excluir modelo" />
-        </IconButton>
+        isGerente ? (
+          <IconButton
+            onClick={() => setOpenConfirmDelete(true)}
+            sx={{ color: '#000', bgcolor: '#FEDCDB', width: 40, height: 40, borderRadius: 2 }}
+          >
+            <img src="/images/lixeira.png" width={15} height={15} alt="Excluir modelo" />
+          </IconButton>
+        ) : null
       }
     >
       <Box sx={{ width: '100%', margin: '0 auto', p: 3 }}>

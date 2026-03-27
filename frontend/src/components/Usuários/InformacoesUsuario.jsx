@@ -1,8 +1,16 @@
 import React from 'react';
 import { Box, Typography, IconButton } from '@mui/material';
 import { getUserInitials, getAvatarColor } from '../../utils/avatarUtils';
+import { notify } from '../../utils/toastConfig.jsx';
 
-const InformacoesUsuario = ({ usuario, onEdit, onDelete, atualizando, setAtualizando }) => {
+const InformacoesUsuario = ({
+  usuario,
+  onEdit,
+  onDelete,
+  atualizando,
+  setAtualizando,
+  canManageActions = true,
+}) => {
   const iniciais = getUserInitials(usuario?.nome, usuario?.email);
   const corAvatar = getAvatarColor(usuario?.nome, usuario?.email);
   const statusNormalizado = String(usuario?.status ?? '')
@@ -49,7 +57,8 @@ const InformacoesUsuario = ({ usuario, onEdit, onDelete, atualizando, setAtualiz
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
-          flexShrink: 0, // <-- Evita que o ícone esprema se o nome for grande
+          flexShrink: 0,
+          boxShadow: 1,
         }}
       >
         <Typography fontSize={16} fontWeight={700} color="white">
@@ -78,12 +87,25 @@ const InformacoesUsuario = ({ usuario, onEdit, onDelete, atualizando, setAtualiz
             <IconButton
               size="small"
               onClick={() => {
+                if (!canManageActions) {
+                  notify.warning('Você não tem permissão para editar usuários.');
+                  return;
+                }
                 setAtualizando(usuario.id, atualizando);
               }}
             >
               <img src="/images/lapis.png" alt="Editar" style={{ width: '14px', height: '14px' }} />
             </IconButton>
-            <IconButton size="small" onClick={() => onDelete(usuario.id)}>
+            <IconButton
+              size="small"
+              onClick={() => {
+                if (!canManageActions) {
+                  notify.warning('Você não tem permissão para excluir usuários.');
+                  return;
+                }
+                onDelete(usuario.id);
+              }}
+            >
               <img
                 src="/images/lixeira.png"
                 alt="Excluir"

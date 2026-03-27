@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { ChatContext } from '../context/ChatContext.jsx';
 import { MotoContext } from '../context/MotoContext.jsx';
 import { UsersContext } from '../context/UserContext.jsx';
+import { useLogin } from '../context/LoginContext.jsx';
 import { notify } from '../utils/toastConfig.jsx';
 
 const normalizeRole = (value) =>
@@ -17,6 +18,15 @@ export const HookInformacoesMoto = ({ moto }) => {
   const { iniciarNovoChat } = useContext(ChatContext);
   const { excluirMoto, atribuirMoto } = useContext(MotoContext);
   const { listarUsers } = useContext(UsersContext);
+  const { user } = useLogin();
+
+  const role = normalizeRole(user?.funcao);
+  const canManageMoto =
+    role === 'coordenador' ||
+    role === 'coordenadora' ||
+    role === 'gerente' ||
+    role === 'administrador' ||
+    role === 'admin';
 
   const [isEditing, setIsEditing] = useState(false);
   const [savingMecanico, setSavingMecanico] = useState(false);
@@ -145,6 +155,7 @@ export const HookInformacoesMoto = ({ moto }) => {
   }, [iniciarNovoChat, moto, motoConcluida, navigate]);
 
   return {
+    canManageMoto,
     isEditing,
     savingMecanico,
     tecnicos,

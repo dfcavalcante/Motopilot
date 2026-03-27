@@ -23,6 +23,7 @@ import { getAvatarColor, getUserInitials } from '../../utils/avatarUtils';
 const InformacoesMoto = ({ moto, onBack }) => {
   const [openConfirmDelete, setOpenConfirmDelete] = useState(false);
   const {
+    canManageMoto,
     isEditing,
     savingMecanico,
     tecnicos,
@@ -51,18 +52,22 @@ const InformacoesMoto = ({ moto, onBack }) => {
           >
             <ArrowBackIcon />
           </IconButton>
-          <IconButton
-            onClick={handleEditar}
-            sx={{ color: '#000', bgcolor: '#FEDCDB', width: 40, height: 40, borderRadius: 2 }}
-          >
-            <img src="/images/lapis.png" width={15} height={15} alt="Editar" />
-          </IconButton>
-          <IconButton
-            onClick={() => setOpenConfirmDelete(true)}
-            sx={{ color: '#000', bgcolor: '#FEDCDB', width: 40, height: 40, borderRadius: 2 }}
-          >
-            <img src="/images/lixeira.png" width={15} height={15} alt="Excluir" />
-          </IconButton>
+          {canManageMoto && (
+            <>
+              <IconButton
+                onClick={handleEditar}
+                sx={{ color: '#000', bgcolor: '#FEDCDB', width: 40, height: 40, borderRadius: 2 }}
+              >
+                <img src="/images/lapis.png" width={15} height={15} alt="Editar" />
+              </IconButton>
+              <IconButton
+                onClick={() => setOpenConfirmDelete(true)}
+                sx={{ color: '#000', bgcolor: '#FEDCDB', width: 40, height: 40, borderRadius: 2 }}
+              >
+                <img src="/images/lixeira.png" width={15} height={15} alt="Excluir" />
+              </IconButton>
+            </>
+          )}
         </Box>
       }
       headerRightAction={
@@ -117,8 +122,9 @@ const InformacoesMoto = ({ moto, onBack }) => {
         >
           {!isEditing ? (
             <Button
-              onClick={handleEditar}
+              onClick={canManageMoto ? handleEditar : undefined}
               variant="contained"
+              disabled={!canManageMoto}
               sx={{
                 boxShadow: 3,
                 backgroundColor: '#ffffff',
@@ -129,6 +135,10 @@ const InformacoesMoto = ({ moto, onBack }) => {
                 minWidth: '300px',
                 minHeight: '45px',
                 fontSize: '20px',
+                '&.Mui-disabled': {
+                  backgroundColor: '#f5f5f5',
+                  color: '#444',
+                },
               }}
             >
               {mecanicoAtual ? (

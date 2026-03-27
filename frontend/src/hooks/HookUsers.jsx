@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { UsersContext } from '../context/UserContext';
+import { useLogin } from '../context/LoginContext.jsx';
 
 //Esquema do Zod
 const usuarioSchema = z
@@ -40,6 +41,17 @@ const usuarioSchema = z
   );
 
 export const HookUsers = () => {
+  const { user } = useLogin();
+
+  const role = String(user?.funcao || '')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .trim();
+  const canManageUsers =
+    role === 'administrador' ||
+    role === 'admin';
+
   const {
     verificarMatricula,
     verificarEmail,
@@ -236,6 +248,7 @@ export const HookUsers = () => {
   }, [usersProcessados, input]);
 
   return {
+    canManageUsers,
     // Cadastro
     etapaAtual,
     loading,
