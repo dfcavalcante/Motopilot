@@ -17,9 +17,9 @@ class Settings(BaseSettings):
     # =================================================================
     # 2. Credenciais do Banco (PostgreSQL Exclusivo)
     # =================================================================
-    # Valores padrão (fallback) caso o .env falhe ou não exista
+    # As credenciais sensíveis devem vir OBRIGATORIAMENTE do arquivo .env
     POSTGRES_USER: str = "postgres"
-    POSTGRES_PASSWORD: str = "12345"
+    POSTGRES_PASSWORD: str
     POSTGRES_DB: str = "motopilot_db"
     POSTGRES_HOST: str = "localhost"
     POSTGRES_PORT: int = 5432
@@ -65,7 +65,7 @@ class Settings(BaseSettings):
     # =================================================================
     # 6. JWT (Autenticação)
     # =================================================================
-    JWT_SECRET_KEY: str = "motopilot-secret-key-change-in-production"
+    JWT_SECRET_KEY: str
     JWT_ALGORITHM: str = "HS256"
     JWT_EXPIRATION_HOURS: int = 8
 
