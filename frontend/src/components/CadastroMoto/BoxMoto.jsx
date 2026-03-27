@@ -23,8 +23,8 @@ const BoxMoto = ({ moto, onEnter, tipo = 'filha', mecanicoNome }) => {
   const subtitulo =
     tipo === 'pai' ? `Marca: ${moto.marca || '-'}` : `Nº Série: ${numeroSerie || '-'}`;
   const estado = tipo === 'pai' ? 'Modelo' : moto.estado;
-
   const imagemMoto = moto.imagemPath || moto.imagem_moto || moto.imagemMoto;
+  const quantidadeMotos = moto.quantidade_motos || moto.quantidadeMotos || 0;
 
   return (
     <Box
@@ -36,7 +36,7 @@ const BoxMoto = ({ moto, onEnter, tipo = 'filha', mecanicoNome }) => {
         display: 'flex',
         flexDirection: 'column',
         position: 'relative',
-        boxShadow: 3
+        boxShadow: 3,
       }}
     >
       {/* Imagem de Fundo */}
@@ -50,7 +50,6 @@ const BoxMoto = ({ moto, onEnter, tipo = 'filha', mecanicoNome }) => {
         }}
         style={{ width: '100%', height: '189px', objectFit: 'cover', display: 'block' }}
       />
-
 
       {/* Conteúdo inferior */}
       <Box
@@ -67,7 +66,8 @@ const BoxMoto = ({ moto, onEnter, tipo = 'filha', mecanicoNome }) => {
             {titulo}
           </Typography>
           <Typography variant="body2" color="#484848">
-            Aq tem q adicionar a quantidade de motos que tem desse modelo, ver no backend
+            {quantidadeMotos} {quantidadeMotos === 1 ? 'moto' : 'motos'} cadastrada
+            {quantidadeMotos !== 1 ? 's' : ''}
           </Typography>
         </Box>
 

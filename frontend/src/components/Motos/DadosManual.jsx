@@ -22,6 +22,7 @@ const ManualMoto = ({ onBack, setValue, watch, loading, onNext }) => {
             top: -5,
             color: '#000000',
             borderRadius: 2,
+            backgroundColor: '#FEDCDB',
           }}
         >
           <ArrowBackIcon />

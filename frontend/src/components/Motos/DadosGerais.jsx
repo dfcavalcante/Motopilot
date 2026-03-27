@@ -2,7 +2,15 @@ import React from 'react';
 import { Box, Typography, TextField, Grid, Button, Stack } from '@mui/material';
 import ImageUploader from '../Motos/ImageUploader.jsx';
 
-const DadosGerais = ({ register, setValue, errors, watch, modeloPaiSelecionado, onNext, onBack }) => {
+const DadosGerais = ({
+  register,
+  setValue,
+  errors,
+  watch,
+  modeloPaiSelecionado,
+  onNext,
+  onBack,
+}) => {
   const labelStyle = {
     color: '#000000',
     fontSize: '15px',
@@ -12,12 +20,25 @@ const DadosGerais = ({ register, setValue, errors, watch, modeloPaiSelecionado, 
 
   const inputSx = {
     '& .MuiOutlinedInput-root': {
-      backgroundColor: 'rgba(0, 0, 0, 0.03)',
       borderRadius: '12px',
-      '& fieldset': { borderColor: '#A0A0A0' },
-      '&:hover fieldset': { borderColor: '#666' },
-      '&.Mui-focused fieldset': { borderColor: '#666', borderWidth: '1px' },
+      '& fieldset': {
+        borderColor: '#fd61614f',
+      },
+      '&:hover fieldset': {
+        borderColor: '#fd61614f',
+      },
+      '&.Mui-focused fieldset': {
+        borderColor: '#fd61614f',
+        borderWidth: '1px',
+      },
+      '&.Mui-disabled fieldset': {
+        borderColor: '#fd61614f',
+      },
+      '&.Mui-error fieldset': {
+        borderColor: '#fd61614f',
+      },
     },
+
     '& input': {
       padding: '10px 14px',
       fontSize: '0.9rem',
@@ -165,7 +186,7 @@ const DadosGerais = ({ register, setValue, errors, watch, modeloPaiSelecionado, 
             color: 'white',
             borderRadius: '8px',
             textTransform: 'none',
-            width: "180px",
+            width: '180px',
             '&:hover': { backgroundColor: '#F30000' },
           }}
         >

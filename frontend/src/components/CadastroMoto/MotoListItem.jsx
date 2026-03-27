@@ -1,6 +1,7 @@
 import React from 'react';
 import { Box, Typography, IconButton, Avatar } from '@mui/material';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import { getAvatarColor } from '../../utils/avatarUtils';
 
 const MotoListItem = ({ moto, onClick, onInfoClick }) => {
   const numeroSerie = moto.numeroSerie
@@ -36,12 +37,7 @@ const MotoListItem = ({ moto, onClick, onInfoClick }) => {
   };
 
   const initial = colaborador ? colaborador.charAt(0).toUpperCase() : '';
-
-  const getAvatarColor = (char) => {
-    const colors = ['#673AB7', '#009688', '#795548', '#FF5722', '#607D8B'];
-    const charCode = char.charCodeAt(0);
-    return colors[charCode % colors.length];
-  };
+  
 
   return (
     <Box

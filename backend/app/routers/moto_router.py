@@ -105,6 +105,18 @@ def listar_modelos_moto_endpoint(db: Session = Depends(get_db)):
     return moto_pai_service.listar_motos_pai_motos(db)
 
 
+@router.delete('/modeloMoto/{modelo_id}/deletar', status_code=status.HTTP_204_NO_CONTENT)
+def deletar_modelo_moto_endpoint(
+    modelo_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    sucesso = moto_pai_service.deletar_modelo_moto_com_filhas(db, modelo_id)
+    if not sucesso:
+        raise HTTPException(status_code=404, detail='Modelo de moto nao encontrado')
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+
 @router.post("/", response_model=MotoResponse, status_code=status.HTTP_201_CREATED)
 def criar_moto_endpoint(
     marca: str = Form(...),

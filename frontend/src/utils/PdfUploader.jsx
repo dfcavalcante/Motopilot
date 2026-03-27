@@ -36,7 +36,7 @@ const PdfUploader = ({ onFileSelect }) => {
     <Box
       {...getRootProps()}
       sx={{
-        border: '1px solid #A0A0A0',
+        border: '1px solid #fd61614f',
         borderRadius: '16px',
         width: '600px',
         height: '320px',
@@ -46,12 +46,7 @@ const PdfUploader = ({ onFileSelect }) => {
         justifyContent: 'center',
         textAlign: 'center',
         cursor: 'pointer',
-        backgroundColor: isDragActive ? '#d0d0d0' : 'rgba(0, 0, 0, 0.03)',
         transition: 'all .2s ease-in-out',
-        '&:hover': {
-          backgroundColor: 'rgba(0, 0, 0, 0.06)',
-          borderColor: '#666',
-        },
         p: 3,
         margin: '0 auto', 
       }}
@@ -71,7 +66,6 @@ const PdfUploader = ({ onFileSelect }) => {
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              backgroundColor: '#fff',
               borderRadius: '8px',
               boxShadow: 3,
               border: '1px solid #eee'
@@ -108,13 +102,13 @@ const PdfUploader = ({ onFileSelect }) => {
             style={{ opacity: 0.8 }}
           />
 
-          <Typography variant="body1" sx={{ color: '#555', fontSize: '1rem', mt: 1 }}>
+          <Typography variant="body1" sx={{  fontSize: '1rem', mt: 1 }}>
             {isDragActive ? 'Solte o PDF aqui' : 'Arraste o PDF aqui'}
           </Typography>
 
           <Box
             sx={{
-              backgroundColor: '#666',
+              backgroundColor: '#8F0303',
               color: 'white',
               padding: '10px 30px',
               borderRadius: '50px',

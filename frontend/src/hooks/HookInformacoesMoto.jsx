@@ -124,12 +124,13 @@ export const HookInformacoesMoto = ({ moto }) => {
     setIsEditing(false);
   }, [mecanicoAtribuidoId]);
 
-  const handleExcluir = useCallback(() => {
-    if (
-      window.confirm('Tem certeza que deseja excluir esta moto? Esta acao nao pode ser desfeita.')
-    ) {
-      excluirMoto(moto.id);
+  const handleExcluir = useCallback(async () => {
+    try {
+      await excluirMoto(moto.id);
+      notify.success('Moto excluida com sucesso.');
       navigate('/listagemMotos');
+    } catch {
+      notify.error('Nao foi possivel excluir a moto.');
     }
   }, [excluirMoto, moto?.id, navigate]);
 

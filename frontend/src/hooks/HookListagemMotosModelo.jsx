@@ -18,6 +18,7 @@ export const HookListagemMotosModelo = () => {
     setMotoSelecionada,
     setModeloPaiSelecionado,
     atribuirMoto,
+    excluirModeloMoto,
   } = useContext(MotoContext);
 
   const { listarUsers } = useContext(UsersContext);
@@ -137,6 +138,23 @@ export const HookListagemMotosModelo = () => {
     return mecanico?.nome || '';
   };
 
+  const handleExcluirModelo = async () => {
+    const idNumerico = Number(modeloMotoId);
+    if (!idNumerico) {
+      notify.warning('Modelo de moto invalido para exclusao.');
+      return;
+    }
+
+    const sucesso = await excluirModeloMoto(idNumerico);
+    if (sucesso) {
+      notify.success('Modelo e motos filhas excluidos com sucesso.');
+      navigate('/listagemMotos');
+      return;
+    }
+
+    notify.error('Nao foi possivel excluir o modelo de moto.');
+  };
+
   return {
     navigate,
     modeloPai,
@@ -158,5 +176,6 @@ export const HookListagemMotosModelo = () => {
     setMecanicoSelecionado,
     handleAtribuirMoto,
     getNomeMecanico,
+    handleExcluirModelo,
   };
 };

@@ -65,7 +65,7 @@ const InformacoesUsuario = ({ usuario, onEdit, onDelete, atualizando, setAtualiz
           {usuario.nome}
         </Typography>
         {/* Cargo do usuário */}
-        <Typography fontSize={16} fontWeight={600} noWrap>
+        <Typography fontSize={20} fontWeight={500} noWrap>
           {usuario.funcao}
         </Typography>
         {/* Email + ícones alinhados */}
