@@ -26,8 +26,8 @@ class DashboardService:
         motos_disponiveis = db.query(func.count(Moto.id)).filter(Moto.estado == "Ativa").scalar() or 0
         motos_concluidas = db.query(func.count(Moto.id)).filter(Moto.estado == "Concluída").scalar() or 0
 
-        relatorios_pendentes = db.query(func.count(Report.id)).filter(Report.status == "pendente").scalar() or 0
-        relatorios_concluidos = db.query(func.count(Report.id)).filter(Report.status == "concluido" or Report.status == "Concluído").scalar() or 0
+        relatorios_pendentes = db.query(func.count(Report.id)).filter(Report.status.in_(["pendente", "Pendente"])).scalar() or 0
+        relatorios_concluidos = db.query(func.count(Report.id)).filter(Report.status.in_(["concluido", "Concluído", "Concluido"])).scalar() or 0
         total_manutencoes = db.query(func.count(Report.id)).scalar() or 0
 
         # Motos com status que exigem ação e que ainda não possuem relatório de conclusão
