@@ -117,7 +117,7 @@ const InformacoesMoto = ({ moto, onBack }) => {
             display: 'flex',
             position: 'absolute',
             top: 30,
-            right: 20,
+            left: 70,
           }}
         >
           {!isEditing ? (
@@ -276,7 +276,7 @@ const InformacoesMoto = ({ moto, onBack }) => {
             display: 'flex',
             position: 'absolute',
             top: 270,
-            right: 20,
+            left: 70,
           }}
         >
           <Button
