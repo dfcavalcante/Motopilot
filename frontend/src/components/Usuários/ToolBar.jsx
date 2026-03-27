@@ -30,7 +30,6 @@ export const Toolbar = ({
               width: '24px',
               height: '24px',
               backgroundColor: viewMode === 'grid' ? '#FFEAEA' : '#ffffff',
-              '&:hover': { backgroundColor: '#FFD8D8' },
             }}
           >
             <img src="/images/Organizar1.png" alt="Grid" height={14} />
@@ -43,7 +42,6 @@ export const Toolbar = ({
               width: '24px',
               height: '24px',
               backgroundColor: viewMode === 'list' ? '#FFEAEA' : '#ffffff',
-              '&:hover': { backgroundColor: '#FFD8D8' },
             }}
           >
             <img src="/images/Organizar2.png" alt="List" height={14} />
@@ -60,8 +58,6 @@ export const Toolbar = ({
             height: 20,
             borderRadius: '4px',
             border: '1px solid #F30000',
-            backgroundColor: '#FFEAEA',
-            '&:hover': { backgroundColor: '#FFD8D8' },
           }}
         >
           <img src="/images/setaChat.png" alt="Ordenar" style={{ width: '10px' }} />

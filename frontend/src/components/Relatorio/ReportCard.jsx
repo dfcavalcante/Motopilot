@@ -58,7 +58,7 @@ const ReportCard = ({
         >
           <Typography
             variant="caption"
-            sx={{ color: '#ce7370', fontWeight: 600, letterSpacing: 1 }}
+            sx={{ color: '#000000', fontWeight: 600, letterSpacing: 1 }}
           >
             #{report.id}
           </Typography>
