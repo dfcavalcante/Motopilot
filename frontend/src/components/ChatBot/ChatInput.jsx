@@ -1,8 +1,14 @@
 import React from 'react';
-import { Box, TextField, InputAdornment } from '@mui/material';
+import { Box, TextField, InputAdornment, Avatar, IconButton } from '@mui/material';
+import { useLogin } from '../../context/LoginContext.jsx';
+import { getAvatarColor, getUserInitials } from '../../utils/avatarUtils';
 
 // Componente de entrada de chat, onde escreve pergunta
 const ChatInput = ({ input, setInput, onSend, disabled = false }) => {
+  const { user } = useLogin();
+  const nomeUsuario = user?.nome || '';
+  const emailUsuario = user?.email || '';
+
   const handleKeyDown = (e) => {
     if (disabled) return;
 
@@ -43,24 +49,27 @@ const ChatInput = ({ input, setInput, onSend, disabled = false }) => {
           },
           '& .MuiInputBase-input::placeholder': {
             color: '#6a6a6a',
-            opacity: 1, 
+            opacity: 1,
           },
         }}
         InputProps={{
           endAdornment: (
             <InputAdornment position="end">
-              <img
-                src="/images/SendButton.png"
-                alt="Send"
-                width="20"
-                style={{
-                  cursor: disabled ? 'not-allowed' : 'pointer',
-                  opacity: 1,
-                }}
+              <IconButton
                 onClick={() => {
                   if (!disabled) onSend();
                 }}
-              />
+              >
+                <img
+                  src="/images/SendButton.png"
+                  alt="Send"
+                  width="20"
+                  style={{
+                    cursor: disabled ? 'not-allowed' : 'pointer',
+                    opacity: 1,
+                  }}
+                />
+              </IconButton>
             </InputAdornment>
           ),
         }}

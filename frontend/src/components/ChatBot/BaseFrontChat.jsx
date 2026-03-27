@@ -36,6 +36,8 @@ const BaseFrontChat = ({ children }) => {
               alignItems: 'center',
               p: 4,
               boxShadow: '6',
+              overflow: 'hidden',
+              minHeight: 0,
             }}
           >
             <Box
@@ -45,6 +47,7 @@ const BaseFrontChat = ({ children }) => {
                 display: 'flex',
                 flexDirection: 'column',
                 overflow: 'hidden',
+                minHeight: 0,
               }}
             >
               {children}

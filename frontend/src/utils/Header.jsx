@@ -55,28 +55,6 @@ const Header = ({ onNovoChat }) => {
   };
 
   const handlePaginaAtual = () => {
-    if (location.pathname === '/chatbot') {
-      return (
-        <Button
-          startIcon={<img src="/images/add.png" alt="Add" width="20" color="white" />}
-          onClick={onNovoChat}
-          sx={{
-            width: 180,
-            height: '40px',
-            whiteSpace: 'nowrap',
-            backgroundColor: '#F30000',
-            borderColor: '#F30000',
-            color: 'white',
-            borderRadius: '10px',
-            textTransform: 'none',
-            fontSize: '18px',
-            '&:hover': { borderColor: '#F30000', backgroundColor: '#F30000', color: 'white' },
-          }}
-        >
-          Novo chat
-        </Button>
-      );
-    }
     if (location.pathname === '/listagemMotos') {
       return (
         <Tooltip

@@ -50,21 +50,6 @@ const Chatbot = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, isLoadingChat]);
 
-  const handleNovoChat = async () => {
-    const usuarioId = user?.id;
-
-    if (!usuarioId) {
-      notify.warning('Você precisa estar logado!');
-      return;
-    }
-
-    const confirmou = window.confirm('Deseja limpar o histórico e iniciar um novo chat?');
-    if (confirmou) {
-      await limparChat(usuarioId);
-      trocarMoto();
-    }
-  };
-
   const handleSendClick = () => {
     if (motoConcluida) {
       notify.warning('Esta moto já foi concluída e não aceita novas mensagens no chat.');
@@ -106,7 +91,7 @@ const Chatbot = () => {
 
   return (
     <BaseFrontChat>
-      <Box sx={{ display: 'flex', height: '100%', overflow: 'hidden' }}>
+      <Box sx={{ display: 'flex', height: '100%', overflow: 'hidden', minHeight: 0 }}>
         {/* Área principal do chat */}
         <Box
           sx={{
@@ -115,6 +100,7 @@ const Chatbot = () => {
             flexDirection: 'column',
             overflow: 'hidden',
             minWidth: 0,
+            minHeight: 0,
           }}
         >
           {/* Header Interno do Chat */}
@@ -210,6 +196,7 @@ const Chatbot = () => {
                 alignItems: 'center',
                 flexGrow: 1,
                 overflow: 'hidden',
+                minHeight: 0,
               }}
             >
               {/* Caixa das Mensagens */}
@@ -222,10 +209,17 @@ const Chatbot = () => {
                   flexDirection: 'column',
                   mb: 2,
                   overflowY: 'auto',
+                  minHeight: 0,
                 }}
               >
                 {messages.map((msg, index) => (
-                  <ChatMessage key={index} text={msg.text} isBot={msg.isBot} />
+                  <ChatMessage
+                    key={index}
+                    text={msg.text}
+                    isBot={msg.isBot}
+                    userNome={user?.nome}
+                    userEmail={user?.email}
+                  />
                 ))}
                 {isLoadingChat && <Loading />}
                 <div ref={messagesEndRef} />
