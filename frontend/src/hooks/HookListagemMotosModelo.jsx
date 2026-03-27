@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { MotoContext } from '../context/MotoContext';
 import { UsersContext } from '../context/UserContext';
 import { useLogin } from '../context/LoginContext.jsx';
+import { notify } from '../utils/toastConfig.jsx';
 
 export const HookListagemMotosModelo = () => {
   const navigate = useNavigate();
@@ -17,6 +18,7 @@ export const HookListagemMotosModelo = () => {
     setMotoSelecionada,
     setModeloPaiSelecionado,
     atribuirMoto,
+    excluirModeloMoto,
   } = useContext(MotoContext);
 
   const { listarUsers } = useContext(UsersContext);
@@ -117,14 +119,14 @@ export const HookListagemMotosModelo = () => {
   const handleAtribuirMoto = async (motoId) => {
     const mecanicoId = mecanicoSelecionado[motoId];
     if (!mecanicoId) {
-      alert('Selecione um técnico para atribuir a moto.');
+      notify.warning('Selecione um técnico para atribuir a moto.');
       return;
     }
 
     const sucesso = await atribuirMoto(motoId, Number(mecanicoId));
     if (sucesso) {
       await listarMotos(true);
-      alert('Moto atribuída com sucesso.');
+      notify.success('Moto atribuída com sucesso.');
     }
   };
 
@@ -134,6 +136,23 @@ export const HookListagemMotosModelo = () => {
 
     const mecanico = usuarios.find((u) => Number(u.id) === Number(mecanicoId));
     return mecanico?.nome || '';
+  };
+
+  const handleExcluirModelo = async () => {
+    const idNumerico = Number(modeloMotoId);
+    if (!idNumerico) {
+      notify.warning('Modelo de moto invalido para exclusao.');
+      return;
+    }
+
+    const sucesso = await excluirModeloMoto(idNumerico);
+    if (sucesso) {
+      notify.success('Modelo e motos filhas excluidos com sucesso.');
+      navigate('/listagemMotos');
+      return;
+    }
+
+    notify.error('Nao foi possivel excluir o modelo de moto.');
   };
 
   return {
@@ -157,5 +176,6 @@ export const HookListagemMotosModelo = () => {
     setMecanicoSelecionado,
     handleAtribuirMoto,
     getNomeMecanico,
+    handleExcluirModelo,
   };
 };

@@ -1,7 +1,8 @@
 import { useContext, useEffect, useMemo, useState } from 'react';
 import { ReportContext } from '../context/ReportContext.jsx';
 import { useLogin } from '../context/LoginContext.jsx';
-import generateReportPdf  from '../utils/generateReportPdf.jsx';
+import generateReportPdf from '../utils/generateReportPdf.jsx';
+import { notify } from '../utils/toastConfig.jsx';
 
 export const HookHistoricoRelatorios = () => {
   const {
@@ -58,7 +59,7 @@ export const HookHistoricoRelatorios = () => {
         await listarRelatorios({ cliente_id: user.id });
       }
     } catch (err) {
-      alert('Erro ao salvar alterações.');
+      notify.error('Erro ao salvar alterações.');
     }
   };
 

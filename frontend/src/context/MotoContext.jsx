@@ -163,6 +163,35 @@ export const MotoProvider = ({ children }) => {
     }
   };
 
+  // =------ EXCLUIR MODELO + MOTOS FILHAS ----------
+  const excluirModeloMoto = async (modeloId) => {
+    setLoading(true);
+    setErro(null);
+    try {
+      const response = await fetch(`${BASE_URL}/motos/modeloMoto/${modeloId}/deletar`, {
+        method: 'DELETE',
+        headers: { ...getAuthHeaders() },
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.detail || 'Erro ao excluir modelo de moto');
+      }
+
+      setModelosMoto((prev) => prev.filter((modelo) => Number(modelo.id) !== Number(modeloId)));
+      setMotos((prev) =>
+        prev.filter((moto) => Number(moto.modeloMotoId ?? moto.modelo_moto_id) !== Number(modeloId))
+      );
+      return true;
+    } catch (error) {
+      console.error(error);
+      setErro(error.message);
+      return false;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // consulta backend para verificação de número de série
   const verificarNumeroSerie = async (numeroSerie) => {
     try {
@@ -301,6 +330,7 @@ export const MotoProvider = ({ children }) => {
         loading,
         erro,
         excluirMoto,
+        excluirModeloMoto,
         atualizarMoto,
         motoSelecionada,
         setMotoSelecionada,

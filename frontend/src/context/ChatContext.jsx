@@ -2,6 +2,7 @@ import { createContext, useCallback, useContext, useEffect, useState } from 'rea
 import React from 'react';
 import { MotoContext } from './MotoContext';
 import { getAuthHeaders } from './LoginContext';
+import { notify } from '../utils/toastConfig.jsx';
 
 export const ChatContext = createContext();
 
@@ -75,13 +76,13 @@ export const ChatProvider = ({ children }) => {
     if (!texto?.trim() || !motoSelecionada) return;
 
     if (motoEstaConcluida(motoSelecionada)) {
-      alert('Esta moto já foi concluída e não aceita novas mensagens no chat.');
+      notify.warning('Esta moto já foi concluída e não aceita novas mensagens no chat.');
       return;
     }
 
     if (!usuarioId) {
       console.error('Tentativa de enviar mensagem sem usuário logado!');
-      alert('Você precisa estar logado para enviar mensagens.');
+      notify.warning('Você precisa estar logado para enviar mensagens.');
       return;
     }
 
@@ -111,7 +112,7 @@ export const ChatProvider = ({ children }) => {
   const iniciarNovoChat = useCallback(
     (moto) => {
       if (motoEstaConcluida(moto)) {
-        alert('Esta moto já foi concluída e não pode mais usar o chat.');
+        notify.warning('Esta moto já foi concluída e não pode mais usar o chat.');
         return;
       }
 

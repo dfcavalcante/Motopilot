@@ -52,7 +52,7 @@ const ReportImageUploader = ({ onFileSelect, arquivo, error }) => {
       <Box
         {...getRootProps()}
         sx={{
-          border: '1px solid #A0A0A0',
+          border: '1px solid #FBC8C6',
           borderRadius: '12px',
           height: 200,
           maxHeight: 350,
@@ -66,12 +66,12 @@ const ReportImageUploader = ({ onFileSelect, arquivo, error }) => {
           justifyContent: 'center',
           textAlign: 'center',
           cursor: 'pointer',
-          backgroundColor: 'rgba(0, 0, 0, 0.03)',
+          backgroundColor: '#FFF7F7',
           position: 'relative',
           transition: 'all .2s ease-in-out',
           '&:hover': {
-            backgroundColor: 'rgba(0, 0, 0, 0.06)',
-            borderColor: '#666',
+            backgroundColor: '#FFF1F1',
+            borderColor: '#F6A9A6',
           },
         }}
       >
@@ -133,21 +133,22 @@ const ReportImageUploader = ({ onFileSelect, arquivo, error }) => {
 
             <Typography
               variant="body2"
-              sx={{ color: error ? '#d32f2f' : '#333', fontSize: '0.9rem' }}
+              sx={{ color: error ? '#d32f2f' : '#6A3A3A', fontSize: '0.9rem' }}
             >
               {isDragActive ? 'Solte para adicionar' : 'Arraste imagem aqui'}
             </Typography>
 
             <Box
               sx={{
-                backgroundColor: '#666',
+                backgroundColor: '#8F0303',
                 color: 'white',
                 padding: '8px 24px',
                 borderRadius: '50px',
                 fontSize: '0.75rem',
-                fontWeight: 500,
+                fontWeight: 700,
                 mt: 1,
                 boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
+                border: '1px solid #FBC8C6',
               }}
             >
               Procurar neste Dispositivo

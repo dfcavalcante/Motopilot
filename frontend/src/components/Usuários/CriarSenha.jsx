@@ -185,12 +185,11 @@ const CriarSenha = ({ onBack, register, errors, watch, loading }) => {
           disabled={loading}
           sx={{
             color: '#333',
-            borderColor: '#999',
+            borderColor: '#FD6161',
             borderRadius: '8px',
             textTransform: 'none',
             px: 7,
             width: '100px',
-            '&:hover': { borderColor: '#666', backgroundColor: 'rgba(0,0,0,0.05)' },
           }}
         >
           Voltar

@@ -1,5 +1,14 @@
 import React, { useState } from 'react';
-import { Box, Typography, IconButton } from '@mui/material';
+import {
+  Box,
+  Typography,
+  IconButton,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button,
+} from '@mui/material';
 import BaseFront from '../utils/BaseFront';
 import { HookListagemMotosModelo } from '../hooks/HookListagemMotosModelo';
 import InformacoesMoto from '../components/Motos/InformacoesMoto';
@@ -10,6 +19,7 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 const ListagemMotos = () => {
   const [motoEmDetalhe, setMotoEmDetalhe] = useState(null);
+  const [openConfirmDelete, setOpenConfirmDelete] = useState(false);
   const navigate = useNavigate();
 
   const {
@@ -22,6 +32,8 @@ const ListagemMotos = () => {
     motosProcessadas,
     getNomeMecanico,
     setMotoSelecionada,
+    isGerente,
+    handleExcluirModelo,
   } = HookListagemMotosModelo();
 
   if (motoEmDetalhe) {
@@ -29,23 +41,30 @@ const ListagemMotos = () => {
   }
 
   return (
-    <BaseFront icone={null} width={null} height={null} nome={'Motos'}>
-      <IconButton
-        onClick={() => navigate('/listagemMotos')}
-        sx={{
-          color: '#000000',
-          borderRadius: 2,
-          backgroundColor: '#FEDCDB',
-          width: 40,
-          height: 40,
-          position: 'absolute',
-          top: 130,
-          left: 150,
-        }}
-      >
-        <ArrowBackIcon />
-      </IconButton>
-      
+    <BaseFront
+      icone={null}
+      width={null}
+      height={null}
+      nome={'Motos'}
+      headerAction={
+        <IconButton
+          onClick={() => navigate('/listagemMotos')}
+          sx={{ color: '#000', bgcolor: '#FEDCDB', width: 40, height: 40, borderRadius: 2 }}
+        >
+          <ArrowBackIcon />
+        </IconButton>
+      }
+      headerRightAction={
+        isGerente ? (
+          <IconButton
+            onClick={() => setOpenConfirmDelete(true)}
+            sx={{ color: '#000', bgcolor: '#FEDCDB', width: 40, height: 40, borderRadius: 2 }}
+          >
+            <img src="/images/lixeira.png" width={15} height={15} alt="Excluir modelo" />
+          </IconButton>
+        ) : null
+      }
+    >
       <Box sx={{ width: '100%', margin: '0 auto', p: 3 }}>
         {/* Toolbar Superior (Busca e Ordenação) */}
         <ListToolbar
@@ -107,6 +126,39 @@ const ListagemMotos = () => {
           )}
         </Box>
       </Box>
+
+      <Dialog
+        open={openConfirmDelete}
+        onClose={() => setOpenConfirmDelete(false)}
+        maxWidth="xs"
+        fullWidth
+      >
+        <DialogTitle sx={{ fontWeight: 700 }}>Excluir modelo de moto</DialogTitle>
+        <DialogContent>
+          <Typography sx={{ color: '#444' }}>
+            Tem certeza que deseja excluir este modelo? Todas as motos filhas desse modelo serão
+            apagadas automaticamente.
+          </Typography>
+        </DialogContent>
+        <DialogActions sx={{ px: 3, pb: 2 }}>
+          <Button
+            onClick={() => setOpenConfirmDelete(false)}
+            sx={{ color: '#333', textTransform: 'none' }}
+          >
+            Cancelar
+          </Button>
+          <Button
+            onClick={async () => {
+              setOpenConfirmDelete(false);
+              await handleExcluirModelo();
+            }}
+            variant="contained"
+            sx={{ bgcolor: '#F30000', textTransform: 'none', '&:hover': { bgcolor: '#D80000' } }}
+          >
+            Excluir
+          </Button>
+        </DialogActions>
+      </Dialog>
     </BaseFront>
   );
 };

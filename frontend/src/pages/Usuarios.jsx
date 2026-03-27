@@ -10,6 +10,7 @@ import { Toolbar } from '../components/Usuários/ToolBar';
 
 const Usuarios = () => {
   const {
+    canManageUsers,
     viewMode,
     setViewMode,
     input,
@@ -42,7 +43,7 @@ const Usuarios = () => {
       />
 
       {/* --- Modal de Edição --- */}
-      {atualizando && (
+      {canManageUsers && atualizando && (
         <UpdateUsuario
           open={!!atualizando}
           onClose={() => setAtualizando(null)}
@@ -91,6 +92,7 @@ const Usuarios = () => {
                 onDelete={excluirUser}
                 setAtualizando={setAtualizando}
                 atualizando={atualizando}
+                canManageActions={canManageUsers}
               />
             ) : (
               <InformacoesUsuario
@@ -99,6 +101,7 @@ const Usuarios = () => {
                 onDelete={excluirUser}
                 setAtualizando={setAtualizando}
                 atualizando={atualizando}
+                canManageActions={canManageUsers}
               />
             )}
           </React.Fragment>

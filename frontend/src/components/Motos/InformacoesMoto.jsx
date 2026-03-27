@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Box,
   Stack,
@@ -10,6 +10,10 @@ import {
   FormControl,
   Select,
   MenuItem,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
 } from '@mui/material';
 import BaseFront from '../../utils/BaseFront.jsx';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
@@ -17,7 +21,9 @@ import HookInformacoesMoto from '../../hooks/HookInformacoesMoto.jsx';
 import { getAvatarColor, getUserInitials } from '../../utils/avatarUtils';
 
 const InformacoesMoto = ({ moto, onBack }) => {
+  const [openConfirmDelete, setOpenConfirmDelete] = useState(false);
   const {
+    canManageMoto,
     isEditing,
     savingMecanico,
     tecnicos,
@@ -46,18 +52,22 @@ const InformacoesMoto = ({ moto, onBack }) => {
           >
             <ArrowBackIcon />
           </IconButton>
-          <IconButton
-            onClick={handleEditar}
-            sx={{ color: '#000', bgcolor: '#FEDCDB', width: 40, height: 40, borderRadius: 2 }}
-          >
-            <img src="/images/lapis.png" width={15} height={15} alt="Editar" />
-          </IconButton>
-          <IconButton
-            onClick={handleExcluir}
-            sx={{ color: '#000', bgcolor: '#FEDCDB', width: 40, height: 40, borderRadius: 2 }}
-          >
-            <img src="/images/lixeira.png" width={15} height={15} alt="Excluir" />
-          </IconButton>
+          {canManageMoto && (
+            <>
+              <IconButton
+                onClick={handleEditar}
+                sx={{ color: '#000', bgcolor: '#FEDCDB', width: 40, height: 40, borderRadius: 2 }}
+              >
+                <img src="/images/lapis.png" width={15} height={15} alt="Editar" />
+              </IconButton>
+              <IconButton
+                onClick={() => setOpenConfirmDelete(true)}
+                sx={{ color: '#000', bgcolor: '#FEDCDB', width: 40, height: 40, borderRadius: 2 }}
+              >
+                <img src="/images/lixeira.png" width={15} height={15} alt="Excluir" />
+              </IconButton>
+            </>
+          )}
         </Box>
       }
       headerRightAction={
@@ -112,22 +122,27 @@ const InformacoesMoto = ({ moto, onBack }) => {
         >
           {!isEditing ? (
             <Button
-              onClick={handleEditar}
+              onClick={canManageMoto ? handleEditar : undefined}
               variant="contained"
+              disabled={!canManageMoto}
               sx={{
                 boxShadow: 3,
                 backgroundColor: '#ffffff',
                 color: 'black',
                 textTransform: 'none',
-                borderRadius: '8px',
-                padding: '8px 16px',
+                borderRadius: '16px',
+                padding: '8px 8px',
                 minWidth: '300px',
                 minHeight: '45px',
                 fontSize: '20px',
+                '&.Mui-disabled': {
+                  backgroundColor: '#f5f5f5',
+                  color: '#444',
+                },
               }}
             >
               {mecanicoAtual ? (
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 3 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                   <Avatar
                     sx={{
                       width: 34,
@@ -394,6 +409,37 @@ const InformacoesMoto = ({ moto, onBack }) => {
           </Box>
         </Box>
       </Box>
+      <Dialog
+        open={openConfirmDelete}
+        onClose={() => setOpenConfirmDelete(false)}
+        maxWidth="xs"
+        fullWidth
+      >
+        <DialogTitle sx={{ fontWeight: 700 }}>Excluir moto</DialogTitle>
+        <DialogContent>
+          <Typography sx={{ color: '#444' }}>
+            Tem certeza que deseja excluir esta moto? Esta ação não pode ser desfeita.
+          </Typography>
+        </DialogContent>
+        <DialogActions sx={{ px: 3, pb: 2 }}>
+          <Button
+            onClick={() => setOpenConfirmDelete(false)}
+            sx={{ color: '#333', textTransform: 'none' }}
+          >
+            Cancelar
+          </Button>
+          <Button
+            onClick={async () => {
+              setOpenConfirmDelete(false);
+              await handleExcluir();
+            }}
+            variant="contained"
+            sx={{ bgcolor: '#F30000', textTransform: 'none', '&:hover': { bgcolor: '#D80000' } }}
+          >
+            Excluir
+          </Button>
+        </DialogActions>
+      </Dialog>
     </BaseFront>
   );
 };

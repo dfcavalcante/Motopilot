@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { ChatContext } from '../context/ChatContext.jsx';
 import { MotoContext } from '../context/MotoContext.jsx';
 import { UsersContext } from '../context/UserContext.jsx';
+import { useLogin } from '../context/LoginContext.jsx';
+import { notify } from '../utils/toastConfig.jsx';
 
 const normalizeRole = (value) =>
   String(value || '')
@@ -16,6 +18,15 @@ export const HookInformacoesMoto = ({ moto }) => {
   const { iniciarNovoChat } = useContext(ChatContext);
   const { excluirMoto, atribuirMoto } = useContext(MotoContext);
   const { listarUsers } = useContext(UsersContext);
+  const { user } = useLogin();
+
+  const role = normalizeRole(user?.funcao);
+  const canManageMoto =
+    role === 'coordenador' ||
+    role === 'coordenadora' ||
+    role === 'gerente' ||
+    role === 'administrador' ||
+    role === 'admin';
 
   const [isEditing, setIsEditing] = useState(false);
   const [savingMecanico, setSavingMecanico] = useState(false);
@@ -102,7 +113,7 @@ export const HookInformacoesMoto = ({ moto }) => {
 
   const handleSalvarMecanico = useCallback(async () => {
     if (!mecanicoSelecionado) {
-      alert('Selecione um mecanico para salvar.');
+      notify.warning('Selecione um mecânico para salvar.');
       return;
     }
 
@@ -112,7 +123,7 @@ export const HookInformacoesMoto = ({ moto }) => {
     if (sucesso) {
       setMecanicoAtribuidoId(Number(mecanicoSelecionado));
       setIsEditing(false);
-      alert('Mecanico atribuido com sucesso.');
+      notify.success('Mecânico atribuído com sucesso.');
     }
 
     setSavingMecanico(false);
@@ -123,18 +134,19 @@ export const HookInformacoesMoto = ({ moto }) => {
     setIsEditing(false);
   }, [mecanicoAtribuidoId]);
 
-  const handleExcluir = useCallback(() => {
-    if (
-      window.confirm('Tem certeza que deseja excluir esta moto? Esta acao nao pode ser desfeita.')
-    ) {
-      excluirMoto(moto.id);
+  const handleExcluir = useCallback(async () => {
+    try {
+      await excluirMoto(moto.id);
+      notify.success('Moto excluida com sucesso.');
       navigate('/listagemMotos');
+    } catch {
+      notify.error('Nao foi possivel excluir a moto.');
     }
   }, [excluirMoto, moto?.id, navigate]);
 
   const handleAbrirChat = useCallback(() => {
     if (motoConcluida) {
-      alert('Esta moto ja foi concluida e nao pode mais acessar o chat.');
+      notify.warning('Esta moto já foi concluída e não pode mais acessar o chat.');
       return;
     }
 
@@ -143,6 +155,7 @@ export const HookInformacoesMoto = ({ moto }) => {
   }, [iniciarNovoChat, moto, motoConcluida, navigate]);
 
   return {
+    canManageMoto,
     isEditing,
     savingMecanico,
     tecnicos,

@@ -153,7 +153,11 @@ class ChatService:
         """Retorna todo o histórico de conversas de um usuário."""
         return (
             self.db.query(ChatLog)
-            .filter(ChatLog.user_id == usuario_id)
+            .filter(
+                ChatLog.user_id == usuario_id,
+                ChatLog.user_id.isnot(None),
+                ChatLog.moto_id.isnot(None),
+            )
             .order_by(ChatLog.created_at.desc())
             .all()
         )

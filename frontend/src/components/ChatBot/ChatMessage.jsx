@@ -1,9 +1,10 @@
 import React from 'react';
-import { Box, Typography, Paper, Avatar, Tooltip, IconButton } from '@mui/material';
+import { Box, Typography, Avatar, Tooltip, IconButton } from '@mui/material';
 import ReactMarkdown from 'react-markdown';
+import { getAvatarColor, getUserInitials } from '../../utils/avatarUtils';
 
 // Componente de mensagem de chat, exibindo mensagens do bot e do usuário
-const ChatMessage = ({ text, isBot }) => {
+const ChatMessage = ({ text, isBot, userNome = '', userEmail = '' }) => {
   const handleCopy = () => {
     navigator.clipboard.writeText(text);
   };
@@ -71,10 +72,13 @@ const ChatMessage = ({ text, isBot }) => {
             sx={{
               width: 24,
               height: 24,
-              bgcolor: 'grey.400',
+              fontSize: 11,
+              fontWeight: 700,
+              bgcolor: getAvatarColor(userNome, userEmail),
+              color: '#fff',
             }}
           >
-            <img src="/images/person.png" alt="Logo" width="10" />
+            {getUserInitials(userNome, userEmail)}
           </Avatar>
         </Box>
       )}

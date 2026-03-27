@@ -1,8 +1,16 @@
 import React from 'react';
 import { Box, Typography, IconButton } from '@mui/material';
 import { getUserInitials, getAvatarColor } from '../../utils/avatarUtils';
+import { notify } from '../../utils/toastConfig.jsx';
 
-const UserRow = ({ usuario, onEdit, onDelete, setAtualizando, atualizando }) => {
+const UserRow = ({
+  usuario,
+  onEdit,
+  onDelete,
+  setAtualizando,
+  atualizando,
+  canManageActions = true,
+}) => {
   const iniciais = getUserInitials(usuario?.nome, usuario?.email);
   const corAvatar = getAvatarColor(usuario?.nome, usuario?.email);
 
@@ -89,12 +97,25 @@ const UserRow = ({ usuario, onEdit, onDelete, setAtualizando, atualizando }) => 
         <IconButton
           size="small"
           onClick={() => {
+            if (!canManageActions) {
+              notify.warning('Você não tem permissão para editar usuários.');
+              return;
+            }
             setAtualizando(usuario);
           }}
         >
           <img src="/images/lapis.png" alt="Editar" style={{ width: '15px', height: '15px' }} />
         </IconButton>
-        <IconButton size="small" onClick={() => onDelete(usuario.id)}>
+        <IconButton
+          size="small"
+          onClick={() => {
+            if (!canManageActions) {
+              notify.warning('Você não tem permissão para excluir usuários.');
+              return;
+            }
+            onDelete(usuario.id);
+          }}
+        >
           <img src="/images/lixeira.png" alt="Excluir" style={{ width: '15px', height: '15px' }} />
         </IconButton>
       </Box>

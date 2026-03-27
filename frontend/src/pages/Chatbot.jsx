@@ -11,6 +11,7 @@ import Loading from '../components/ChatBot/Loading.jsx';
 import { ChatContext } from '../context/ChatContext.jsx';
 import BaseFrontChat from '../components/ChatBot/BaseFrontChat.jsx';
 import BotaoFinalizar from '../components/ChatBot/BotaoFinalizar.jsx';
+import { notify } from '../utils/toastConfig.jsx';
 
 const Chatbot = () => {
   const {
@@ -49,24 +50,9 @@ const Chatbot = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, isLoadingChat]);
 
-  const handleNovoChat = async () => {
-    const usuarioId = user?.id;
-
-    if (!usuarioId) {
-      alert('Você precisa estar logado!');
-      return;
-    }
-
-    const confirmou = window.confirm('Deseja limpar o histórico e iniciar um novo chat?');
-    if (confirmou) {
-      await limparChat(usuarioId);
-      trocarMoto();
-    }
-  };
-
   const handleSendClick = () => {
     if (motoConcluida) {
-      alert('Esta moto já foi concluída e não aceita novas mensagens no chat.');
+      notify.warning('Esta moto já foi concluída e não aceita novas mensagens no chat.');
       return;
     }
 
@@ -79,7 +65,7 @@ const Chatbot = () => {
   // Função para finalizar conversa e criar relatório
   const handleFinalizarAtendimento = async () => {
     if (!user?.id || !motoSelecionada?.id) {
-      alert('Usuário ou Moto não identificados!');
+      notify.error('Usuário ou Moto não identificados!');
       return null;
     }
 
@@ -105,7 +91,7 @@ const Chatbot = () => {
 
   return (
     <BaseFrontChat>
-      <Box sx={{ display: 'flex', height: '100%', overflow: 'hidden' }}>
+      <Box sx={{ display: 'flex', height: '100%', overflow: 'hidden', minHeight: 0 }}>
         {/* Área principal do chat */}
         <Box
           sx={{
@@ -114,6 +100,7 @@ const Chatbot = () => {
             flexDirection: 'column',
             overflow: 'hidden',
             minWidth: 0,
+            minHeight: 0,
           }}
         >
           {/* Header Interno do Chat */}
@@ -209,6 +196,7 @@ const Chatbot = () => {
                 alignItems: 'center',
                 flexGrow: 1,
                 overflow: 'hidden',
+                minHeight: 0,
               }}
             >
               {/* Caixa das Mensagens */}
@@ -221,10 +209,17 @@ const Chatbot = () => {
                   flexDirection: 'column',
                   mb: 2,
                   overflowY: 'auto',
+                  minHeight: 0,
                 }}
               >
                 {messages.map((msg, index) => (
-                  <ChatMessage key={index} text={msg.text} isBot={msg.isBot} />
+                  <ChatMessage
+                    key={index}
+                    text={msg.text}
+                    isBot={msg.isBot}
+                    userNome={user?.nome}
+                    userEmail={user?.email}
+                  />
                 ))}
                 {isLoadingChat && <Loading />}
                 <div ref={messagesEndRef} />

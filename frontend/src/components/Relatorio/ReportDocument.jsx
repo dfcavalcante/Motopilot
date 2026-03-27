@@ -55,11 +55,37 @@ const ReportDocument = ({ data, isEditing, onFieldChange, imagemFile }) => {
     setNovaPeca('');
   };
 
-
+  const formFieldSx = {
+    '& .MuiOutlinedInput-root': {
+      borderRadius: '12px',
+      backgroundColor: '#FFF7F7',
+      '& fieldset': {
+        borderColor: '#FBC8C6',
+      },
+      '&:hover fieldset': {
+        borderColor: '#F6A9A6',
+      },
+      '&.Mui-focused fieldset': {
+        borderColor: '#F30000',
+      },
+    },
+    '& .MuiInputBase-input': {
+      color: '#1A1A1A',
+    },
+    '& .MuiInputLabel-root.Mui-focused': {
+      color: '#F30000',
+    },
+  };
 
   return (
     <Box
-      sx={{ bgcolor: '#fff', p: 4, borderRadius: '4px', boxShadow: '0 2px 10px rgba(0,0,0,0.05)' }}
+      sx={{
+        bgcolor: '#fff',
+        p: 4,
+        borderRadius: '12px',
+        border: '1px solid #FEE0DF',
+        boxShadow: '0 8px 22px rgba(243, 0, 0, 0.08)',
+      }}
     >
       {/* 1. CAPA */}
       <ReportSection number="1" title="Capa / Cabeçalho">
@@ -74,7 +100,9 @@ const ReportDocument = ({ data, isEditing, onFieldChange, imagemFile }) => {
                 name="mecanicos"
                 value={data.mecanicos || ''}
                 onChange={onFieldChange}
-                variant="standard"
+                variant="outlined"
+                size="small"
+                sx={formFieldSx}
               />
             ) : (
               <Typography variant="body2" fontWeight={600}>
@@ -117,7 +145,6 @@ const ReportDocument = ({ data, isEditing, onFieldChange, imagemFile }) => {
 
       <Divider sx={{ my: 4, borderStyle: 'dashed' }} />
 
-
       {/* 3. ATIVIDADES */}
       <ReportSection number="3" title="Descrição das Atividades">
         <SectionTitle title="3.1 SITUAÇÃO ENCONTRADA (DIAGNÓSTICO)" />
@@ -130,114 +157,124 @@ const ReportDocument = ({ data, isEditing, onFieldChange, imagemFile }) => {
             value={data.diagnostico || ''}
             onChange={onFieldChange}
             variant="outlined"
+            sx={formFieldSx}
           />
         ) : (
           <Typography
             variant="body2"
-            sx={{ bgcolor: '#fafafa', p: 2, borderRadius: '8px', border: '1px solid #f0f0f0' }}
+            sx={{ bgcolor: '#FEDCDB', p: 2, borderRadius: '8px', border: '1px solid #f0f0f0' }}
           >
             {data.diagnostico}
           </Typography>
         )}
 
-        <SectionTitle title="3.2 SERVIÇOS REALIZADOS" />
-        {isEditing ? (
-          <TextField
-            fullWidth
-            multiline
-            rows={3}
-            name="atividades"
-            value={data.atividades || ''}
-            onChange={onFieldChange}
-            variant="outlined"
-          />
-        ) : (
-          <Typography variant="body2">{data.atividades}</Typography>
-        )}
+        <Box sx={{ mt: 4 }}>
+          <SectionTitle title="3.2 SERVIÇOS REALIZADOS" />
+          {isEditing ? (
+            <TextField
+              fullWidth
+              multiline
+              rows={3}
+              name="atividades"
+              value={data.atividades || ''}
+              onChange={onFieldChange}
+              variant="outlined"
+              sx={formFieldSx}
+            />
+          ) : (
+            <Typography variant="body2">{data.atividades}</Typography>
+          )}
+        </Box>
 
-        <SectionTitle title="3.3 PEÇAS DEFEITUOSAS" />
+        <Box sx={{ mt: 4 }}>
+          <SectionTitle title="3.3 PEÇAS DEFEITUOSAS" />
 
-        {isEditing ? (
-          <>
+          {isEditing ? (
+            <>
+              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                {pecasDisponiveis.length > 0 ? (
+                  pecasDisponiveis.map((peca) => {
+                    const selecionada = pecasSelecionadas.includes(peca);
+                    return (
+                      <Chip
+                        key={peca}
+                        label={peca}
+                        clickable
+                        onClick={() => togglePeca(peca)}
+                        variant={selecionada ? 'filled' : 'outlined'}
+                        sx={{
+                          borderRadius: '8px',
+                          fontWeight: 600,
+                          bgcolor: selecionada ? '#F30000' : '#FFF7F7',
+                          color: selecionada ? '#fff' : '#6A3A3A',
+                          borderColor: selecionada ? '#F30000' : '#FBC8C6',
+                          '& .MuiChip-label': { px: 1.25 },
+                        }}
+                      />
+                    );
+                  })
+                ) : (
+                  <Typography variant="body2" color="text.secondary">
+                    Nenhuma peça cadastrada no catálogo.
+                  </Typography>
+                )}
+              </Box>
+
+              <Box
+                sx={{ mt: 1.5, display: 'flex', gap: 1, alignItems: 'center', flexWrap: 'wrap' }}
+              >
+                <TextField
+                  size="small"
+                  label="Nova peça"
+                  value={novaPeca}
+                  onChange={(e) => setNovaPeca(e.target.value)}
+                  sx={{ minWidth: { xs: '100%', sm: 280 }, ...formFieldSx }}
+                />
+
+                <Button
+                  variant="contained"
+                  size="small"
+                  startIcon={<Add />}
+                  onClick={handleAdicionar}
+                  disabled={!novaPeca.trim()}
+                  sx={{
+                    height: 40,
+                    borderRadius: '10px',
+                    px: 2,
+                    fontWeight: 700,
+                    textTransform: 'none',
+                    bgcolor: '#F30000',
+                    '&:hover': { bgcolor: '#D80000' },
+                  }}
+                >
+                  Adicionar peça
+                </Button>
+              </Box>
+            </>
+          ) : (
             <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-              {pecasDisponiveis.length > 0 ? (
-                pecasDisponiveis.map((peca) => {
-                  const selecionada = pecasSelecionadas.includes(peca);
-                  return (
-                    <Chip
-                      key={peca}
-                      label={peca}
-                      clickable
-                      onClick={() => togglePeca(peca)}
-                      variant={selecionada ? 'filled' : 'outlined'}
-                      color={selecionada ? 'primary' : 'default'}
-                      sx={{
-                        borderRadius: '8px',
-                        fontWeight: 600,
-                        '& .MuiChip-label': { px: 1.25 },
-                      }}
-                    />
-                  );
-                })
+              {pecasSelecionadas.length > 0 ? (
+                pecasSelecionadas.map((peca) => (
+                  <Chip
+                    key={peca}
+                    label={peca}
+                    size="small"
+                    sx={{
+                      borderRadius: '8px',
+                      bgcolor: '#FEDCDB',
+                      color: '#111827',
+                      fontWeight: 600,
+                    }}
+                  />
+                ))
               ) : (
                 <Typography variant="body2" color="text.secondary">
-                  Nenhuma peça cadastrada no catálogo.
+                  Nenhuma peça registrada
                 </Typography>
               )}
             </Box>
-
-            <Box sx={{ mt: 1.5, display: 'flex', gap: 1, alignItems: 'center', flexWrap: 'wrap' }}>
-              <TextField
-                size="small"
-                label="Nova peça"
-                value={novaPeca}
-                onChange={(e) => setNovaPeca(e.target.value)}
-                sx={{ minWidth: { xs: '100%', sm: 280 } }}
-              />
-
-              <Button
-                variant="contained"
-                size="small"
-                startIcon={<Add />}
-                onClick={handleAdicionar}
-                disabled={!novaPeca.trim()}
-                sx={{
-                  height: 40,
-                  borderRadius: '10px',
-                  px: 2,
-                  fontWeight: 700,
-                  textTransform: 'none',
-                  bgcolor: '#0f172a',
-                  '&:hover': { bgcolor: '#111827' },
-                }}
-              >
-                Adicionar peça
-              </Button>
-            </Box>
-          </>
-        ) : (
-          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-            {pecasSelecionadas.length > 0 ? (
-              pecasSelecionadas.map((peca) => (
-                <Chip
-                  key={peca}
-                  label={peca}
-                  size="small"
-                  sx={{
-                    borderRadius: '8px',
-                    bgcolor: '#f3f4f6',
-                    color: '#111827',
-                    fontWeight: 600,
-                  }}
-                />
-              ))
-            ) : (
-              <Typography variant="body2" color="text.secondary">
-                Nenhuma peça registrada
-              </Typography>
-            )}
-          </Box>
-        )}
+          )}
+        </Box>
       </ReportSection>
 
       {/* 4. EVIDÊNCIAS (FOTOS) */}
@@ -278,6 +315,7 @@ const ReportDocument = ({ data, isEditing, onFieldChange, imagemFile }) => {
             value={data.observacoes || ''}
             onChange={onFieldChange}
             variant="outlined"
+            sx={formFieldSx}
           />
         ) : (
           <Typography variant="body2">
@@ -295,13 +333,13 @@ const ReportDocument = ({ data, isEditing, onFieldChange, imagemFile }) => {
             label="OPERACIONAL"
             icon={<CheckCircleOutline />}
             size="small"
-            sx={{ bgcolor: '#212121', color: '#fff', '& .MuiChip-icon': { color: '#fff' } }}
+            sx={{ bgcolor: '#F30000', color: '#fff', '& .MuiChip-icon': { color: '#fff' } }}
           />
         </Box>
       </Grid>
 
       <Box sx={{ mt: 8, textAlign: 'center', maxWidth: '300px', mx: 'auto' }}>
-        <Divider sx={{ mb: 1, borderColor: '#212121' }} />
+        <Divider sx={{ mb: 1, borderColor: '#F30000' }} />
         <Typography variant="body2" fontWeight={700}>
           {data.mecanicos || 'Técnico Responsável'}
         </Typography>

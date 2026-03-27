@@ -25,7 +25,7 @@ const DadosGeraisModelo = ({ register, setValue, watch, errors, onNext, onCancel
   };
 
   return (
-    <>
+    <Box sx={{ boxShadow: 3, padding: 4, borderRadius: '16px', backgroundColor: 'white' }}>
       <Typography variant="h5" align="center" sx={{ mb: 2.5, color: '#000000', fontWeight: 400 }}>
         Dados Gerais
       </Typography>
@@ -140,7 +140,7 @@ const DadosGeraisModelo = ({ register, setValue, watch, errors, onNext, onCancel
           Próximo
         </Button>
       </Box>
-    </>
+    </Box>
   );
 };
 

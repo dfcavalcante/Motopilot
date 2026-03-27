@@ -11,7 +11,7 @@ const ManualMoto = ({ onBack, setValue, watch, loading, onNext }) => {
   };
 
   return (
-    <>
+    <Box sx={{ boxShadow:3, bgcolor: 'white', borderRadius: '16px', p: 3, display: 'flex', flexDirection: 'column' }}>
       {/* --- Cabeçalho --- */}
       <Box sx={{ position: 'relative', mb: 2 }}>
         <IconButton
@@ -22,6 +22,7 @@ const ManualMoto = ({ onBack, setValue, watch, loading, onNext }) => {
             top: -5,
             color: '#000000',
             borderRadius: 2,
+            backgroundColor: '#FEDCDB',
           }}
         >
           <ArrowBackIcon />
@@ -72,21 +73,21 @@ const ManualMoto = ({ onBack, setValue, watch, loading, onNext }) => {
           onClick={onNext}
           disabled={!arquivoAtual || loading}
           sx={{
-            backgroundColor: '#888',
+            backgroundColor: '#F30000',
             color: 'white',
             borderRadius: '8px',
             textTransform: 'none',
             px: 4,
             width: '140px',
             boxShadow: 'none',
-            '&:hover': { backgroundColor: '#666', boxShadow: 'none' },
+            '&:hover': { backgroundColor: '#F30000', boxShadow: 'none' },
             '&.Mui-disabled': { backgroundColor: '#bbb', color: '#eee' },
           }}
         >
           {loading ? 'Salvando...' : 'Finalizar'}
         </Button>
       </Box>
-    </>
+    </Box>
   );
 };
 

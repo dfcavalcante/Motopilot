@@ -5,7 +5,6 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import BaseFront from '../utils/BaseFront.jsx';
 import { MotoContext } from '../context/MotoContext.jsx';
-import ImageUploader from './../components/Motos/ImageUploader';
 import EtapasMoto from '../components/Motos/EtapasMoto.jsx';
 import DadosGeraisModelo from '../components/Motos/DadosGeraisModelo.jsx';
 import ManualMoto from '../components/Motos/DadosManual.jsx';
@@ -31,27 +30,6 @@ const CadastroMotoAtribuir = () => {
       manual_pdf_path: null,
     },
   });
-
-  const labelStyle = {
-    color: '#000000',
-    fontSize: '15px',
-    fontWeight: '500',
-    marginLeft: '2px',
-  };
-
-  const inputSx = {
-    '& .MuiOutlinedInput-root': {
-      backgroundColor: 'rgba(0, 0, 0, 0.03)',
-      borderRadius: '12px',
-      '& fieldset': { borderColor: '#A0A0A0' },
-      '&:hover fieldset': { borderColor: '#666' },
-      '&.Mui-focused fieldset': { borderColor: '#666', borderWidth: '1px' },
-    },
-    '& input': {
-      padding: '10px 14px',
-      fontSize: '0.9rem',
-    },
-  };
 
   const [etapaAtual, setEtapaAtual] = useState(1);
 
@@ -91,7 +69,7 @@ const CadastroMotoAtribuir = () => {
           margin: '0 auto',
           fontFamily: 'Roboto, sans-serif',
           overflow: 'visible',
-          marginTop: 8,
+          marginTop: 4,
         }}
       >
         <Box component="form" onSubmit={handleSubmit(onSubmit)} sx={{ width: '100%', mt: 2 }}>

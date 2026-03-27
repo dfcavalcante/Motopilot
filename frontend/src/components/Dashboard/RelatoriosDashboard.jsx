@@ -6,7 +6,7 @@ const BoxRelatorio = ({ icone, numero, nome, descricao }) => {
     <Box
       flex={1} 
       height={'100%'}
-      backgroundColor={'#ffffff'}
+      boxShadow={3}
       borderRadius={4}
       padding={4}
       display="flex"
@@ -14,9 +14,8 @@ const BoxRelatorio = ({ icone, numero, nome, descricao }) => {
       alignItems="center"
       justifyContent="space-between" 
     >
-      {/*Dps vai ter q mudar a cor desse container */}
       <Box
-        backgroundColor="#E4E4E4"
+        boxShadow={3}
         padding={1.5}
         borderRadius={3}
         display="flex"
@@ -24,6 +23,8 @@ const BoxRelatorio = ({ icone, numero, nome, descricao }) => {
         justifyContent="center"
         width={60}
         height={60}
+        sx={{ backgroundColor: "#fff8f8" }}
+        mt={3}
       >
         {icone}
       </Box>
@@ -106,7 +107,6 @@ const RelatoriosDashboards = ({
 
   return (
     <Box
-      backgroundColor={'#D9D9D9'}
       width="100%"
       height="100%"
       alignItems={'center'}

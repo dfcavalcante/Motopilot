@@ -28,5 +28,6 @@ export const getAvatarColor = (nome = '', email = '') => {
   }
 
   const hue = Math.abs(hash) % 360;
-  return `hsl(${hue}, 60%, 42%)`;
+  
+  return `hsl(${hue}, 55%, 55%)`; 
 };

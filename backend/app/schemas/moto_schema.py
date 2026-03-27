@@ -44,6 +44,7 @@ class ModeloMotoResponse(BaseModel):
     ano: int
     imagem_moto: Optional[str] = Field(None, alias="imagemMoto")
     manual_pdf_path: Optional[str] = None
+    quantidade_motos: int = Field(default=0, alias="quantidadeMotos")
 
     model_config = ConfigDict(from_attributes=True, populate_by_name=True)
 

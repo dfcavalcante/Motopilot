@@ -117,7 +117,7 @@ const SideBar = ({ historico = [] }) => {
           alignItems: 'center',
           justifyContent: 'center',
           '&:hover': {
-            backgroundColor: '#DBDBDB',
+            backgroundColor: '#FFDBDB',
             boxShadow: 3,
           },
         }}
@@ -197,7 +197,7 @@ const SideBar = ({ historico = [] }) => {
                   backgroundColor: location.pathname === menu.link ? '#FEDCDB' : 'transparent',
                   color: location.pathname === menu.link,
                   '&:hover': {
-                    backgroundColor: location.pathname === menu.link ? '#d5d5d5' : '#f5f5f5',
+                    backgroundColor: location.pathname === menu.link ? '#d5d5d5' : '#FFDBDB',
                   },
                 }}
               >
@@ -222,6 +222,9 @@ const SideBar = ({ historico = [] }) => {
               padding: '12px',
               borderRadius: '12px',
               justifyContent: open ? 'flex-start' : 'center',
+              '&:hover': {
+                backgroundColor: '#FFDBDB',
+              },
             }}
           >
             <img src="/images/logout.png" alt="Sair" width="20" />

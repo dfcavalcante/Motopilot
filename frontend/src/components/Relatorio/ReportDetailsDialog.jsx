@@ -18,7 +18,6 @@ import {
 } from '@mui/icons-material';
 import ReportDocument from './ReportDocument';
 import { ReportContext } from '../../context/ReportContext';
-import Header from './../../utils/Header';
 
 const ReportDetailsDialog = ({ open, report, onClose, onDownload, onSave, watch }) => {
   const [isEditing, setIsEditing] = useState(false);
@@ -70,21 +69,41 @@ const ReportDetailsDialog = ({ open, report, onClose, onDownload, onSave, watch 
       onClose={onClose}
       maxWidth="md"
       fullWidth
-      PaperProps={{ sx: { borderRadius: '12px', bgcolor: '#f5f5f5' } }}
+      PaperProps={{
+        sx: {
+          borderRadius: '16px',
+          bgcolor: '#fff',
+          border: '1px solid #FEE0DF',
+          boxShadow: '0 16px 38px rgba(243, 0, 0, 0.12)',
+          overflow: 'hidden',
+        },
+      }}
     >
       <DialogTitle
         sx={{
           p: 3,
-          bgcolor: '#fff',
+          bgcolor: '#FFF7F7',
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
-          borderBottom: '1px solid #e0e0e0',
+          borderBottom: '1px solid #FEE0DF',
         }}
       >
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-          <AssignmentOutlined />
-          <Typography variant="h6" fontWeight={700}>
+          <Box
+            sx={{
+              width: 34,
+              height: 34,
+              borderRadius: '10px',
+              bgcolor: '#FEDCDB',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <AssignmentOutlined sx={{ color: '#F30000', fontSize: 20 }} />
+          </Box>
+          <Typography variant="h6" fontWeight={700} sx={{ color: '#1A1A1A' }}>
             Relatório Técnico #{report.id}
           </Typography>
         </Box>
@@ -92,47 +111,79 @@ const ReportDetailsDialog = ({ open, report, onClose, onDownload, onSave, watch 
           <Button
             startIcon={isEditing ? <SaveOutlined /> : <EditOutlined />}
             onClick={isEditing ? handleSaveInternal : () => setIsEditing(true)}
-            sx={{ color: isEditing ? '#2e7d32' : '#212121' }}
+            sx={{
+              textTransform: 'none',
+              fontWeight: 700,
+              borderRadius: '10px',
+              px: 2,
+              color: '#000000',
+              border: '1px solid #000000',
+              bgcolor: '#fff',
+              '&:hover': { bgcolor: '#FFF1F1' },
+            }}
           >
             {isEditing ? 'Salvar' : 'Editar'}
           </Button>
-          <IconButton onClick={onClose} size="small">
-            <Close />
+          <IconButton
+            onClick={onClose}
+            size="small"
+            sx={{
+              bgcolor: '#FEDCDB',
+              color: '#111',
+              '&:hover': { bgcolor: '#FBC8C6' },
+            }}
+          >
+            <Close fontSize="small" />
           </IconButton>
         </Box>
       </DialogTitle>
 
-      <DialogContent sx={{ p: { xs: 2, md: 5 } }}>
+      <DialogContent sx={{ p: { xs: 2, md: 4 }, bgcolor: '#FFFDFD' }}>
         <ReportDocument data={formData} isEditing={isEditing} onFieldChange={handleChange} imagemFile={imagemFile} />
       </DialogContent>
 
       <DialogActions
         sx={{
           p: 3,
-          bgcolor: '#fff',
-          borderTop: '1px solid #e0e0e0',
+          bgcolor: '#FFF7F7',
+          borderTop: '1px solid #FEE0DF',
           justifyContent: 'space-between',
         }}
       >
-        <Typography variant="caption" color="textSecondary">
+        <Typography variant="caption" sx={{ color: '#8A6A6A' }}>
           Cópia digital MotoService AI
         </Typography>
         <Box sx={{ display: 'flex', gap: 2 }}>
-          <Button 
-            onClick={async () => {
-              try {
-                // Usa o formData mais recente (que inclui imagem_path) no lugar do report original
-                await onDownload(formData);
-              } catch (e) {
-                console.error("Erro ao gerar PDF:", e);
-              }
-            }} 
-            startIcon={<Download />} 
-            sx={{ color: '#212121', fontWeight: 700 }}
+          <Button
+            onClick={() => onDownload(report)}
+            startIcon={<Download />}
+            sx={{
+              color: '#000000',
+              border: '1px solid #000000',
+              borderRadius: '10px',
+              px: 2,
+              fontWeight: 700,
+              textTransform: 'none',
+              '&:hover': { bgcolor: '#FFF1F1', borderColor: '#F6A9A6' },
+            }}
           >
             Exportar PDF
           </Button>
-          <Button onClick={onClose} variant="contained" disableElevation sx={{ bgcolor: '#212121', borderRadius: '8px', px: 4 }}>Fechar</Button>
+          <Button
+            onClick={onClose}
+            variant="contained"
+            disableElevation
+            sx={{
+              bgcolor: '#F30000',
+              borderRadius: '10px',
+              px: 4,
+              textTransform: 'none',
+              fontWeight: 700,
+              '&:hover': { bgcolor: '#D80000' },
+            }}
+          >
+            Fechar
+          </Button>
         </Box>
       </DialogActions>
     </Dialog>

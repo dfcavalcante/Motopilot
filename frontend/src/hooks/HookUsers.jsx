@@ -1,9 +1,10 @@
-import { useState, useContext, useEffect } from 'react';
+import { useState, useContext, useEffect, useMemo } from 'react';
 
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { UsersContext } from '../context/UserContext';
+import { useLogin } from '../context/LoginContext.jsx';
 
 //Esquema do Zod
 const usuarioSchema = z
@@ -40,6 +41,17 @@ const usuarioSchema = z
   );
 
 export const HookUsers = () => {
+  const { user } = useLogin();
+
+  const role = String(user?.funcao || '')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .trim();
+  const canManageUsers =
+    role === 'administrador' ||
+    role === 'admin';
+
   const {
     verificarMatricula,
     verificarEmail,
@@ -221,7 +233,22 @@ export const HookUsers = () => {
     }
   };
 
+  // Filtra usuários baseado no input de pesquisa
+  const usersFiltered = useMemo(() => {
+    let lista = [...usersProcessados];
+    if (input) {
+      lista = lista.filter(
+        (usuario) =>
+          usuario.nome?.toLowerCase().includes(input.toLowerCase()) ||
+          usuario.email?.toLowerCase().includes(input.toLowerCase()) ||
+          usuario.matricula?.toLowerCase().includes(input.toLowerCase())
+      );
+    }
+    return lista;
+  }, [usersProcessados, input]);
+
   return {
+    canManageUsers,
     // Cadastro
     etapaAtual,
     loading,
@@ -234,7 +261,7 @@ export const HookUsers = () => {
     onSubmitForm,
     control,
     // Listagem
-    usersProcessados,
+    usersProcessados: usersFiltered,
     viewMode,
     setViewMode,
     input,
