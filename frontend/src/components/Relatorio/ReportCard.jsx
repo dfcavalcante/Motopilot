@@ -37,8 +37,6 @@ const ReportCard = ({
         display: 'flex',
         flexDirection: 'column',
         borderRadius: '16px',
-        backgroundColor: isConcluido ? '#f4fbf4' : '#fff8f8',
-        border: isConcluido ? '1px solid #b7e2bc' : '1px solid #fadcdc',
         boxShadow: isConcluido ? '0 6px 16px rgba(46,125,50,0.10)' : '0 4px 12px rgba(0,0,0,0.03)',
         transition: 'all 0.3s ease-in-out',
         '&:hover': {
