@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { ChatContext } from '../context/ChatContext.jsx';
 import { MotoContext } from '../context/MotoContext.jsx';
 import { UsersContext } from '../context/UserContext.jsx';
+import { notify } from '../utils/toastConfig.jsx';
 
 const normalizeRole = (value) =>
   String(value || '')
@@ -102,7 +103,7 @@ export const HookInformacoesMoto = ({ moto }) => {
 
   const handleSalvarMecanico = useCallback(async () => {
     if (!mecanicoSelecionado) {
-      alert('Selecione um mecanico para salvar.');
+      notify.warning('Selecione um mecânico para salvar.');
       return;
     }
 
@@ -112,7 +113,7 @@ export const HookInformacoesMoto = ({ moto }) => {
     if (sucesso) {
       setMecanicoAtribuidoId(Number(mecanicoSelecionado));
       setIsEditing(false);
-      alert('Mecanico atribuido com sucesso.');
+      notify.success('Mecânico atribuído com sucesso.');
     }
 
     setSavingMecanico(false);
@@ -134,7 +135,7 @@ export const HookInformacoesMoto = ({ moto }) => {
 
   const handleAbrirChat = useCallback(() => {
     if (motoConcluida) {
-      alert('Esta moto ja foi concluida e nao pode mais acessar o chat.');
+      notify.warning('Esta moto já foi concluída e não pode mais acessar o chat.');
       return;
     }
 

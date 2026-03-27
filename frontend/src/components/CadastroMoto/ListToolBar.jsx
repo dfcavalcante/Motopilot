@@ -1,13 +1,23 @@
 import React from 'react';
-import { Box, Typography, IconButton, Menu, MenuItem, TextField, InputAdornment } from '@mui/material';
+import {
+  Box,
+  Typography,
+  IconButton,
+  Menu,
+  MenuItem,
+  TextField,
+  InputAdornment,
+} from '@mui/material';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
-import SearchIcon from '@mui/icons-material/Search';
-import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 
 const ListToolbar = ({ input, setInput, anchorEl, onOpenMenu, onCloseMenu, onSelectOrder }) => {
   return (
-    <Box display="flex" alignItems="center" justifyContent="space-between" sx={{ width: '100%', mb: 4, px: 2 }}>
-      
+    <Box
+      display="flex"
+      alignItems="center"
+      justifyContent="space-between"
+      sx={{ width: '100%', mb: 4, px: 2 }}
+    >
       {/* Lado Esquerdo: Ordenar */}
       <Box display="flex" alignItems="center" gap={1} sx={{ flex: 1 }}>
         <Typography sx={{ fontSize: '14px', color: '#555' }}>Ordenar</Typography>
@@ -36,35 +46,32 @@ const ListToolbar = ({ input, setInput, anchorEl, onOpenMenu, onCloseMenu, onSel
             width: '100%',
             maxWidth: '500px',
             '& .MuiOutlinedInput-root': {
-              borderRadius: '24px',
-              backgroundColor: '#FAFAFA',
-              '& fieldset': { borderColor: '#E0E0E0' },
-              '&:hover fieldset': { borderColor: '#BDBDBD' },
-              '&.Mui-focused fieldset': { borderColor: '#999' },
+              borderRadius: '16px',
+              backgroundColor: 'rgba(255, 219, 219, 0.48)',
+              boxShadow: '3',
+              '& fieldset': { borderColor: 'transparent !important' },
+              '&:hover fieldset': { borderColor: 'transparent' },
+              '&.Mui-focused fieldset': { borderColor: 'transparent' },
+            },
+            '& .MuiInputBase-input::placeholder': {
+              color: '#6a6a6a',
+              opacity: 1,
             },
           }}
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
-                <SearchIcon sx={{ color: '#888' }} />
+                <img src="/images/search.png" alt="Search" width="12" />
               </InputAdornment>
             ),
             endAdornment: (
               <InputAdornment position="end">
-                <Box
-                  sx={{
-                    backgroundColor: '#000',
-                    color: '#FFF',
-                    borderRadius: '50%',
-                    width: 20,
-                    height: 20,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center'
-                  }}
-                >
-                  <ArrowUpwardIcon sx={{ fontSize: 14 }} />
-                </Box>
+                <img
+                  src="/images/SendButton.png"
+                  alt="Send"
+                  width="12"
+                  style={{ cursor: 'pointer' }}
+                />
               </InputAdornment>
             ),
           }}

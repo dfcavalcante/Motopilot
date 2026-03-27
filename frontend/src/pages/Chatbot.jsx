@@ -11,6 +11,7 @@ import Loading from '../components/ChatBot/Loading.jsx';
 import { ChatContext } from '../context/ChatContext.jsx';
 import BaseFrontChat from '../components/ChatBot/BaseFrontChat.jsx';
 import BotaoFinalizar from '../components/ChatBot/BotaoFinalizar.jsx';
+import { notify } from '../utils/toastConfig.jsx';
 
 const Chatbot = () => {
   const {
@@ -53,7 +54,7 @@ const Chatbot = () => {
     const usuarioId = user?.id;
 
     if (!usuarioId) {
-      alert('Você precisa estar logado!');
+      notify.warning('Você precisa estar logado!');
       return;
     }
 
@@ -66,7 +67,7 @@ const Chatbot = () => {
 
   const handleSendClick = () => {
     if (motoConcluida) {
-      alert('Esta moto já foi concluída e não aceita novas mensagens no chat.');
+      notify.warning('Esta moto já foi concluída e não aceita novas mensagens no chat.');
       return;
     }
 
@@ -79,7 +80,7 @@ const Chatbot = () => {
   // Função para finalizar conversa e criar relatório
   const handleFinalizarAtendimento = async () => {
     if (!user?.id || !motoSelecionada?.id) {
-      alert('Usuário ou Moto não identificados!');
+      notify.error('Usuário ou Moto não identificados!');
       return null;
     }
 

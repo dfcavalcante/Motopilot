@@ -17,16 +17,28 @@ body {
   margin: 0;
 }
 
-
 * {
   box-sizing: border-box;
 }
 
 @keyframes bounce {
-  0%, 80%, 100% {
+  0%,
+  80%,
+  100% {
     transform: scale(0);
   }
   40% {
     transform: scale(1);
   }
+}
+
+:root {
+  --toastify-color-success: #fedcdb; /* Sucesso */
+  --toastify-color-error: #d63031; /* Erro */
+  --toastify-color-warning: #fdcb6e; /* Aviso */
+  --toastify-color-info: #0984e3; /* Informação */
+
+  /* cor da barrinha de tempo  */
+  --toastify-color-progress-success: rgba(255, 255, 255, 0.7);
+  --toastify-color-progress-error: rgba(255, 255, 255, 0.7);
 }

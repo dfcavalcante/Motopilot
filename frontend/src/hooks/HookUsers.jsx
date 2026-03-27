@@ -1,4 +1,4 @@
-import { useState, useContext, useEffect } from 'react';
+import { useState, useContext, useEffect, useMemo } from 'react';
 
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -221,6 +221,20 @@ export const HookUsers = () => {
     }
   };
 
+  // Filtra usuários baseado no input de pesquisa
+  const usersFiltered = useMemo(() => {
+    let lista = [...usersProcessados];
+    if (input) {
+      lista = lista.filter(
+        (usuario) =>
+          usuario.nome?.toLowerCase().includes(input.toLowerCase()) ||
+          usuario.email?.toLowerCase().includes(input.toLowerCase()) ||
+          usuario.matricula?.toLowerCase().includes(input.toLowerCase())
+      );
+    }
+    return lista;
+  }, [usersProcessados, input]);
+
   return {
     // Cadastro
     etapaAtual,
@@ -234,7 +248,7 @@ export const HookUsers = () => {
     onSubmitForm,
     control,
     // Listagem
-    usersProcessados,
+    usersProcessados: usersFiltered,
     viewMode,
     setViewMode,
     input,

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Button, CircularProgress } from '@mui/material';
 import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn';
 import { useNavigate } from 'react-router-dom';
+import { notify } from '../../utils/toastConfig.jsx';
 
 const BotaoFinalizar = ({ onFinalizar }) => {
   const navigate = useNavigate();
@@ -18,11 +19,11 @@ const BotaoFinalizar = ({ onFinalizar }) => {
           // Redireciona para a página de relatórios
           navigate('/relatorios', { state: { novoRelatorioId: relatorio.id } });
         } else {
-          alert('Erro ao criar o relatório. Tente novamente.');
+          notify.error('Erro ao criar o relatório. Tente novamente.');
         }
       } catch (error) {
         console.error('Erro ao finalizar:', error);
-        alert('Erro ao finalizar o atendimento.');
+        notify.error('Erro ao finalizar o atendimento.');
       } finally {
         setLoading(false);
       }

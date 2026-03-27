@@ -23,6 +23,7 @@ import { ReportProvider } from '../context/ReportContext';
 import { PecaProvider } from '../context/PecasContext';
 import { GraficoProvider } from '../context/GraficosContext';
 import { DashboardProvider } from '../context/DashboardContext';
+import { AppToastContainer } from '../utils/toastConfig.jsx';
 
 import RotaProtegida from './RoutersProtected';
 
@@ -38,6 +39,7 @@ const Routers = () => {
                   <NotificacaoProvider>
                     <DashboardProvider>
                       <ReportProvider>
+                        <AppToastContainer />
                         <Routes>
                           {/* ROTA PÚBLICA */}
                           <Route path="/" element={<Login />} />

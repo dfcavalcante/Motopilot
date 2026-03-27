@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { MotoContext } from '../context/MotoContext';
 import { UsersContext } from '../context/UserContext';
 import { useLogin } from '../context/LoginContext.jsx';
+import { notify } from '../utils/toastConfig.jsx';
 
 export const HookListagemMotosModelo = () => {
   const navigate = useNavigate();
@@ -117,14 +118,14 @@ export const HookListagemMotosModelo = () => {
   const handleAtribuirMoto = async (motoId) => {
     const mecanicoId = mecanicoSelecionado[motoId];
     if (!mecanicoId) {
-      alert('Selecione um técnico para atribuir a moto.');
+      notify.warning('Selecione um técnico para atribuir a moto.');
       return;
     }
 
     const sucesso = await atribuirMoto(motoId, Number(mecanicoId));
     if (sucesso) {
       await listarMotos(true);
-      alert('Moto atribuída com sucesso.');
+      notify.success('Moto atribuída com sucesso.');
     }
   };
 
