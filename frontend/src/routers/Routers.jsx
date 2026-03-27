@@ -104,7 +104,7 @@ const Routers = () => {
                           <Route
                             path="/dashboard"
                             element={
-                              <RotaProtegida>
+                              <RotaProtegida coordinatorOnly redirectTo="/listagemMotos">
                                 <Dashboard />
                               </RotaProtegida>
                             }

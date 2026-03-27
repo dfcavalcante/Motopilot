@@ -5,6 +5,21 @@ import { Box, InputAdornment, Button, TextField, Stack, Grid, InputLabel } from 
 import WarningIcon from '@mui/icons-material/Warning';
 import { useLogin } from '../context/LoginContext';
 
+const normalizeRole = (funcao) =>
+  String(funcao || '')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .trim();
+
+const isCoordenador = (funcao) => {
+  const role = normalizeRole(funcao);
+  return (
+    role === 'administrador' ||
+    role === 'admin'
+  );
+};
+
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -23,10 +38,11 @@ const Login = () => {
     }
 
     try {
-      await login(email, password);
+      const loggedUser = await login(email, password);
 
       setError(false);
-      navigate('/dashboard');
+      const destinoInicial = isCoordenador(loggedUser?.funcao) ? '/dashboard' : '/listagemMotos';
+      navigate(destinoInicial);
     } catch (err) {
       console.error(err);
       setError(true);
@@ -92,7 +108,7 @@ const Login = () => {
                     },
                     '&.Mui-focused fieldset': {
                       borderColor: '#969696 !important', // O !important força a remoção do azul
-                      borderWidth: '1px !important', 
+                      borderWidth: '1px !important',
                     },
                   },
                   '& input:-webkit-autofill': {

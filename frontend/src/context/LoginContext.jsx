@@ -67,7 +67,7 @@ export const LoginProvider = ({ children }) => {
       localStorage.setItem('@MotoPilot:user', JSON.stringify(data.user));
       setUser(data.user);
 
-      return true;
+      return data.user;
     } catch (error) {
       console.error('Erro ao fazer login (verifique se o usuário está cadastrado):', error);
       throw error;

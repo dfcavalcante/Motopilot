@@ -2,18 +2,42 @@ import React from 'react';
 import { Box, Typography, Stack, Divider, Button, IconButton } from '@mui/material';
 import { useLocation, useNavigate } from 'react-router-dom';
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
+import { useLogin } from '../context/LoginContext';
+
+const normalizeRole = (funcao) =>
+  String(funcao || '')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .trim();
+
+const isCoordenador = (funcao) => {
+  const role = normalizeRole(funcao);
+  return (
+    role === 'administrador' ||
+    role === 'admin'
+  );
+};
 
 const SideBar = ({ historico = [] }) => {
   const [open, setOpen] = React.useState(false); //Mudei pq tava #foda
   const location = useLocation();
   const navigate = useNavigate();
+  const { user } = useLogin();
+
+  const canAccessDashboard = isCoordenador(user?.funcao);
+  const homePath = canAccessDashboard ? '/dashboard' : '/listagemMotos';
 
   const menus = [
-    {
-      name: 'Início',
-      link: '/dashboard',
-      icon: <img src="/images/Home.svg" alt="Logo" width="20" />,
-    },
+    ...(canAccessDashboard
+      ? [
+          {
+            name: 'Início',
+            link: '/dashboard',
+            icon: <img src="/images/Home.svg" alt="Logo" width="20" />,
+          },
+        ]
+      : []),
     {
       name: 'Chatbot',
       link: '/chatbot',
@@ -96,7 +120,7 @@ const SideBar = ({ historico = [] }) => {
         p: '20px',
         boxSizing: 'border-box',
         position: 'relative',
-        boxShadow: 6
+        boxShadow: 6,
       }}
     >
       {/* Botão de abrir/fechar */}
@@ -136,7 +160,7 @@ const SideBar = ({ historico = [] }) => {
       <Stack spacing={2} sx={{ height: '100%', overflow: 'hidden' }}>
         {/* Logo */}
         <IconButton
-          onClick={() => navigate('/dashboard')}
+          onClick={() => navigate(homePath)}
           sx={{
             display: 'flex',
             alignItems: 'center',
