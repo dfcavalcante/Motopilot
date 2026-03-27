@@ -109,41 +109,51 @@ class RagOrchestrator:
         1. Use o contexto abaixo retirado do manual oficial para responder.
         2. Seja técnico, direto e cite valores numéricos se houver.
         3. Liste passos caso seja um procedimento e remova dicas irrelevantes.
-        4. OCORTE e EXCLUA qualquer referência a número de páginas (ex: "(página 59)", "veja a página X"). Se existir no contexto, simplesmente delete essa citação.
-        5. OCORTE e EXCLUA qualquer recomendação para ir a uma concessionária, assistência técnica ou procurar um mecânico. O usuário JÁ É o mecânico trabalhando na moto. Apenas omita essas recomendações do texto final.
-        6. Se a mensagem for algum tipo de saudação, responda de forma educada e cordial, mencionando brevemente que está pronto para ajudar com a moto.
-        7. Se a pergunta NÃO tiver relação DIRETA com motos, manutenção, peças ou mecânica (ex: emergências pessoais, incêndios, problemas domésticos, saúde, política, culinária, etc.), responda APENAS: "O MotoPilot é um assistente exclusivo para manutenção de motos. Por favor, faça perguntas relacionadas à sua moto!" e NADA mais. NÃO use informações de segurança ou emergência do manual para responder perguntas fora do contexto mecânico. IGNORE completamente o contexto do manual nesses casos.
-        8. NUNCA diga ao usuário para "acessar o manual", "consultar o manual", "verificar no manual" ou "ver o manual". Você JÁ É a interface do manual. Todas as informações que você fornece já vieram do manual. Simplesmente responda com a informação diretamente.
+        4. RECUSE-SE A INVENTAR: Se a informação solicitada NÃO estiver no contexto do manual fornecido abaixo, responda APENAS: "Desculpe, o manual desta moto não detalha os procedimentos para esta solicitação." NÃO tente adivinhar passos ou criar guias da sua própria cabeça.
+        5. É ABSOLUTAMENTE PROIBIDO sugerir que o usuário "procure um mecânico", "vá a uma concessionária" ou "busque ajuda profissional". O usuário JÁ É um mecânico profissional capacitado. OMITA qualquer aviso do tipo que vier do manual.
+        6. OCORTE e EXCLUA qualquer referência a número de páginas (ex: "(página 59)", "veja a página X"). Se existir no contexto, simplesmente delete essa citação.
+        7. Se a mensagem for algum tipo de saudação, responda de forma educada e cordial, mencionando brevemente que está pronto para ajudar com a moto.
+        8. Se a pergunta for sobre um assunto totalmente fora de mecânica/motos (ex: culinária, política), responda APENAS: "O MotoPilot é um assistente exclusivo para manutenção de motos. Por favor, faça perguntas relacionadas à sua moto!" e NADA mais. NÃO anexe outras coisas a essa mensagem.
+        9. Vá direto à resposta. NÃO crie cabeçalhos narrativos como "--- MANUAL ---" ou "Aqui está o que achei".
+        10. NUNCA diga ao usuário para "acessar o manual". Você JÁ É o manual. Responda diretamente.
+        11. FORMATAÇÃO ESTRITA: Você DEVE dar DUAS QUEBRAS DE LINHA (Enter duas vezes) DEPOIS DE CADA PASSO NUMERADO. NUNCA, SOB HIPÓTESE ALGUMA, escreva dois passos na mesma linha de texto. O número do próximo passo tem que sempre estar sozinho no começo de um novo parágrafo.
 
         EXEMPLO DO QUE ***NÃO*** FAZER:
         - "Remova a bateria (página 59)" -> ERRADO
-        - "Consulte uma concessionária Honda" -> ERRADO
+        - "Consulte uma concessionária" -> PROIBIDO
+        - "Procure ajuda profissional" -> PROIBIDO
         - "Acesse o manual para mais detalhes" -> ERRADO
-        - "Consulte o manual do proprietário" -> ERRADO
-        - "Consulte um técnico especialista" -> ERRADO
-        - " Procure a sua concessionária" -> ERRADO
-        - "Dirija-se a uma concessionária" -> ERRADO
+        - "--- MANUAL DA MOTO ---" -> ERRADO (Vá logo pro formato ou pra resposta)
+        - Inventar passos de como trocar o motor se o manual não tiver isso transcrito. -> PROIBIDO
 
         FORMATO DE RESPOSTA:
-        - Se a pergunta for sobre um PROCEDIMENTO (como trocar, instalar, remover algo), use este formato:
+        - Se a pergunta for sobre um PROCEDIMENTO (como trocar, instalar, remover algo), estruture sua resposta usando formatação Markdown rigorosa.
+        - REPITO: CADA PASSO (1., 2., 3...) DEVE ESTAR EM UM PARÁGRAFO ISOLADO COM LINHAS EM BRANCO ANTES E DEPOIS DELE.
         
-        **[Título da tarefa]**
+        Exemplo de formato estruturado (Siga este padrão estritamente):
+        
+        ### [Título da tarefa]
         Siga este passo a passo:
         
         **Preparação**
         1. [Primeiro passo baseado no contexto do manual]
-        2. [Segundo passo]
+        
+        2. [Segundo passo, em uma linha separada após quebra de linha]
         
         **Execução**
-        3. [Passos principais retirados do manual]
+        3. [Primeiro passo da execução]
+        
+        4. [Segundo passo da execução, sempre após duas quebras de linha]
+        
+        5. [Terceiro passo da execução]
         
         **Finalização**
-        4. [Últimos passos]
+        6. [Últimos passos]
         
         ⚠️ **Atenção:**
-        - [Alertas de segurança relevantes do manual, se houver]
+        - [Alertas de segurança relevantes do manual, em formato de lista (bullet points)]
         
-        - Se a pergunta for INFORMATIVA (medidas, especificações, dados técnicos), responda diretamente de forma clara e objetiva SEM usar o formato de passo a passo.
+        - Se a pergunta for INFORMATIVA (medidas, especificações, dados técnicos), responda diretamente com listas pontuadas (bullet points) ou parágrafos curtos bem espaçados. Evite blocos textuais densos.
         
         IMPORTANTE: Use APENAS informações do contexto do manual abaixo. NÃO invente dados. NÃO misture informações de peças diferentes.
         
@@ -191,7 +201,7 @@ class RagOrchestrator:
         Retorna o dicionário pronto para o relatório.
         """
         def perguntar_llm(pergunta: str) -> str:
-            prompt = f"Baseado estritamente no seguinte histórico de conversa:\n\n{historico_conversa}\n\nResponda diretamente e de forma extremamente curta (máximo 1 frase): {pergunta}"
+            prompt = f"Baseado estritamente no seguinte histórico de conversa:\n\n{historico_conversa}\n\nInstrução Suprema: Responda OBRIGATORIAMENTE em Português do Brasil de forma extremamente curta e concisa.\n\nTarefa: {pergunta}"
             try:
                 res = self.llm_client.invoke(prompt).strip()
                 # Limpa aspas que o LLM possa adicionar
@@ -204,16 +214,16 @@ class RagOrchestrator:
         print("=======================================================")
 
         print("🤖 Gerando resumo [Diagnóstico]...")
-        diagnostico = perguntar_llm("Resuma em menos de 10 palavras qual foi o PROBLEMA ou DEFEITO REAL relatado na moto. Considere apenas peças que o mecânico disse estar com defeito ou precisando de troca. Se o mecânico apenas pediu informações ou medidas de algo sem dizer que estava com defeito, NÃO inclua isso no diagnóstico.")
+        diagnostico = perguntar_llm("Resuma em menos de 10 palavras qual foi o PROBLEMA, sintoma ou motivo da manutenção relatado. Exemplo: 'Vazamento de óleo', 'Troca de pneus' ou 'Revisão do motor'.")
         
         print("🤖 Gerando resumo [Atividades]...")
-        atividades = perguntar_llm("Em NENHUMA HIPÓTESE ultrapasse 15 palavras. Resuma o que foi consertado ou qual ajuda foi prestada. Evite frases robóticas. Responda apenas o essencial (Ex: 'Troca da bateria e limpeza' ou 'Instruções para bateria passadas').")
+        atividades = perguntar_llm("Resuma as ações e reparos realizados em uma frase curta relatada na terceira pessoa (Ex: 'Substituição do óleo' ou 'Ajuste do guidão'). É totalmente PROIBIDO transcrever o diálogo ou dizer 'O mecânico perguntou...'. Vá direto ao serviço.")
         
         print("🤖 Gerando resumo [Observações]...")
-        observacoes = perguntar_llm("Qual foi a conclusão final ou dica geral dada ao término do atendimento? (resuma em 1 frase). Se não houve, apenas diga 'Nenhuma observação'.")
+        observacoes = perguntar_llm("Qual foi a conclusão técnica ou alerta dado sobre o conserto? (resuma em 1 frase curta). Se não houve, apenas diga 'Nenhuma observação'.")
         
         print("🤖 Gerando resumo [Peças]...")
-        pecas_str = perguntar_llm("Quais peças foram relatadas como DEFEITUOSAS ou precisando de TROCA/CONSERTO? Liste APENAS peças com defeito real relatado pelo mecânico. Se o mecânico apenas perguntou medidas ou informações sobre uma peça sem relatar defeito, NÃO inclua essa peça. Retorne os nomes separados por vírgula. Se nenhuma peça estava defeituosa, responda 'Nenhuma'.")
+        pecas_str = perguntar_llm("Quais peças o mecânico EXPLICITAMENTE relatou que estavam QUEBRADAS ou DEFEITUOSAS na conversa? Atenção de ouro: se o mecânico apenas perguntou 'Como trocar' ou pedir um guia, significa que ele só precisava de instruções, e NÃO que a roda/motor/painel estava defeituoso. Liste apenas o nome básico das peças realmente quebradas separadas por vírgula. Na dúvida ou se for só uma dúvida de procedimento, responda OBRIGATORIAMENTE: 'Nenhuma'.")
         
         # Limpar a resposta das peças para uma lista
         pecas_list = []
@@ -226,7 +236,10 @@ class RagOrchestrator:
             # Remove artigos do início dos nomes (ex: "A Bateria" -> "Bateria")
             artigos = ["A ", "O ", "As ", "Os ", "Um ", "Uma ", "Uns ", "Umas "]
             pecas_limpas = []
+            # Remove termos extras como "da moto" e blocos parentéticos residuais
             for peca in pecas_list:
+                peca = re.sub(r'\(.*?\)', '', peca).strip()
+                peca = re.sub(r'(?i)\bda moto\b', '', peca).strip()
                 for artigo in artigos:
                     if peca.startswith(artigo):
                         peca = peca[len(artigo):]
